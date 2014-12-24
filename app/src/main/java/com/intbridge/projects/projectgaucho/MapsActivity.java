@@ -1,5 +1,8 @@
 package com.intbridge.projects.projectgaucho;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -8,6 +11,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import android.app.ActionBar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.widget.SearchView;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -16,8 +25,32 @@ public class MapsActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.action_bar_top);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+
+        // Get the intent, verify the action and get the query
+        //Intent intent = getIntent();
+        //if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+         //   String query = intent.getStringExtra(SearchManager.QUERY);
+         //   //doMySearch(query);
+        //}
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        //TODO: Issue with rotation
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_bar, menu);
+
+        // Associate searchable configuration with the SearchView
+       // SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+       // SearchView searchView = (SearchView) menu.findItem(R.id.searchView).getActionView();
+       // searchView.setSearchableInfo( searchManager.getSearchableInfo(getComponentName()));
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

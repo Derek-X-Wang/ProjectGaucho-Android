@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+    Since I use Split Action Bar, this xml is no longer useful.
+    However, I feel extremely awkward to use layout instead of menu.
+     Save for people who may have a better idea!
+     TODO: Find a better way to do split action bar ex. use menu action_bar_top instead of layout...
+    -->
+    <item android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="@string/action_search"
+        android:showAsAction="ifRoom" />
+    <item android:id="@+id/action_filp"
+        android:title="@string/filp"
+        android:icon="@drawable/text_filp"
+        android:showAsAction="ifRoom"/>
+</menu>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:weightSum="1">
+
+    <!--
+        TODO: Current UI has a minor change while searchview is spanning, fix the position of SearchView and Button.
+    -->
+
+    <SearchView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchView"
+        android:iconifiedByDefault="true"
+        android:inputType="textCapWords"
+        android:imeOptions="actionSearch"
+        android:queryHint="@string/search_hint"
+        android:layout_gravity="end"
+        android:gravity="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:background= "@android:color/transparent"
+        android:text="@string/filp"
+        android:gravity="center" />
+
+
+</LinearLayout>
