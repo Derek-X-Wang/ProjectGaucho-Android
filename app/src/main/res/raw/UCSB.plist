@@ -1,0 +1,874 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Environmental Health &amp; Safety | 565</key>
+        <dict>
+            <key>la</key>
+            <real>34.420342</real>
+            <key>lo</key>
+            <real>-119.850586</real>
+        </dict>
+        <key>Public Safety (Fire &amp; Police Station) | 574</key>
+        <dict>
+            <key>la</key>
+            <real>34.421844</real>
+            <key>lo</key>
+            <real>-119.852911</real>
+        </dict>
+        <key>Housing &amp; Residential Services</key>
+        <dict>
+            <key>la</key>
+            <real>34.409533</real>
+            <key>lo</key>
+            <real>-119.844701</real>
+        </dict>
+        <key>Arts &amp; Lectures (Tickets Office) | 402</key>
+        <dict>
+            <key>la</key>
+            <real>34.416786</real>
+            <key>lo</key>
+            <real>-119.844736</real>
+        </dict>
+        <key>Hatlen Theater</key>
+        <dict>
+            <key>la</key>
+            <real>34.412537</real>
+            <key>lo</key>
+            <real>-119.850919</real>
+        </dict>
+        <key>Santa Catalina</key>
+        <dict>
+            <key>la</key>
+            <real>34.41779</real>
+            <key>lo</key>
+            <real>-119.86816</real>
+        </dict>
+        <key>Gaviota House</key>
+        <dict>
+            <key>la</key>
+            <real>34.408671</real>
+            <key>lo</key>
+            <real>-119.851906</real>
+        </dict>
+        <key>La Cumbre House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409299</real>
+            <key>lo</key>
+            <real>-119.851992</real>
+        </dict>
+        <key>Tepusquet House</key>
+        <dict>
+            <key>la</key>
+            <real>34.408957</real>
+            <key>lo</key>
+            <real>-119.851466</real>
+        </dict>
+        <key>Rincon House</key>
+        <dict>
+            <key>la</key>
+            <real>34.40859</real>
+            <key>lo</key>
+            <real>-119.851369</real>
+        </dict>
+        <key>Condor House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409011</real>
+            <key>lo</key>
+            <real>-119.852064</real>
+        </dict>
+        <key>Montecito House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409279</real>
+            <key>lo</key>
+            <real>-119.851622</real>
+        </dict>
+        <key>La Patera</key>
+        <dict>
+            <key>la</key>
+            <real>34.408907</real>
+            <key>lo</key>
+            <real>-119.851735</real>
+        </dict>
+        <key>Zaca House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409441</real>
+            <key>lo</key>
+            <real>-119.8513</real>
+        </dict>
+        <key>Camuesa House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409551</real>
+            <key>lo</key>
+            <real>-119.851692</real>
+        </dict>
+        <key>Pendola House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409621</real>
+            <key>lo</key>
+            <real>-119.852046</real>
+        </dict>
+        <key>Cuyama House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409936</real>
+            <key>lo</key>
+            <real>-119.851987</real>
+        </dict>
+        <key>Madulce House</key>
+        <dict>
+            <key>la</key>
+            <real>34.410218</real>
+            <key>lo</key>
+            <real>-119.851832</real>
+        </dict>
+        <key>Figueroa House</key>
+        <dict>
+            <key>la</key>
+            <real>34.410334</real>
+            <key>lo</key>
+            <real>-119.851438</real>
+        </dict>
+        <key>Los Robles</key>
+        <dict>
+            <key>la</key>
+            <real>34.409896</real>
+            <key>lo</key>
+            <real>-119.851531</real>
+        </dict>
+        <key>UCSB Summer Inn</key>
+        <dict>
+            <key>la</key>
+            <real>34.409936</real>
+            <key>lo</key>
+            <real>-119.851987</real>
+        </dict>
+        <key>Las Encinas</key>
+        <dict>
+            <key>la</key>
+            <real>34.408962</real>
+            <key>lo</key>
+            <real>-119.852884</real>
+        </dict>
+        <key>Miranda House</key>
+        <dict>
+            <key>la</key>
+            <real>34.408896</real>
+            <key>lo</key>
+            <real>-119.852527</real>
+        </dict>
+        <key>Arguello House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409298</real>
+            <key>lo</key>
+            <real>-119.852639</real>
+        </dict>
+        <key>Jalama House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409291</real>
+            <key>lo</key>
+            <real>-119.853005</real>
+        </dict>
+        <key>Cienaga House</key>
+        <dict>
+            <key>la</key>
+            <real>34.409096</real>
+            <key>lo</key>
+            <real>-119.853248</real>
+        </dict>
+        <key>Tecolete House</key>
+        <dict>
+            <key>la</key>
+            <real>34.408765</real>
+            <key>lo</key>
+            <real>-119.853127</real>
+        </dict>
+        <key>Labyrinth</key>
+        <dict>
+            <key>la</key>
+            <real>34.407193</real>
+            <key>lo</key>
+            <real>-119.848728</real>
+        </dict>
+        <key>Art Museum</key>
+        <dict>
+            <key>la</key>
+            <real>34.412048</real>
+            <key>lo</key>
+            <real>-119.849285</real>
+        </dict>
+        <key>SSMS| Social Science and Media Studies</key>
+        <dict>
+            <key>la</key>
+            <real>34.415199</real>
+            <key>lo</key>
+            <real>-119.849381</real>
+        </dict>
+        <key>Ortega Dining Commons</key>
+        <dict>
+            <key>la</key>
+            <real>34.41099</real>
+            <key>lo</key>
+            <real>-119.847005</real>
+        </dict>
+        <key>WMNS CENTR| Women’s Center</key>
+        <dict>
+            <key>la</key>
+            <integer>0</integer>
+            <key>lo</key>
+            <integer>0</integer>
+        </dict>
+        <key>WEBB| Webb Hall-Geological Sciences</key>
+        <dict>
+            <key>la</key>
+            <real>34.413402</real>
+            <key>lo</key>
+            <real>-119.843532</real>
+        </dict>
+        <key>UCEN| University Center</key>
+        <dict>
+            <key>la</key>
+            <real>34.411583</real>
+            <key>lo</key>
+            <real>-119.84804</real>
+        </dict>
+        <key>TD-W| Theater/Dance West</key>
+        <dict>
+            <key>la</key>
+            <real>34.412389</real>
+            <key>lo</key>
+            <real>-119.851423</real>
+        </dict>
+        <key>TD-E| Theater/Dance East</key>
+        <dict>
+            <key>la</key>
+            <real>34.412732</real>
+            <key>lo</key>
+            <real>-119.850454</real>
+        </dict>
+        <key>SRB| Student Resources Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.412721</real>
+            <key>lo</key>
+            <real>-119.852702</real>
+        </dict>
+        <key>CLAS</key>
+        <dict>
+            <key>la</key>
+            <real>34.412721</real>
+            <key>lo</key>
+            <real>-119.852702</real>
+        </dict>
+        <key>Children’s Center Main Campus</key>
+        <dict>
+            <key>la</key>
+            <real>34.412721</real>
+            <key>lo</key>
+            <real>-119.852702</real>
+        </dict>
+        <key>Children’s Center West Campus | 359</key>
+        <dict>
+            <key>la</key>
+            <real>34.414771</real>
+            <key>lo</key>
+            <real>-119.870032</real>
+        </dict>
+        <key>Student Health Center</key>
+        <dict>
+            <key>la</key>
+            <real>34.415442</real>
+            <key>lo</key>
+            <real>-119.852648</real>
+        </dict>
+        <key>Storke Tower</key>
+        <dict>
+            <key>la</key>
+            <real>34.412634</real>
+            <key>lo</key>
+            <real>-119.848335</real>
+        </dict>
+        <key>SH| South Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.413663</real>
+            <key>lo</key>
+            <real>-119.847568</real>
+        </dict>
+        <key>Santa Rosa Residence Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.410928</real>
+            <key>lo</key>
+            <real>-119.845111</real>
+        </dict>
+        <key>Santa Cruz Residence Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.409875</real>
+            <key>lo</key>
+            <real>-119.843464</real>
+        </dict>
+        <key>San Rafael Residence Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.411116</real>
+            <key>lo</key>
+            <real>-119.852095</real>
+        </dict>
+        <key>San Nicholas Residence Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.411116</real>
+            <key>lo</key>
+            <real>-119.852095</real>
+        </dict>
+        <key>San Miguel Residence Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.411116</real>
+            <key>lo</key>
+            <real>-119.852095</real>
+        </dict>
+        <key>SAASB| Student Affairs and Administrative Services Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.41631</real>
+            <key>lo</key>
+            <real>-119.847386</real>
+        </dict>
+        <key>RGYM| Robertson Gym</key>
+        <dict>
+            <key>la</key>
+            <real>34.416208</real>
+            <key>lo</key>
+            <real>-119.849199</real>
+        </dict>
+        <key>RECEN CTS| Recreation Center Tennis Courts</key>
+        <dict>
+            <key>la</key>
+            <real>34.419465</real>
+            <key>lo</key>
+            <real>-119.850315</real>
+        </dict>
+        <key>RECEN| Recreation Center</key>
+        <dict>
+            <key>la</key>
+            <real>34.418292</real>
+            <key>lo</key>
+            <real>-119.849127</real>
+        </dict>
+        <key>PSYCH| Psychology Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.411911</real>
+            <key>lo</key>
+            <real>-119.845058</real>
+        </dict>
+        <key>PSB-S| Physical Sciences Building South</key>
+        <dict>
+            <key>la</key>
+            <real>34.414553</real>
+            <key>lo</key>
+            <real>-119.842641</real>
+        </dict>
+        <key>PSB-N| Physical Sciences Building North</key>
+        <dict>
+            <key>la</key>
+            <real>34.415416</real>
+            <key>lo</key>
+            <real>-119.84354</real>
+        </dict>
+        <key>PHELP| Phelps Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.416131</real>
+            <key>lo</key>
+            <real>-119.844643</real>
+        </dict>
+        <key>NH| North Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.414973</real>
+            <key>lo</key>
+            <real>-119.846613</real>
+        </dict>
+        <key>Noble Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.416131</real>
+            <key>lo</key>
+            <real>-119.844643</real>
+        </dict>
+        <key>MCC| Multicultural Center</key>
+        <dict>
+            <key>la</key>
+            <real>34.411415</real>
+            <key>lo</key>
+            <real>-119.846689</real>
+        </dict>
+        <key>MUSIC LLCH| Lotte Lehmann Concert Hall | 531</key>
+        <dict>
+            <key>la</key>
+            <real>34.41219</real>
+            <key>lo</key>
+            <real>-119.846898</real>
+        </dict>
+        <key>Arts Library (Music) | 531</key>
+        <dict>
+            <key>la</key>
+            <real>34.41219</real>
+            <key>lo</key>
+            <real>-119.846898</real>
+        </dict>
+        <key>Music Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.412628</real>
+            <key>lo</key>
+            <real>-119.847118</real>
+        </dict>
+        <key>MLAB| Marine Biology Laboratory</key>
+        <dict>
+            <key>la</key>
+            <real>34.412521</real>
+            <key>lo</key>
+            <real>-119.842295</real>
+        </dict>
+        <key>Manzanita Village</key>
+        <dict>
+            <key>la</key>
+            <real>34.409386</real>
+            <key>lo</key>
+            <real>-119.85227</real>
+        </dict>
+        <key>LSB| Life Science Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.411831</real>
+            <key>lo</key>
+            <real>-119.843802</real>
+        </dict>
+        <key>Davidson Library</key>
+        <dict>
+            <key>la</key>
+            <real>34.413216</real>
+            <key>lo</key>
+            <real>-119.845873</real>
+        </dict>
+        <key>Kohn Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.414363</real>
+            <key>lo</key>
+            <real>-119.840568</real>
+        </dict>
+        <key>Kerr Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.41454</real>
+            <key>lo</key>
+            <real>-119.847193</real>
+        </dict>
+        <key>Extension | 591</key>
+        <dict>
+            <key>la</key>
+            <real>34.41454</real>
+            <key>lo</key>
+            <real>-119.847193</real>
+        </dict>
+        <key>ICA| Intercollegiate Athletics</key>
+        <dict>
+            <key>la</key>
+            <real>34.415929</real>
+            <key>lo</key>
+            <real>-119.85043</real>
+        </dict>
+        <key>Athletics Ticket Office</key>
+        <dict>
+            <key>la</key>
+            <real>34.415929</real>
+            <key>lo</key>
+            <real>-119.85043</real>
+        </dict>
+        <key>IV THEA| Isla Vista Theater</key>
+        <dict>
+            <key>la</key>
+            <real>34.411335</real>
+            <key>lo</key>
+            <real>-119.854829</real>
+        </dict>
+        <key>HSSB| Humanities and Social Sciences Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.41334</real>
+            <key>lo</key>
+            <real>-119.849966</real>
+        </dict>
+        <key>GIRV| Girvetz Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.413522</real>
+            <key>lo</key>
+            <real>-119.846852</real>
+        </dict>
+        <key>Event Center</key>
+        <dict>
+            <key>la</key>
+            <real>34.413739</real>
+            <key>lo</key>
+            <real>-119.851323</real>
+        </dict>
+        <key>ELING| Elings Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.415321</real>
+            <key>lo</key>
+            <real>-119.839927</real>
+        </dict>
+        <key>ESB| Engineering Sciences Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.415577</real>
+            <key>lo</key>
+            <real>-119.841388</real>
+        </dict>
+        <key>ENGR2| Engineering Building II</key>
+        <dict>
+            <key>la</key>
+            <real>34.414688</real>
+            <key>lo</key>
+            <real>-119.840938</real>
+        </dict>
+        <key>EMBAR HALL| Embarcadero Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.412101</real>
+            <key>lo</key>
+            <real>-119.85565</real>
+        </dict>
+        <key>ELLSN| Ellison Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.415909</real>
+            <key>lo</key>
+            <real>-119.844663</real>
+        </dict>
+        <key>CTC| Coral Tree Cafe</key>
+        <dict>
+            <key>la</key>
+            <real>34.415799</real>
+            <key>lo</key>
+            <real>-119.8468</real>
+        </dict>
+        <key>Counseling &amp; Career Service</key>
+        <dict>
+            <key>la</key>
+            <real>34.413305</real>
+            <key>lo</key>
+            <real>-119.849221</real>
+        </dict>
+        <key>CCS| College of Creative Studies</key>
+        <dict>
+            <key>la</key>
+            <real>34.411081</real>
+            <key>lo</key>
+            <real>-119.845844</real>
+        </dict>
+        <key>Cheadle Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.416268</real>
+            <key>lo</key>
+            <real>-119.846214</real>
+        </dict>
+        <key>CHEM| Chemistry Building</key>
+        <dict>
+            <key>la</key>
+            <real>34.415389</real>
+            <key>lo</key>
+            <real>-119.842569</real>
+        </dict>
+        <key>CAMPB HALL| Campbell Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.416279</real>
+            <key>lo</key>
+            <real>-119.845487</real>
+        </dict>
+        <key>BSIF| Biological Sciences Instructional Facility</key>
+        <dict>
+            <key>la</key>
+            <real>34.412172</real>
+            <key>lo</key>
+            <real>-119.843169</real>
+        </dict>
+        <key>BUCHN| Buchanan Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.415416</real>
+            <key>lo</key>
+            <real>-119.844553</real>
+        </dict>
+        <key>BREN| Bren Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.41317</real>
+            <key>lo</key>
+            <real>-119.84218</real>
+        </dict>
+        <key>BRDA| Broida Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.413973</real>
+            <key>lo</key>
+            <real>-119.842864</real>
+        </dict>
+        <key>BIO2| Biological Science II</key>
+        <dict>
+            <key>la</key>
+            <real>34.411959</real>
+            <key>lo</key>
+            <real>-119.842654</real>
+        </dict>
+        <key>AAS| Audit &amp; Advisory Service</key>
+        <dict>
+            <key>la</key>
+            <real>34.41577</real>
+            <key>lo</key>
+            <real>-119.849054</real>
+        </dict>
+        <key>Arbor</key>
+        <dict>
+            <key>la</key>
+            <real>34.414059</real>
+            <key>lo</key>
+            <real>-119.846514</real>
+        </dict>
+        <key>Associated Students Bike Shop</key>
+        <dict>
+            <key>la</key>
+            <real>34.414382</real>
+            <key>lo</key>
+            <real>-119.849371</real>
+        </dict>
+        <key>AS| Associated Students | 558</key>
+        <dict>
+            <key>la</key>
+            <real>34.411701</real>
+            <key>lo</key>
+            <real>-119.847085</real>
+        </dict>
+        <key>ARTS| Arts Building </key>
+        <dict>
+            <key>la</key>
+            <real>34.412539</real>
+            <key>lo</key>
+            <real>-119.84951</real>
+        </dict>
+        <key>Anacapa Residence Hall</key>
+        <dict>
+            <key>la</key>
+            <real>34.411021</real>
+            <key>lo</key>
+            <real>-119.843062</real>
+        </dict>
+        <key>937| Physics Trailer 2</key>
+        <dict>
+            <key>la</key>
+            <real>34.414203</real>
+            <key>lo</key>
+            <real>-119.843942</real>
+        </dict>
+        <key>615-MRL| Material Research Laboratory</key>
+        <dict>
+            <key>la</key>
+            <real>34.414177</real>
+            <key>lo</key>
+            <real>-119.841528</real>
+        </dict>
+        <key>Room 599</key>
+        <dict>
+            <key>la</key>
+            <real>34.413309</real>
+            <key>lo</key>
+            <real>-119.849162</real>
+        </dict>
+        <key>Room 477</key>
+        <dict>
+            <key>la</key>
+            <real>34.413703</real>
+            <key>lo</key>
+            <real>-119.848437</real>
+        </dict>
+        <key>Room 411</key>
+        <dict>
+            <key>la</key>
+            <real>34.412446</real>
+            <key>lo</key>
+            <real>-119.845626</real>
+        </dict>
+        <key>Room 429</key>
+        <dict>
+            <key>la</key>
+            <real>34.412229</real>
+            <key>lo</key>
+            <real>-119.84553</real>
+        </dict>
+        <key>479 | Old Gym1</key>
+        <dict>
+            <key>la</key>
+            <real>34.414531</real>
+            <key>lo</key>
+            <real>-119.84818</real>
+        </dict>
+        <key>434 | Former Women&apos;s Center</key>
+        <dict>
+            <key>la</key>
+            <real>34.413354</real>
+            <key>lo</key>
+            <real>-119.848394</real>
+        </dict>
+        <key>387 | Modular Classroom</key>
+        <dict>
+            <key>la</key>
+            <real>34.411977</real>
+            <key>lo</key>
+            <real>-119.845685</real>
+        </dict>
+        <key>Room 346</key>
+        <dict>
+            <key>la</key>
+            <real>34.412827</real>
+            <key>lo</key>
+            <real>-119.844575</real>
+        </dict>
+        <key>Room 300</key>
+        <dict>
+            <key>la</key>
+            <real>34.414088</real>
+            <key>lo</key>
+            <real>-119.848142</real>
+        </dict>
+        <key>Harold Frank Hall | HFH</key>
+        <dict>
+            <key>la</key>
+            <real>34.413774</real>
+            <key>lo</key>
+            <real>-119.841472</real>
+        </dict>
+        <key>Engineering I | 556</key>
+        <dict>
+            <key>la</key>
+            <real>34.413774</real>
+            <key>lo</key>
+            <real>-119.841472</real>
+        </dict>
+        <key>Carrillo Dining Common</key>
+        <dict>
+            <key>la</key>
+            <real>34.40991</real>
+            <key>lo</key>
+            <real>-119.852715</real>
+        </dict>
+        <key>De La Guerra Dining Common | DLG</key>
+        <dict>
+            <key>la</key>
+            <real>34.409556</real>
+            <key>lo</key>
+            <real>-119.845095</real>
+        </dict>
+        <key>Centennial House | 530</key>
+        <dict>
+            <key>la</key>
+            <real>34.409028</real>
+            <key>lo</key>
+            <real>-119.843591</real>
+        </dict>
+        <key>Central Stores (Receiving Mail Services) | 507</key>
+        <dict>
+            <key>la</key>
+            <real>34.423103</real>
+            <key>lo</key>
+            <real>-119.856908</real>
+        </dict>
+        <key>Community Relations (Police) | 300</key>
+        <dict>
+            <key>la</key>
+            <real>34.414059</real>
+            <key>lo</key>
+            <real>-119.848113</real>
+        </dict>
+        <key>Corwin Pavilion | 558</key>
+        <dict>
+            <key>la</key>
+            <real>34.411624</real>
+            <key>lo</key>
+            <real>-119.847147</real>
+        </dict>
+        <key>Courtyard Cafe (Parking Lot 10)</key>
+        <dict>
+            <key>la</key>
+            <real>34.41487</real>
+            <key>lo</key>
+            <real>-119.840566</real>
+        </dict>
+        <key>Education Building | 275</key>
+        <dict>
+            <key>la</key>
+            <real>34.415212</real>
+            <key>lo</key>
+            <real>-119.850293</real>
+        </dict>
+        <key>El Centro (Chicano Studies) | 406</key>
+        <dict>
+            <key>la</key>
+            <real>34.414178</real>
+            <key>lo</key>
+            <real>-119.844438</real>
+        </dict>
+        <key>Events Center (Thunderdome) | 505</key>
+        <dict>
+            <key>la</key>
+            <real>34.413771</real>
+            <key>lo</key>
+            <real>-119.851332</real>
+        </dict>
+        <key>Faculty Club | 581</key>
+        <dict>
+            <key>la</key>
+            <real>34.412027</real>
+            <key>lo</key>
+            <real>-119.851307</real>
+        </dict>
+        <key>Harder Stadium Offices</key>
+        <dict>
+            <key>la</key>
+            <real>34.419624</real>
+            <key>lo</key>
+            <real>-119.854572</real>
+        </dict>
+        <key>Harder Stadium</key>
+        <dict>
+            <key>la</key>
+            <real>34.420219</real>
+            <key>lo</key>
+            <real>-119.854382</real>
+        </dict>
+        <key>Information Kiosk</key>
+        <dict>
+            <key>la</key>
+            <real>34.416925</real>
+            <key>lo</key>
+            <real>-119.846005</real>
+        </dict>
+    </dict>
+</plist>

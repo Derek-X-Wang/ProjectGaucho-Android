@@ -3,6 +3,7 @@ package com.intbridge.projects.projectgaucho;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -18,9 +19,19 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.SearchView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Map;
+
+import xmlwise.Plist;
+import xmlwise.XmlParseException;
+
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private SearchView search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +39,24 @@ public class MapsActivity extends FragmentActivity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.action_bar_top);
+        search=(SearchView) findViewById(R.id.searchView);
+
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return true;
+            }
+
+        });
+
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
@@ -37,6 +66,7 @@ public class MapsActivity extends FragmentActivity {
          //   String query = intent.getStringExtra(SearchManager.QUERY);
          //   //doMySearch(query);
         //}
+
     }
 
     @Override
@@ -97,4 +127,5 @@ public class MapsActivity extends FragmentActivity {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(34.412327,-119.846978),13));
     }
+
 }

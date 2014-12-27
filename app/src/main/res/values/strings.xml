@@ -9,5 +9,6 @@
     <string name="layout">Layout</string>
     <string name="direction">Direction</string>
     <string name="search_hint">Location</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

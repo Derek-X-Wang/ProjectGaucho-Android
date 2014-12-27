@@ -9,6 +9,7 @@
 
     <!--
         TODO: Current UI has a minor change while searchview is spanning, fix the position of SearchView and Button.
+        I think it may be a better idea to use relatedlayout instead.
     -->
 
     <SearchView
