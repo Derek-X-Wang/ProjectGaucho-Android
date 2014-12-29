@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="end"
@@ -12,24 +12,37 @@
         I think it may be a better idea to use relatedlayout instead.
     -->
 
-    <SearchView
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button"
+            android:background= "@android:color/transparent"
+            android:text="@string/filp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <SearchView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/searchView"
+            android:iconifiedByDefault="true"
+            android:inputType="textCapWords"
+            android:imeOptions="actionSearch"
+            android:queryHint="@string/search_hint"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/button" />
+    </RelativeLayout>
+
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/searchView"
-        android:iconifiedByDefault="true"
-        android:inputType="textCapWords"
-        android:imeOptions="actionSearch"
-        android:queryHint="@string/search_hint"
-        android:layout_gravity="end"
-        android:gravity="center" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button"
-        android:background= "@android:color/transparent"
-        android:text="@string/filp"
-        android:gravity="center" />
-
+        android:layout_centerHorizontal="true"
+        android:id="@+id/listView" />
 
 </LinearLayout>

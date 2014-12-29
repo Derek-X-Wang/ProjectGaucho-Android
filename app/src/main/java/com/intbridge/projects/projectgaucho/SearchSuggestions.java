@@ -1,6 +1,12 @@
 package com.intbridge.projects.projectgaucho;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -18,11 +24,23 @@ public class SearchSuggestions {
     private ArrayList<SearchItem> totalList = new ArrayList<SearchItem>();
     private ArrayList<SearchItem> filteredList = new ArrayList<SearchItem>();
     private Map<String, Object> LocationMap = null;
+    private ArrayList<String> totalStringList = null;
+    private ArrayList<String> filteredStringList = new ArrayList<String>();
 
-    private Map<String, Object> loadPListByXmlwise(String school){
+    private Map<String, Object> loadPListByXmlwise(Context here,String school){
         Map<String, Object> schoolMap = null;
         try{
-            schoolMap = Plist.load("../res/raw/UCSB.plist"); // loads the (nested) properties.
+            InputStream inputStream = null;
+            BufferedReader bufferedReader = null;
+            inputStream = here.getResources().openRawResource(R.raw.ucsb);
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            schoolMap = Plist.fromXml(sb.toString());
+            //schoolMap = Plist.load("../res/raw/ucsb.plist"); // loads the (nested) properties.
         }catch (XmlParseException e){
             e.printStackTrace();
         }catch (IOException e){
@@ -31,34 +49,57 @@ public class SearchSuggestions {
             return schoolMap;
         }
     }
-    SearchSuggestions(String school){
-            LocationMap = loadPListByXmlwise(school);
+    public SearchSuggestions(Context here,String school){
+        //Log.e("SearchSuggestions","Here 1");
+            LocationMap = loadPListByXmlwise(here,school);
     }
 
     private boolean matchKey(String key, String queryText){
-        if(queryText.length() > key.length()){
+        if(key == null){
+           // Log.d("matchKey","key is null");
             return false;
         }
+        if(queryText.length() > key.length()){
+            //Log.d("matchKey","queryT > key");
+            return false;
+        }
+        //Log.d("matchKey","loop start");
         for (int i = 0; i <queryText.length(); i++){
             if(key.charAt(i)!=queryText.charAt(i)){
                 return  false;
             }
         }
+        //Log.d("matchKey","loop end");
         return true;
     }
     private boolean checkKey(String key, String queryText){
         String key1 = null;
         String key2 = null;
+        String key3 = null;
         if (key.contains("|")) {
-            String[] parts = key.split("|");
+            //TODO: key may contains more that 3 parts separate by |, this model can not handle that situation. Make the code more expandable
+            //Log.d("checkKey","The key have |");
+            String[] parts = key.split("\\|");
             key1 = parts[0];
             key2 = parts[1];
-            if(matchKey(key1,queryText)||matchKey(key2,queryText)){
+            if(parts.length==3){
+                key3 = parts[2];
+                key3 = key3.substring(1);
+                //Log.d("checkKey","The key3 is "+key3);
+            }
+            if (key1.charAt(key1.length()-1)==" ".charAt(0)) {
+                key1 = key1.substring(0, key1.length() - 1);
+            }
+            key2 = key2.substring(1);
+            //Log.d("checkKey","The key1 is "+key1);
+            //Log.d("checkKey","The key2 is "+key2);
+            if(matchKey(key1,queryText)||matchKey(key2,queryText)||matchKey(key3,queryText)){
                 return true;
             }else {
                 return false;
             }
         } else {
+            //Log.d("checkKey","The key have no |");
             if(matchKey(key,queryText)){
                 return true;
             }else {
@@ -85,5 +126,28 @@ public class SearchSuggestions {
         }
     }
 
+    public ArrayList<String> generateFilteredStringList(String newText){
+        //Log.e("generateFilteredStringList","Here 1");
+        if(LocationMap == null){
+            //Log.e("generateFilteredStringList","Here 2");
+            return null;
+        }else {
+            //TODO: the code can be optimized by only filter the filtedList instead of loop through original list every time
+            //Log.e("generateFilteredStringList","Here 3");
+            for(String key : LocationMap.keySet()) {
+                //Log.d("generateFilteredStringList","The key is " + key);
+                if (checkKey(key, newText)) {
+                  //  Log.e("generateFilteredStringList","Here 4");
+                    filteredStringList.add(key);
+                }
+            }
+            //Log.e("generateFilteredStringList","Here 5");
+            return filteredStringList;
+        }
+    }
+
+    public void resetFilteredStringList(){
+        filteredStringList = new ArrayList<String>();
+    }
 
 }

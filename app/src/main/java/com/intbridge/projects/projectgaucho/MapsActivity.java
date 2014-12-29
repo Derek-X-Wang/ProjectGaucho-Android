@@ -13,16 +13,22 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import android.app.ActionBar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SearchView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import xmlwise.Plist;
@@ -32,6 +38,9 @@ public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private SearchView search;
+    private ListView searchListView;
+    private SearchSuggestions searchSuggestions;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +49,11 @@ public class MapsActivity extends FragmentActivity {
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.action_bar_top);
         search=(SearchView) findViewById(R.id.searchView);
+        searchListView=(ListView)findViewById(R.id.listView);
+        //Log.e("onCreate","Here 1");
 
+        searchSuggestions = new SearchSuggestions(this,"UCSB");
+        //Log.e("onCreate","Here 2");
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
@@ -51,7 +64,23 @@ public class MapsActivity extends FragmentActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
+                Log.e("onQueryTextChange","Here 1");
+                if (newText != null && newText.length() > 0) {
+                    Log.e("onQueryTextChange","Here 2");
+                    ArrayList<String> filteredList = searchSuggestions.generateFilteredStringList(newText);
+                    Log.e("onQueryTextChange","Here 3");
+                    Log.d("this is my newText", newText);
+                    String[] stringList = new String[ filteredList.size() ];
+                    Log.e("onQueryTextChange","Here 4");
+                    stringList = filteredList.toArray(stringList);
+                    Log.e("onQueryTextChange","Here 5");
+                    //Log.d("this is my array", "arr: " + Arrays.toString(arr));
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                            MapsActivity.this,
+                            android.R.layout.simple_list_item_1,
+                            stringList);
+                    searchListView.setAdapter(arrayAdapter);
+                }
                 return true;
             }
 
@@ -77,9 +106,10 @@ public class MapsActivity extends FragmentActivity {
         inflater.inflate(R.menu.action_bar, menu);
 
         // Associate searchable configuration with the SearchView
-       // SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-       // SearchView searchView = (SearchView) menu.findItem(R.id.searchView).getActionView();
-       // searchView.setSearchableInfo( searchManager.getSearchableInfo(getComponentName()));
+       SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+       SearchView searchView = (SearchView) menu.findItem(R.id.searchView).getActionView();
+       searchView.setSearchableInfo( searchManager.getSearchableInfo(getComponentName()));
+
         return super.onCreateOptionsMenu(menu);
     }
 
