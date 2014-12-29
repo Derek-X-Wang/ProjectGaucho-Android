@@ -24,7 +24,7 @@ public class SearchSuggestions {
     private ArrayList<SearchItem> totalList = new ArrayList<SearchItem>();
     private ArrayList<SearchItem> filteredList = new ArrayList<SearchItem>();
     private Map<String, Object> LocationMap = null;
-    private ArrayList<String> totalStringList = null;
+    private ArrayList<String> totalStringList = new ArrayList<String>();
     private ArrayList<String> filteredStringList = new ArrayList<String>();
 
     private Map<String, Object> loadPListByXmlwise(Context here,String school){
@@ -52,6 +52,12 @@ public class SearchSuggestions {
     public SearchSuggestions(Context here,String school){
         //Log.e("SearchSuggestions","Here 1");
             LocationMap = loadPListByXmlwise(here,school);
+        if(LocationMap == null){
+        }else {
+            for(String key : LocationMap.keySet()) {
+                totalStringList.add(key);
+            }
+        }
     }
 
     private boolean matchKey(String key, String queryText){
@@ -148,6 +154,10 @@ public class SearchSuggestions {
 
     public void resetFilteredStringList(){
         filteredStringList = new ArrayList<String>();
+    }
+
+    public ArrayList<String> getTotalStringList(){
+        return totalStringList;
     }
 
 }
