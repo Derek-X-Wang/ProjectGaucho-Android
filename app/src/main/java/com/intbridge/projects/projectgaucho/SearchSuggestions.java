@@ -61,6 +61,7 @@ public class SearchSuggestions {
     }
 
     private boolean matchKey(String key, String queryText){
+        //TODO: make it return true with ex D and d
         if(key == null){
            // Log.d("matchKey","key is null");
             return false;
@@ -138,9 +139,8 @@ public class SearchSuggestions {
             //Log.e("generateFilteredStringList","Here 2");
             return null;
         }else {
-            //TODO: the code can be optimized by only filter the filtedList instead of loop through original list every time
             //Log.e("generateFilteredStringList","Here 3");
-            for(String key : LocationMap.keySet()) {
+            for(String key : totalStringList) {
                 //Log.d("generateFilteredStringList","The key is " + key);
                 if (checkKey(key, newText)) {
                   //  Log.e("generateFilteredStringList","Here 4");

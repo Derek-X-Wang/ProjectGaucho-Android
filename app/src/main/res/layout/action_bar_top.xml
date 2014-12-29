@@ -7,11 +7,6 @@
     android:gravity="end"
     android:weightSum="1">
 
-    <!--
-        TODO: Current UI has a minor change while searchview is spanning, fix the position of SearchView and Button.
-        I think it may be a better idea to use relatedlayout instead.
-    -->
-
 
     <RelativeLayout
         android:layout_width="fill_parent"
