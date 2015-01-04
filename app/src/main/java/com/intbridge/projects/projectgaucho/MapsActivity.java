@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.database.MatrixCursor;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import android.app.ActionBar;
 import android.text.TextUtils;
@@ -26,9 +28,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,13 +46,15 @@ import java.util.Map;
 import xmlwise.Plist;
 import xmlwise.XmlParseException;
 
-public class MapsActivity extends FragmentActivity implements SearchView.OnQueryTextListener, SearchView.OnFocusChangeListener{
+public class MapsActivity extends FragmentActivity implements SearchView.OnQueryTextListener, SearchView.OnFocusChangeListener, SearchView.OnSuggestionListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private SearchView search;
     private ListView searchListView;
     private SearchSuggestions searchSuggestions;
     private List<String> items;
+    private SearchAdapter searchAdapter = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +78,33 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.action_bar, menu);
 
+        Button filpButton = (Button) findViewById(R.id.button);
+
+        filpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "LALALALALLALALALALA", Toast.LENGTH_LONG).show();
+            }
+        });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_layout:
+                Toast.makeText(getApplicationContext(), "Layout feature is coming soon!", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.action_direction:
+                Toast.makeText(getApplicationContext(), "Click the marker and get navigation!", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.action_settings:
+                Toast.makeText(getApplicationContext(), "No setting currently", Toast.LENGTH_LONG).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -118,14 +150,10 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     private void setUpMap() {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(34.412327, -119.846978), 13));
+        mMap.getUiSettings().setZoomControlsEnabled(false);
     }
 
 
-    /**
-     * Set action bar
-     * 1. properties
-     * 2. title with custom font
-     */
     private void setActionBar() {
         //getActionBar().setTitle("");
         ActionBar actionBar = getActionBar();
@@ -142,6 +170,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
 
         loadData(null);
         search.setOnQueryTextListener(this);
+        search.setOnSuggestionListener(this);
     }
 
 
@@ -179,6 +208,40 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
 
     }
 
+    @Override
+    public boolean onSuggestionSelect(int position) {
+
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+
+        Log.e("onSuggestionClick","Here 1");
+        String key = searchAdapter.getKey(position);
+        Log.e("onSuggestionClick","key is "+ key);
+        ArrayList<Double> lalo = searchSuggestions.getLaLo(key);
+        Log.e("onSuggestionClick","la is "+ lalo.get(0)+" and lo is "+lalo.get(1));
+        mMap.clear();
+        mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(lalo.get(0), lalo.get(1)))
+        );
+        mMap.setOnMarkerClickListener(this);
+
+        return true;
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        Log.e("onMarkerClick","Here 1");
+        Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude));
+        Log.e("onMarkerClick","Here 2");
+        startActivity(navigation);
+        Log.e("onMarkerClick","Here 3");
+        return true;
+    }
+
     private void loadData(String query) {
 
         // Load data from list to cursor
@@ -200,10 +263,19 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
 
             cursor.addRow(temp);
         }
+        searchAdapter = new SearchAdapter(this, cursor, items);
         Log.e("loadData","Here 4");
-        search.setSuggestionsAdapter(new SearchAdapter(this, cursor, items));
+        search.setSuggestionsAdapter(searchAdapter);
         Log.e("loadData","Here 5");
         searchSuggestions.resetFilteredStringList();
+    }
+
+    public void LayoutButton(View v){
+        Toast.makeText(getApplicationContext(), "Layout feature is coming soon", Toast.LENGTH_LONG).show();
+    }
+
+    public void NavigationButton(View v){
+        Toast.makeText(getApplicationContext(), "Click the marker and get navigation", Toast.LENGTH_LONG).show();
     }
 
 }

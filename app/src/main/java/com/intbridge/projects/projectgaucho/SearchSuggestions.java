@@ -61,7 +61,6 @@ public class SearchSuggestions {
     }
 
     private boolean matchKey(String key, String queryText){
-        //TODO: make it return true with ex D and d
         if(key == null){
            // Log.d("matchKey","key is null");
             return false;
@@ -142,7 +141,7 @@ public class SearchSuggestions {
             //Log.e("generateFilteredStringList","Here 3");
             for(String key : totalStringList) {
                 //Log.d("generateFilteredStringList","The key is " + key);
-                if (checkKey(key, newText)) {
+                if (checkKey(key.toLowerCase(), newText.toLowerCase())) {
                   //  Log.e("generateFilteredStringList","Here 4");
                     filteredStringList.add(key);
                 }
@@ -159,5 +158,20 @@ public class SearchSuggestions {
     public ArrayList<String> getTotalStringList(){
         return totalStringList;
     }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<Double> getLaLo(String key){
+        if(LocationMap == null){
+            return null;
+        }else {
+            Log.e("getLaLo","Here 1");
+            ArrayList<Double> lalo = new ArrayList<Double>();
+            Map<String, Object> vMap = (Map<String, Object>) LocationMap.get(key);
+            lalo.add((Double) vMap.get("la"));
+            lalo.add((Double) vMap.get("lo"));
+            return lalo;
+        }
+    }
+
 
 }
