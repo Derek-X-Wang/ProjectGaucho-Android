@@ -14,10 +14,10 @@ import java.util.List;
  * Created by Derek on 12/29/2014.
  */
 public class SearchAdapter extends CursorAdapter {
-    //TODO: I think there is a error here,maybe in bindView, which cause the changing search suggestion text after delete to 0
+
     private List<String> items;
 
-    private TextView text;
+    //private TextView text;
 
     public SearchAdapter(Context context, Cursor cursor, List items) {
 
@@ -36,10 +36,13 @@ public class SearchAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         // Show list item data from cursor
+        //Log.e("bindView","cursor position is " +cursor.getPosition());
+        //Log.e("bindView","cursor text is " + items.get(cursor.getPosition()));
+        TextView text = (TextView) view.findViewById(R.id.text);
         text.setText(items.get(cursor.getPosition()));
 
         // Alternatively show data direct from database
-        //text.setText(cursor.getString(cursor.getColumnIndex("column_name")));
+        //text.setText(cursor.getString(cursor.getColumnIndex("text")));
 
     }
 
@@ -49,8 +52,8 @@ public class SearchAdapter extends CursorAdapter {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View view = inflater.inflate(R.layout.item, parent, false);
-
-        text = (TextView) view.findViewById(R.id.text);
+        //Log.e("newView","newView is called");
+        //text = (TextView) view.findViewById(R.id.text);
 
         return view;
 

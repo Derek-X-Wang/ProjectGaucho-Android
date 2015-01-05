@@ -201,7 +201,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
 
         //Log.e("onSuggestionClick","Here 1");
         String key = searchAdapter.getKey(position);
-        //Log.e("onSuggestionClick","key is "+ key);
+        //Log.e("onSuggestionClick", "key is " + key);
         ArrayList<Double> lalo = searchSuggestions.getLaLo(key);
         //Log.e("onSuggestionClick","la is "+ lalo.get(0)+" and lo is "+lalo.get(1));
         setMarkerWithAnimation(lalo.get(0),lalo.get(1));
@@ -231,15 +231,18 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
         if(query==null) {
             //Log.e("loadData","Here 2");
             items = searchSuggestions.getTotalStringList();
+            //Log.e("loadData","item total size is "+items.size());
         }else {
             //Log.e("loadData","Here 3");
             items = searchSuggestions.generateFilteredStringList(query);
+            //Log.e("loadData","item filtered size is "+items.size());
         }
         for (int i = 0; i < items.size(); i++) {
             temp[0] = i;
             temp[1] = items.get(i);
 
             cursor.addRow(temp);
+            //Log.e("loadData","Count MC is "+cursor.getCount());
         }
         searchAdapter = new SearchAdapter(this, cursor, items);
         //Log.e("loadData","Here 4");

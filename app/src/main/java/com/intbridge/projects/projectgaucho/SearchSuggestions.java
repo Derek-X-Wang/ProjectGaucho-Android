@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import xmlwise.Plist;
@@ -45,6 +46,7 @@ public class SearchSuggestions {
             return schoolMap;
         }
     }
+
     public SearchSuggestions(Context here,String school){
         //Log.e("SearchSuggestions","Here 1");
             LocationMap = loadPListByXmlwise(here,school);
@@ -53,6 +55,7 @@ public class SearchSuggestions {
             for(String key : LocationMap.keySet()) {
                 totalStringList.add(key);
             }
+            Collections.sort(totalStringList);
         }
     }
 
@@ -79,7 +82,7 @@ public class SearchSuggestions {
         String key2 = null;
         String key3 = null;
         if (key.contains("|")) {
-            //TODO: key may contains more that 3 parts separate by |, this model can not handle that situation. Make the code more expandable
+            //TODO: key may contains more that 3 parts separate by |, this model can not handle that situation. Make the code more expandable. Also, clean and refactor the code
             //Log.d("checkKey","The key have |");
             String[] parts = key.split("\\|");
             key1 = parts[0];
@@ -88,11 +91,17 @@ public class SearchSuggestions {
                 key3 = parts[2];
                 key3 = key3.substring(1);
                 //Log.d("checkKey","The key3 is "+key3);
+                if (key3.charAt(key3.length()-1)==" ".charAt(0)) {
+                    key3 = key1.substring(0, key3.length() - 1);
+                }
             }
             if (key1.charAt(key1.length()-1)==" ".charAt(0)) {
                 key1 = key1.substring(0, key1.length() - 1);
             }
             key2 = key2.substring(1);
+            if (key2.charAt(key2.length()-1)==" ".charAt(0)) {
+                key2 = key2.substring(0, key2.length() - 1);
+            }
             //Log.d("checkKey","The key1 is "+key1);
             //Log.d("checkKey","The key2 is "+key2);
             if(matchKey(key1,queryText)||matchKey(key2,queryText)||matchKey(key3,queryText)){
@@ -142,6 +151,7 @@ public class SearchSuggestions {
                     filteredStringList.add(key);
                 }
             }
+            Collections.sort(filteredStringList);
             //Log.e("generateFilteredStringList","Here 5");
             return filteredStringList;
         }

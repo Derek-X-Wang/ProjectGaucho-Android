@@ -681,14 +681,14 @@
             <key>lo</key>
             <real>-119.843062</real>
         </dict>
-        <key>937| Physics Trailer 2</key>
+        <key>Physics Trailer 2 | 937</key>
         <dict>
             <key>la</key>
             <real>34.414203</real>
             <key>lo</key>
             <real>-119.843942</real>
         </dict>
-        <key>615-MRL| Material Research Laboratory</key>
+        <key>MRL| Material Research Laboratory | 615</key>
         <dict>
             <key>la</key>
             <real>34.414177</real>
@@ -723,21 +723,21 @@
             <key>lo</key>
             <real>-119.84553</real>
         </dict>
-        <key>479 | Old Gym1</key>
+        <key>Old Gym1 | 479</key>
         <dict>
             <key>la</key>
             <real>34.414531</real>
             <key>lo</key>
             <real>-119.84818</real>
         </dict>
-        <key>434 | Former Women&apos;s Center</key>
+        <key>Former Women&apos;s Center | 434</key>
         <dict>
             <key>la</key>
             <real>34.413354</real>
             <key>lo</key>
             <real>-119.848394</real>
         </dict>
-        <key>387 | Modular Classroom</key>
+        <key>Modular Classroom | 387</key>
         <dict>
             <key>la</key>
             <real>34.411977</real>
@@ -779,7 +779,7 @@
             <key>lo</key>
             <real>-119.852715</real>
         </dict>
-        <key>De La Guerra Dining Common | DLG</key>
+        <key>DLG | De La Guerra Dining Common</key>
         <dict>
             <key>la</key>
             <real>34.409556</real>
