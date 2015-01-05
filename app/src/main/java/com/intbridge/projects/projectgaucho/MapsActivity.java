@@ -1,15 +1,22 @@
 package com.intbridge.projects.projectgaucho;
 
-import android.app.SearchManager;
-import android.content.Context;
+import android.app.ActionBar;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.database.MatrixCursor;
-import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.Build;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,34 +24,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import android.app.ActionBar;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
-import xmlwise.Plist;
-import xmlwise.XmlParseException;
 
 public class MapsActivity extends FragmentActivity implements SearchView.OnQueryTextListener, SearchView.OnFocusChangeListener, SearchView.OnSuggestionListener, GoogleMap.OnMarkerClickListener {
 
@@ -74,16 +56,17 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
-        //TODO: Issue with rotation
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.action_bar, menu);
 
-        Button filpButton = (Button) findViewById(R.id.button);
+        Button flipButton = (Button) findViewById(R.id.button);
 
-        filpButton.setOnClickListener(new View.OnClickListener() {
+        flipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "LALALALALLALALALALA", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplicationContext(), FlipActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
         return super.onCreateOptionsMenu(menu);

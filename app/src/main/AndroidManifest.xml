@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.intbridge.projects.projectgaucho" >
 
-    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="21"/>
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="21" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -16,7 +19,8 @@
 
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true"/>
+        android:required="true" />
+
 
     <application
         android:allowBackup="true"
@@ -31,18 +35,28 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:screenOrientation="portrait"
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:uiOptions="splitActionBarWhenNarrow">
-            <meta-data android:name="android.app.default_searchable"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value="com.intbridge.projects.projectgaucho" />
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".FlipActivity"
+            android:label="@string/title_activity_flip" >
         </activity>
     </application>
 
