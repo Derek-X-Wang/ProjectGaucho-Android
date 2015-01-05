@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,9 +41,9 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.e("onCreate", "Before setActionBar()");
+        //Log.e("onCreate", "Before setActionBar()");
         setActionBar();
-        Log.e("onCreate", "After setActionBar()");
+        //Log.e("onCreate", "After setActionBar()");
 
 
         setContentView(R.layout.activity_maps);
@@ -166,16 +165,16 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        Log.d("this is my newText", newText);
+        //Log.d("this is my newText", newText);
 
         if (TextUtils.isEmpty(newText))
         {
-            Log.e("onQueryTextChange","B 1");
+            //Log.e("onQueryTextChange","B 1");
             loadData(null);
         }
         else
         {
-            Log.e("onQueryTextChange","B 2");
+            //Log.e("onQueryTextChange","B 2");
             loadData(newText);
         }
 
@@ -200,16 +199,12 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     @Override
     public boolean onSuggestionClick(int position) {
 
-        Log.e("onSuggestionClick","Here 1");
+        //Log.e("onSuggestionClick","Here 1");
         String key = searchAdapter.getKey(position);
-        Log.e("onSuggestionClick","key is "+ key);
+        //Log.e("onSuggestionClick","key is "+ key);
         ArrayList<Double> lalo = searchSuggestions.getLaLo(key);
-        Log.e("onSuggestionClick","la is "+ lalo.get(0)+" and lo is "+lalo.get(1));
-        mMap.clear();
-        mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(lalo.get(0), lalo.get(1)))
-        );
-        mMap.setOnMarkerClickListener(this);
+        //Log.e("onSuggestionClick","la is "+ lalo.get(0)+" and lo is "+lalo.get(1));
+        setMarkerWithAnimation(lalo.get(0),lalo.get(1));
 
         return true;
     }
@@ -217,11 +212,11 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        Log.e("onMarkerClick","Here 1");
+        //Log.e("onMarkerClick","Here 1");
         Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude));
-        Log.e("onMarkerClick","Here 2");
+        //Log.e("onMarkerClick","Here 2");
         startActivity(navigation);
-        Log.e("onMarkerClick","Here 3");
+        //Log.e("onMarkerClick","Here 3");
         return true;
     }
 
@@ -232,12 +227,12 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
         Object[] temp = new Object[]{0, "default"};
 
         MatrixCursor cursor = new MatrixCursor(columns);
-        Log.e("loadData","Here 1");
+        //Log.e("loadData","Here 1");
         if(query==null) {
-            Log.e("loadData","Here 2");
+            //Log.e("loadData","Here 2");
             items = searchSuggestions.getTotalStringList();
         }else {
-            Log.e("loadData","Here 3");
+            //Log.e("loadData","Here 3");
             items = searchSuggestions.generateFilteredStringList(query);
         }
         for (int i = 0; i < items.size(); i++) {
@@ -247,18 +242,23 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
             cursor.addRow(temp);
         }
         searchAdapter = new SearchAdapter(this, cursor, items);
-        Log.e("loadData","Here 4");
+        //Log.e("loadData","Here 4");
         search.setSuggestionsAdapter(searchAdapter);
-        Log.e("loadData","Here 5");
+        //Log.e("loadData","Here 5");
         searchSuggestions.resetFilteredStringList();
     }
 
-    public void LayoutButton(View v){
-        Toast.makeText(getApplicationContext(), "Layout feature is coming soon", Toast.LENGTH_LONG).show();
-    }
+    public void setMarkerWithAnimation(Double la,Double lo){
+        mMap.clear();
+        LatLng lalo = new LatLng(la,lo);
+        mMap.addMarker(new MarkerOptions()
+                        .position(lalo)
+        );
+        mMap.setOnMarkerClickListener(this);
 
-    public void NavigationButton(View v){
-        Toast.makeText(getApplicationContext(), "Click the marker and get navigation", Toast.LENGTH_LONG).show();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lalo, 13));
+
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17), 2000, null);
     }
 
 }

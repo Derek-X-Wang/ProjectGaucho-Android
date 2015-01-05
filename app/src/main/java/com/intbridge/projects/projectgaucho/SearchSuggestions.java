@@ -1,17 +1,13 @@
 package com.intbridge.projects.projectgaucho;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 
 import xmlwise.Plist;
 import xmlwise.XmlParseException;
@@ -164,7 +160,7 @@ public class SearchSuggestions {
         if(LocationMap == null){
             return null;
         }else {
-            Log.e("getLaLo","Here 1");
+            //Log.e("getLaLo","Here 1");
             ArrayList<Double> lalo = new ArrayList<Double>();
             Map<String, Object> vMap = (Map<String, Object>) LocationMap.get(key);
             lalo.add((Double) vMap.get("la"));

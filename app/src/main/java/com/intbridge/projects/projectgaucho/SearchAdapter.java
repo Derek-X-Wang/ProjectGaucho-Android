@@ -2,7 +2,6 @@ package com.intbridge.projects.projectgaucho;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,7 @@ public class SearchAdapter extends CursorAdapter {
     }
 
     public String getKey(int position){
-        Log.e("getKey","here 1");
+        //Log.e("getKey","here 1");
         return items.get(position);
     }
 
