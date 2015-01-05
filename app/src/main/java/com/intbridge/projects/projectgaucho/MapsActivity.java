@@ -213,7 +213,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     public boolean onMarkerClick(final Marker marker) {
 
         //Log.e("onMarkerClick","Here 1");
-        Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude));
+        Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude + "&mode=w"));
         //Log.e("onMarkerClick","Here 2");
         startActivity(navigation);
         //Log.e("onMarkerClick","Here 3");
