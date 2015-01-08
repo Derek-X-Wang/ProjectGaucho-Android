@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -31,7 +30,6 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private SearchView search;
-    private ListView searchListView;
     private SearchSuggestions searchSuggestions;
     private List<String> items;
     private SearchAdapter searchAdapter = null;
@@ -41,10 +39,8 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Log.e("onCreate", "Before setActionBar()");
+        //set up actionbar
         setActionBar();
-        //Log.e("onCreate", "After setActionBar()");
-
 
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
@@ -58,6 +54,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.action_bar, menu);
 
+        // setup flip button
         Button flipButton = (Button) findViewById(R.id.button);
 
         flipButton.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
         return super.onCreateOptionsMenu(menu);
     }
 
+    // this will handle the click on action bar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
@@ -129,6 +127,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
      * <p/>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
+    // here, I move the camera to UCSB TODO: move the camera based on user location ( which campus )
     private void setUpMap() {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(34.412327, -119.846978), 13));
@@ -136,21 +135,26 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     }
 
 
+    // setup action bar
     private void setActionBar() {
-        //getActionBar().setTitle("");
         ActionBar actionBar = getActionBar();
+        // setup the top view in action bar
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.action_bar_top);
 
+        // get a filter for search
         searchSuggestions = new SearchSuggestions(this, "UCSB");
 
         search = (SearchView) findViewById(R.id.searchView);
 
+        // setup search display threshold
         int autoCompleteTextViewID = getResources().getIdentifier("android:id/search_src_text", null, null);
         AutoCompleteTextView searchAutoCompleteTextView = (AutoCompleteTextView) search.findViewById(autoCompleteTextViewID);
         searchAutoCompleteTextView.setThreshold(0);
 
+        // setup matrix cursor and adapter
         loadData(null);
+        // setup listener
         search.setOnQueryTextListener(this);
         search.setOnSuggestionListener(this);
     }
@@ -165,19 +169,12 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        //Log.d("this is my newText", newText);
-
-        if (TextUtils.isEmpty(newText))
-        {
-            //Log.e("onQueryTextChange","B 1");
+        if (TextUtils.isEmpty(newText))        {
             loadData(null);
         }
-        else
-        {
-            //Log.e("onQueryTextChange","B 2");
+        else{
             loadData(newText);
         }
-
         return true;
     }
 
@@ -185,9 +182,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     public void onFocusChange(View v, boolean hasFocus)
     {
         if (!hasFocus){
-            //searchSuggestions.resetFilteredStringList();
         }
-
     }
 
     @Override
@@ -199,11 +194,8 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     @Override
     public boolean onSuggestionClick(int position) {
 
-        //Log.e("onSuggestionClick","Here 1");
         String key = searchAdapter.getKey(position);
-        //Log.e("onSuggestionClick", "key is " + key);
         ArrayList<Double> lalo = searchSuggestions.getLaLo(key);
-        //Log.e("onSuggestionClick","la is "+ lalo.get(0)+" and lo is "+lalo.get(1));
         setMarkerWithAnimation(lalo.get(0),lalo.get(1));
 
         return true;
@@ -212,14 +204,12 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        //Log.e("onMarkerClick","Here 1");
         Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude + "&mode=w"));
-        //Log.e("onMarkerClick","Here 2");
         startActivity(navigation);
-        //Log.e("onMarkerClick","Here 3");
         return true;
     }
 
+    // here, search suggestion is handled
     private void loadData(String query) {
 
         // Load data from list to cursor
@@ -227,30 +217,23 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
         Object[] temp = new Object[]{0, "default"};
 
         MatrixCursor cursor = new MatrixCursor(columns);
-        //Log.e("loadData","Here 1");
         if(query==null) {
-            //Log.e("loadData","Here 2");
             items = searchSuggestions.getTotalStringList();
-            //Log.e("loadData","item total size is "+items.size());
         }else {
-            //Log.e("loadData","Here 3");
             items = searchSuggestions.generateFilteredStringList(query);
-            //Log.e("loadData","item filtered size is "+items.size());
         }
         for (int i = 0; i < items.size(); i++) {
             temp[0] = i;
             temp[1] = items.get(i);
 
             cursor.addRow(temp);
-            //Log.e("loadData","Count MC is "+cursor.getCount());
         }
         searchAdapter = new SearchAdapter(this, cursor, items);
-        //Log.e("loadData","Here 4");
         search.setSuggestionsAdapter(searchAdapter);
-        //Log.e("loadData","Here 5");
         searchSuggestions.resetFilteredStringList();
     }
 
+    // set the marker and focus on that marker
     public void setMarkerWithAnimation(Double la,Double lo){
         mMap.clear();
         LatLng lalo = new LatLng(la,lo);
@@ -258,9 +241,7 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
                         .position(lalo)
         );
         mMap.setOnMarkerClickListener(this);
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lalo, 13));
-
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17), 2000, null);
     }
 

@@ -15,15 +15,15 @@ import xmlwise.XmlParseException;
 
 /**
  * Created by Derek on 12/26/2014.
+ * This is the filter class, it keeps the data and filters data for search
  */
 public class SearchSuggestions {
 
-    private ArrayList<SearchItem> totalList = new ArrayList<SearchItem>();
-    private ArrayList<SearchItem> filteredList = new ArrayList<SearchItem>();
     private Map<String, Object> LocationMap = null;
     private ArrayList<String> totalStringList = new ArrayList<String>();
     private ArrayList<String> filteredStringList = new ArrayList<String>();
 
+    // This function loads the plists data to map(java), it has been hard coded to 'ucsb' currently, but will be easy to load other plist by using the param 'school'
     private Map<String, Object> loadPListByXmlwise(Context here,String school){
         Map<String, Object> schoolMap = null;
         try{
@@ -37,7 +37,6 @@ public class SearchSuggestions {
                 sb.append(line);
             }
             schoolMap = Plist.fromXml(sb.toString());
-            //schoolMap = Plist.load("../res/raw/ucsb.plist"); // loads the (nested) properties.
         }catch (XmlParseException e){
             e.printStackTrace();
         }catch (IOException e){
@@ -47,11 +46,13 @@ public class SearchSuggestions {
         }
     }
 
+    // The constructor, which setup the totalStringList for search and load data to this SearchSuggestion object
     public SearchSuggestions(Context here,String school){
-        //Log.e("SearchSuggestions","Here 1");
-            LocationMap = loadPListByXmlwise(here,school);
+        LocationMap = loadPListByXmlwise(here,school);
         if(LocationMap == null){
+            //do nothing if the object is empty, which meant something wrong with loadPListByXmlwise
         }else {
+            // get a list of string for all location
             for(String key : LocationMap.keySet()) {
                 totalStringList.add(key);
             }
@@ -59,100 +60,72 @@ public class SearchSuggestions {
         }
     }
 
+    // Match the query text with the string in the list, return true if query text is the first letters of the keys
     private boolean matchKey(String key, String queryText){
         if(key == null){
-           // Log.d("matchKey","key is null");
             return false;
         }
         if(queryText.length() > key.length()){
-            //Log.d("matchKey","queryT > key");
             return false;
         }
-        //Log.d("matchKey","loop start");
         for (int i = 0; i <queryText.length(); i++){
             if(key.charAt(i)!=queryText.charAt(i)){
                 return  false;
             }
         }
-        //Log.d("matchKey","loop end");
         return true;
     }
+
+    // Split the key and do match for each
     private boolean checkKey(String key, String queryText){
         String key1 = null;
         String key2 = null;
         String key3 = null;
         if (key.contains("|")) {
             //TODO: key may contains more that 3 parts separate by |, this model can not handle that situation. Make the code more expandable. Also, clean and refactor the code
-            //Log.d("checkKey","The key have |");
+            //Split key to more key by '|'
             String[] parts = key.split("\\|");
             key1 = parts[0];
             key2 = parts[1];
+            // If there is more than two keys
             if(parts.length==3){
                 key3 = parts[2];
                 key3 = key3.substring(1);
-                //Log.d("checkKey","The key3 is "+key3);
+                // chop the key if necessary
                 if (key3.charAt(key3.length()-1)==" ".charAt(0)) {
                     key3 = key1.substring(0, key3.length() - 1);
                 }
             }
+            // chop the key if necessary
             if (key1.charAt(key1.length()-1)==" ".charAt(0)) {
                 key1 = key1.substring(0, key1.length() - 1);
             }
+            // chop the key if necessary
             key2 = key2.substring(1);
             if (key2.charAt(key2.length()-1)==" ".charAt(0)) {
                 key2 = key2.substring(0, key2.length() - 1);
             }
-            //Log.d("checkKey","The key1 is "+key1);
-            //Log.d("checkKey","The key2 is "+key2);
             if(matchKey(key1,queryText)||matchKey(key2,queryText)||matchKey(key3,queryText)){
                 return true;
             }else {
                 return false;
             }
         } else {
-            //Log.d("checkKey","The key have no |");
-            if(matchKey(key,queryText)){
-                return true;
-            }else {
-                return false;
-            }
+            return matchKey(key,queryText);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public ArrayList<SearchItem> generateFilteredList(String newText){
-        if(LocationMap == null){
-            return null;
-        }else {
-            for(String key : LocationMap.keySet()) {
-                if (checkKey(key, newText)) {
-                    Map<String, Object> vMap = (Map<String, Object>) LocationMap.get(key);
-                    Double la = (Double) vMap.get("la");
-                    Double lo = (Double) vMap.get("lo");
-                    SearchItem item = new SearchItem(key, la, lo);
-                    filteredList.add(item);
-                }
-            }
-            return filteredList;
-        }
-    }
-
+    // Get the filtered list by using the checkKey function
     public ArrayList<String> generateFilteredStringList(String newText){
-        //Log.e("generateFilteredStringList","Here 1");
         if(LocationMap == null){
-            //Log.e("generateFilteredStringList","Here 2");
             return null;
         }else {
-            //Log.e("generateFilteredStringList","Here 3");
             for(String key : totalStringList) {
-                //Log.d("generateFilteredStringList","The key is " + key);
                 if (checkKey(key.toLowerCase(), newText.toLowerCase())) {
-                  //  Log.e("generateFilteredStringList","Here 4");
                     filteredStringList.add(key);
                 }
             }
             Collections.sort(filteredStringList);
-            //Log.e("generateFilteredStringList","Here 5");
             return filteredStringList;
         }
     }
@@ -165,12 +138,12 @@ public class SearchSuggestions {
         return totalStringList;
     }
 
+    // Get la and lo by key, return a array for la and lo
     @SuppressWarnings("unchecked")
     public ArrayList<Double> getLaLo(String key){
         if(LocationMap == null){
             return null;
         }else {
-            //Log.e("getLaLo","Here 1");
             ArrayList<Double> lalo = new ArrayList<Double>();
             Map<String, Object> vMap = (Map<String, Object>) LocationMap.get(key);
             lalo.add((Double) vMap.get("la"));

@@ -5,6 +5,7 @@
     android:background="#ffffffff"
     android:gravity="center_vertical">
 
+    <!-- this is the xml for search suggestion items-->
     <!--TODO: Re-adjust the layout, make it fit the text and look good -->
     <TextView
         android:id="@+id/text"

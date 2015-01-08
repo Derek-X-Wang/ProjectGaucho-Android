@@ -32,7 +32,6 @@ public class FlipActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_flip_back) {
             Intent intent = new Intent(this, MapsActivity.class);
             startActivity(intent);

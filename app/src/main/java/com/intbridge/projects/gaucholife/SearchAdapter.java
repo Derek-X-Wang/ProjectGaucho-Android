@@ -12,12 +12,12 @@ import java.util.List;
 
 /**
  * Created by Derek on 12/29/2014.
+ * A simple adapter for searching suggestions with matrixCursor
  */
 public class SearchAdapter extends CursorAdapter {
 
+    // Store the string list that needed to show for search
     private List<String> items;
-
-    //private TextView text;
 
     public SearchAdapter(Context context, Cursor cursor, List items) {
 
@@ -27,17 +27,16 @@ public class SearchAdapter extends CursorAdapter {
 
     }
 
+    // handle which suggestion has been clicked
     public String getKey(int position){
-        //Log.e("getKey","here 1");
         return items.get(position);
     }
 
+    // this function update the search list view
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
         // Show list item data from cursor
-        //Log.e("bindView","cursor position is " +cursor.getPosition());
-        //Log.e("bindView","cursor text is " + items.get(cursor.getPosition()));
         TextView text = (TextView) view.findViewById(R.id.text);
         text.setText(items.get(cursor.getPosition()));
 
@@ -46,14 +45,12 @@ public class SearchAdapter extends CursorAdapter {
 
     }
 
+    // inflate for more list view if needed
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         View view = inflater.inflate(R.layout.item, parent, false);
-        //Log.e("newView","newView is called");
-        //text = (TextView) view.findViewById(R.id.text);
 
         return view;
 
