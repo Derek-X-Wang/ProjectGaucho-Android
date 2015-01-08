@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.intbridge.projects.projectgaucho"
-    android:versionCode="1"
-    android:versionName="0.7">
+    package="com.intbridge.projects.gaucholife"
+    android:versionCode="5"
+    android:versionName="0.9">
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -34,16 +34,16 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="AIzaSyBv-FPmRvUyEQBs9JhpoJs-hWyRZuBlswY" />
 
         <activity
             android:screenOrientation="portrait"
-            android:name=".MapsActivity"
+            android:name="com.intbridge.projects.gaucholife.MapsActivity"
             android:label="@string/title_activity_maps"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value="com.intbridge.projects.projectgaucho" />
+                android:value="com.intbridge.projects.gaucholife" />
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -57,7 +57,7 @@
         </activity>
         <activity
             android:screenOrientation="portrait"
-            android:name=".FlipActivity"
+            android:name="com.intbridge.projects.gaucholife.FlipActivity"
             android:label="@string/title_activity_flip" >
         </activity>
     </application>

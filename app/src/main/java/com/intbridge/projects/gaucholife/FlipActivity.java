@@ -1,4 +1,4 @@
-package com.intbridge.projects.projectgaucho;
+package com.intbridge.projects.gaucholife;
 
 import android.app.Activity;
 import android.content.Intent;
