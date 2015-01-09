@@ -1,6 +1,7 @@
 package com.intbridge.projects.gaucholife;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.SearchView;
@@ -196,7 +198,11 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
 
         String key = searchAdapter.getKey(position);
         ArrayList<Double> lalo = searchSuggestions.getLaLo(key);
-        setMarkerWithAnimation(lalo.get(0),lalo.get(1));
+        setMarkerWithAnimation(key,lalo.get(0),lalo.get(1));
+        // hide the keyboard
+        InputMethodManager imm = (InputMethodManager)getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(search.getWindowToken(), 0);
 
         return true;
     }
@@ -234,15 +240,18 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
     }
 
     // set the marker and focus on that marker
-    public void setMarkerWithAnimation(Double la,Double lo){
+    public void setMarkerWithAnimation(String key,Double la,Double lo){
         mMap.clear();
         LatLng lalo = new LatLng(la,lo);
-        mMap.addMarker(new MarkerOptions()
+        Marker marker = mMap.addMarker(new MarkerOptions()
                         .position(lalo)
+                        .title(key)
         );
         mMap.setOnMarkerClickListener(this);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lalo, 13));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17), 2000, null);
+        marker.showInfoWindow();
+
     }
 
 }
