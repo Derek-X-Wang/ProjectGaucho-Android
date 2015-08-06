@@ -9,12 +9,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -52,21 +50,21 @@ public class MapsActivity extends FragmentActivity implements SearchView.OnQuery
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_bar, menu);
-
-        // setup flip button
-        Button flipButton = (Button) findViewById(R.id.button);
-
-        flipButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), FlipActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+//        // Inflate the menu items for use in the action bar
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.action_bar, menu);
+//
+//        // setup flip button
+//        Button flipButton = (Button) findViewById(R.id.button);
+//
+//        flipButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(), FlipActivity.class);
+//                startActivity(intent);
+//                finish();
+//            }
+//        });
         return super.onCreateOptionsMenu(menu);
     }
 

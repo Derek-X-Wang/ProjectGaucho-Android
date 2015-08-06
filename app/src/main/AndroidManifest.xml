@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.intbridge.projects.gaucholife">
-
+    package="com.intbridge.projects.gaucholife" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,7 +17,6 @@
         android:glEsVersion="0x00020000"
         android:required="true" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -32,9 +30,9 @@
             android:value="AIzaSyBv-FPmRvUyEQBs9JhpoJs-hWyRZuBlswY" />
 
         <activity
-            android:screenOrientation="portrait"
-            android:name="com.intbridge.projects.gaucholife.MapsActivity"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.app.default_searchable"
@@ -51,9 +49,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:screenOrientation="portrait"
-            android:name="com.intbridge.projects.gaucholife.FlipActivity"
-            android:label="@string/title_activity_flip" >
+            android:name=".FlipActivity"
+            android:label="@string/title_activity_flip"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main" >
         </activity>
     </application>
 
