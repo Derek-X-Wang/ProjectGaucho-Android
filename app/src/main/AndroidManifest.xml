@@ -29,34 +29,40 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBv-FPmRvUyEQBs9JhpoJs-hWyRZuBlswY" />
 
+       
+        
         <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"
-            android:screenOrientation="portrait"
-            android:uiOptions="splitActionBarWhenNarrow" >
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value="com.intbridge.projects.gaucholife" />
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.SEARCH" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".FlipActivity"
-            android:label="@string/title_activity_flip"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
-        </activity>
+
+        <!--<activity-->
+            <!--android:name=".MapsActivity"-->
+            <!--android:label="@string/title_activity_maps"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:uiOptions="splitActionBarWhenNarrow" >-->
+            <!--<meta-data-->
+                <!--android:name="android.app.default_searchable"-->
+                <!--android:value="com.intbridge.projects.gaucholife" />-->
+            <!--<meta-data-->
+                <!--android:name="android.app.searchable"-->
+                <!--android:resource="@xml/searchable" />-->
+
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.SEARCH" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+
+        <!--<activity-->
+            <!--android:name=".FlipActivity"-->
+            <!--android:label="@string/title_activity_flip"-->
+            <!--android:screenOrientation="portrait" >-->
+        <!--</activity>-->
     </application>
 
 </manifest>

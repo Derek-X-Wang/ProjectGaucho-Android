@@ -1,4 +1,4 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.GauchoLifeV1;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -22,6 +22,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.intbridge.projects.gaucholife.R;
+import com.intbridge.projects.gaucholife.SearchAdapter;
+import com.intbridge.projects.gaucholife.SearchSuggestions;
 
 import java.util.ArrayList;
 import java.util.List;

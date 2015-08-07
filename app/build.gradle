@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.intbridge.projects.gaucholife"
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 21
         versionCode 6
         versionName "0.95"

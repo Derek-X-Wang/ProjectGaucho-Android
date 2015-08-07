@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.intbridge.projects.gaucholife.FlipActivity">
+    tools:context="com.intbridge.projects.gaucholife.GauchoLifeV1.FlipActivity">
     <item android:id="@+id/action_flip_back"
         android:title="@string/flip"
         android:icon="@drawable/ic_action_map"
