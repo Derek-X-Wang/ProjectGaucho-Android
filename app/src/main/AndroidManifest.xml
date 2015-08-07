@@ -29,12 +29,10 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBv-FPmRvUyEQBs9JhpoJs-hWyRZuBlswY" />
 
-       
-        
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
-            <intent-filter>
+            <intent-filter android:label="@string/title_activity_maps">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
