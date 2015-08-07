@@ -78,54 +78,33 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public void onClick(View v) {
         resetOtherTabs();
+        ActionBar actionBar = getActionBar();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         switch (v.getId()){
             case R.id.tab_maps:
                 tabMaps.setIconAlpha(1.0f);
+                if(actionBar != null && !actionBar.isShowing()) actionBar.show();
                 if(mapsFragemnt == null) mapsFragemnt = new MapsFragment();
-                if(mapsFragemnt.isHidden()) ft.show(mapsFragemnt);
-                else {
-                    if(mapsFragemnt.isAdded()){
-                        
-                    }else {
-                        ft.add(R.id.fragment_content, mapsFragemnt);
-                        if(settingsFragment != null) ft.hide(settingsFragment);
-                        if(diningFragment != null) ft.hide(diningFragment);
-                        
-                    }
-                }
+                if(mapsFragemnt.isAdded()) break;
+                ft.replace(R.id.fragment_content, mapsFragemnt);
                 ft.commit();
                 break;
             case R.id.tab_dining:
                 tabDining.setIconAlpha(1.0f);
+                if (!search.isIconified()) search.setIconified(true);
+                if(actionBar != null && actionBar.isShowing()) actionBar.hide();
                 if(diningFragment == null) diningFragment = new DiningFragment();
-                if(diningFragment.isHidden()) ft.show(diningFragment);
-                else {
-                    if(diningFragment.isAdded()){
-
-                    }else {
-                        ft.add(R.id.fragment_content, diningFragment);
-                        if(mapsFragemnt != null) ft.hide(mapsFragemnt);
-                        if(settingsFragment != null) ft.hide(settingsFragment);
-                        
-                    }
-                }
+                if(diningFragment.isAdded()) break;
+                ft.replace(R.id.fragment_content, diningFragment);
                 ft.commit();
                 break;
             case R.id.tab_settings:
                 tabSettings.setIconAlpha(1.0f);
+                if (!search.isIconified()) search.setIconified(true);
+                if(actionBar != null && actionBar.isShowing()) actionBar.hide();
                 if(settingsFragment == null) settingsFragment = new SettingsFragment();
-                if(settingsFragment.isHidden()) ft.show(settingsFragment);
-                else {
-                    if(settingsFragment.isAdded()){
-
-                    }else {
-                        ft.add(R.id.fragment_content, settingsFragment);
-                        if(mapsFragemnt != null) ft.hide(mapsFragemnt);
-                        if(diningFragment != null) ft.hide(diningFragment);
-                        
-                    }
-                }
+                if(settingsFragment.isAdded()) break;
+                ft.replace(R.id.fragment_content, settingsFragment);
                 ft.commit();
                 break;
         }

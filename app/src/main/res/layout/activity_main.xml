@@ -16,7 +16,8 @@
         android:background="@drawable/tab_bg_line"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:animateLayoutChanges="true">
 
         <com.intbridge.projects.gaucholife.IconWithTextView
             android:id="@+id/tab_maps"
