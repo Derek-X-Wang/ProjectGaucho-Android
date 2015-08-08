@@ -26,7 +26,9 @@ public class DiningFragment extends Fragment {
             "短信5", "短信6", "短信7", "短信8", "短信9");
 //	private List<String> mDatas = Arrays.asList("短信", "收藏", "推荐");
 
-    private MultiSelectionIndicator mIndicator;
+    private MultiSelectionIndicator mIndicatorDate;
+    private MultiSelectionIndicator mIndicatorCommon;
+    private MultiSelectionIndicator mIndicatorMeal;
 
     public DiningFragment() {
         // Required empty public constructor
@@ -82,8 +84,12 @@ public class DiningFragment extends Fragment {
 //        tv.setText(mTitle);
         //tv.setGravity(Gravity.CENTER);
 
-//        mIndicator = (MultiSelectionIndicator) v.findViewById(R.id.msi_date);
-//        mIndicator.setTabItemTitles(mDatas);
+        mIndicatorDate = (MultiSelectionIndicator) v.findViewById(R.id.msi_date);
+        mIndicatorCommon = (MultiSelectionIndicator) v.findViewById(R.id.msi_common);
+        mIndicatorMeal = (MultiSelectionIndicator) v.findViewById(R.id.msi_meal);
+        mIndicatorDate.setTabItemTitles(Arrays.asList("20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"));
+        mIndicatorCommon.setTabItemTitles(Arrays.asList("Carrillo", "De La Guerra", "Ortega","Portola"));
+        mIndicatorMeal.setTabItemTitles(Arrays.asList("Breakfast", "Lunch", "Dinner"));
         
         return v;
     }
