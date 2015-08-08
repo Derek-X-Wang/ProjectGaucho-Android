@@ -13,4 +13,11 @@
         <attr name = "text_size"></attr>
     </declare-styleable>
 
+    <attr name="item_count" format="integer"></attr>
+
+    <declare-styleable name="MultiSelectionIndicator">
+        <attr name="item_count" />
+    </declare-styleable>
+
+
 </resources>
