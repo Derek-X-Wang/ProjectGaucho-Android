@@ -24,8 +24,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.astuetz.PagerSlidingTabStrip;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,7 +50,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
     //private final PagerAdapterObserver mAdapterObserver = new PagerAdapterObserver();
     //private final PageListener mPageListener = new PageListener();
-    private PagerSlidingTabStrip.OnTabReselectedListener mTabReselectedListener = null;
+    //private PagerSlidingTabStrip.OnTabReselectedListener mTabReselectedListener = null;
     public ViewPager.OnPageChangeListener mDelegatePageListener;
     private ViewPager mPager;
 
@@ -92,7 +90,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
     private int mScrollOffset;
     private int mLastScrollX = 0;
 
-    private int mTabBackgroundResId = R.drawable.psts_background_tab;
+    //private int mTabBackgroundResId = R.drawable.psts_background_tab;
 
     private List<String> mDatas = Arrays.asList("短信1", "短信2", "短信3");  
 
@@ -293,7 +291,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
         Log.e("updateTabStyles: ","start");
         for (int i = 0; i < mTabCount; i++) {
             View v = mTabsContainer.getChildAt(i);
-            v.setBackgroundResource(mTabBackgroundResId);
+            //v.setBackgroundResource(mTabBackgroundResId);
             v.setPadding(mTabPadding, v.getPaddingTop(), mTabPadding, v.getPaddingBottom());
             TextView tab_title = (TextView) v.findViewById(R.id.tab_multiselectionindicator_title);
             if (tab_title != null) {
