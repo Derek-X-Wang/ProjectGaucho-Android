@@ -3,6 +3,7 @@ package com.intbridge.projects.gaucholife;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,14 @@ public class DiningFragment extends Fragment {
             "短信5", "短信6", "短信7", "短信8", "短信9");
 //	private List<String> mDatas = Arrays.asList("短信", "收藏", "推荐");
 
-    private MultiSelectionIndicator mIndicatorDate;
     private MultiSelectionIndicator mIndicatorCommon;
+    private MultiSelectionIndicator mIndicatorDate;
     private MultiSelectionIndicator mIndicatorMeal;
+
+    private List<String> commons;
+    private List<String> dates;
+    private List<String> meals;
+
 
     public DiningFragment() {
         // Required empty public constructor
@@ -84,42 +90,52 @@ public class DiningFragment extends Fragment {
 //        tv.setText(mTitle);
         //tv.setGravity(Gravity.CENTER);
 
-        mIndicatorDate = (MultiSelectionIndicator) v.findViewById(R.id.msi_date);
         mIndicatorCommon = (MultiSelectionIndicator) v.findViewById(R.id.msi_common);
+        mIndicatorDate = (MultiSelectionIndicator) v.findViewById(R.id.msi_date);
         mIndicatorMeal = (MultiSelectionIndicator) v.findViewById(R.id.msi_meal);
-        mIndicatorDate.setTabItemTitles(Arrays.asList("20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"));
+
+        commons = Arrays.asList("Carrillo", "De La Guerra", "Ortega","Portola");
+        dates = Arrays.asList("20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30");
+        meals = Arrays.asList("Breakfast", "Lunch", "Dinner");
+
         mIndicatorCommon.setTabItemTitles(Arrays.asList("Carrillo", "De La Guerra", "Ortega","Portola"));
+        mIndicatorDate.setTabItemTitles(Arrays.asList("20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"));
         mIndicatorMeal.setTabItemTitles(Arrays.asList("Breakfast", "Lunch", "Dinner"));
+
+        mIndicatorCommon.setCallbackManager(new MultiSelectionIndicator.CallbackManager() {
+            @Override
+            public void notifyChange(int position) {
+                changeInnerFragementData(0,commons.get(position));
+            }
+        });
+        mIndicatorDate.setCallbackManager(new MultiSelectionIndicator.CallbackManager(){
+            @Override
+            public void notifyChange(int position) {
+                changeInnerFragementData(1,dates.get(position));
+            }
+        });
+        mIndicatorMeal.setCallbackManager(new MultiSelectionIndicator.CallbackManager(){
+            @Override
+            public void notifyChange(int position) {
+                changeInnerFragementData(2,meals.get(position));
+            }
+        });
         
         return v;
     }
 
+    private void changeInnerFragementData(int code, String newString){
+        switch (code){
+            case 0:
+                Log.e("Callback: ","Common is changed to "+newString);
+                break;
+            case 1:
+                Log.e("Callback: ","Date is changed to "+newString);
+                break;
+            case 2:
+                Log.e("Callback: ","Meal is changed to "+newString);
+                break;
+        }
+    }
 
-
-//    class TabPageIndicatorAdapter extends FragmentPagerAdapter {
-//        public TabPageIndicatorAdapter(FragmentManager fm) {
-//            super(fm);
-//        }
-//
-//        @Override
-//        public Fragment getItem(int position) {
-//            //新建一个Fragment来展示ViewPager item的内容，并传递参数
-//            Fragment fragment = new ItemFragment();
-//            Bundle args = new Bundle();
-//            args.putString("arg", TITLE[position]);
-//            fragment.setArguments(args);
-//
-//            return fragment;
-//        }
-//
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            return TITLE[position % TITLE.length];
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            return TITLE.length;
-//        }
-//    }
 }

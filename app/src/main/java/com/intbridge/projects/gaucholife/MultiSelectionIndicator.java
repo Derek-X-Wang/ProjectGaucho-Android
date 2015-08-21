@@ -48,9 +48,6 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
     private LinearLayout mTabsContainer;
     private LinearLayout.LayoutParams mTabLayoutParams;
 
-    //private final PagerAdapterObserver mAdapterObserver = new PagerAdapterObserver();
-    //private final PageListener mPageListener = new PageListener();
-    //private PagerSlidingTabStrip.OnTabReselectedListener mTabReselectedListener = null;
     public ViewPager.OnPageChangeListener mDelegatePageListener;
     private ViewPager mPager;
 
@@ -73,16 +70,16 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
     private int mDividerColor;
 
     private int mTabPadding = 12;
-    private int mTabTextSize = 14;
+    private int mTabTextSize = 18;
     private ColorStateList mTabTextColor = null;
 
     private int mPaddingLeft = 0;
     private int mPaddingRight = 0;
 
-    private boolean isExpandTabs = false;
+    private boolean isExpandTabs = true;
     private boolean isCustomTabs;
-    private boolean isPaddingMiddle = false;
-    private boolean isTabTextAllCaps = true;
+    private boolean isPaddingMiddle = true;
+    private boolean isTabTextAllCaps = false;
 
     private Typeface mTabTextTypeface = null;
     private int mTabTextTypefaceStyle = Typeface.BOLD;
@@ -92,7 +89,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
     //private int mTabBackgroundResId = R.drawable.psts_background_tab;
 
-    private List<String> mDatas = Arrays.asList("短信1", "短信2", "短信3");  
+    private List<String> mDatas = Arrays.asList("stub1", "stub2", "stub3");
 
 
     public MultiSelectionIndicator(Context context) {
@@ -130,7 +127,8 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
         // get system attrs for container
         TypedArray a = context.obtainStyledAttributes(attrs, ANDROID_ATTRS);
-        int textPrimaryColor = a.getColor(TEXT_COLOR_PRIMARY, getResources().getColor(android.R.color.black));
+
+        int textPrimaryColor = a.getColor(TEXT_COLOR_PRIMARY, getResources().getColor(android.R.color.white));
         mUnderlineColor = textPrimaryColor;
         mDividerColor = textPrimaryColor;
         mIndicatorColor = textPrimaryColor;
@@ -139,6 +137,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
         mPaddingRight = padding > 0 ? padding : a.getDimensionPixelSize(PADDING_RIGHT_INDEX, 0);
         a.recycle();
 
+        //mPaddingLeft = getWidth()/2;
         String tabTextTypefaceName = "sans-serif";
         // Use Roboto Medium as the default typeface from API 21 onwards
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -167,9 +166,10 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 //        int tabTextAlpha = a.getInt(R.styleable.MultiSelectionIndicator_pstsTabTextAlpha, DEF_VALUE_TAB_TEXT_ALPHA);
 //        String fontFamily = a.getString(R.styleable.MultiSelectionIndicator_pstsTabTextFontFamily);
 //        a.recycle();
-        int tabTextAlpha = 150;
+        int tabTextAlpha = 128;
         String fontFamily = "sans-serif";
         //Tab text color selector
+        textPrimaryColor = Color.parseColor("#ffffff");
         if (mTabTextColor == null) {
             mTabTextColor = createColorStateList(
                     textPrimaryColor,
@@ -200,7 +200,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
             tabView = LayoutInflater.from(getContext()).inflate(R.layout.tab_multiselectionindicator, this, false);
 
-            CharSequence title = mDatas.get(i);
+            String title = mDatas.get(i);
             addTab(i, title, tabView);
         }
 
@@ -216,7 +216,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
             tabView = LayoutInflater.from(getContext()).inflate(R.layout.tab_multiselectionindicator, this, false);
 
-            CharSequence title = mDatas.get(i);
+            String title = mDatas.get(i);
             addTab(i, title, tabView);
         }
 
@@ -256,12 +256,14 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 //        updateTabStyles();
 //    }
 
-    private void addTab(final int position, CharSequence title, View tabView) {
+    private void addTab(final int position, String title, View tabView) {
         TextView textView = (TextView) tabView.findViewById(R.id.tab_multiselectionindicator_title);
         if (textView != null) {
             if (title != null) textView.setText(title);
         }
-
+        // not working?
+        //textView.setAllCaps(false);
+        //Log.e("The title when add: ", title);
         tabView.setFocusable(true);
         tabView.setOnClickListener(new OnClickListener() {
             @Override
@@ -272,7 +274,8 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
                     mCurrentPosition = position;
                     tab = mTabsContainer.getChildAt(mCurrentPosition);
                     select(tab);
-                    invalidate();
+                    callbackManager.notifyChange(mCurrentPosition);
+                    //invalidate();
                 }
 //                if (mPager.getCurrentItem() != position) {
 //                    View tab = mTabsContainer.getChildAt(mPager.getCurrentItem());
@@ -286,6 +289,8 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
         mTabsContainer.addView(tabView, position, mTabLayoutParams);
     }
+
+    //public abstract void notifyChangeToHost();
 
     private void updateTabStyles() {
         Log.e("updateTabStyles: ","start");
@@ -444,10 +449,10 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
         //Log.e("onDraw: ","draw indicator line");
         // draw indicator line
         if (mIndicatorHeight > 0) {
-            mRectPaint.setColor(mIndicatorColor);
-            Pair<Float, Float> lines = getIndicatorCoordinates();
+            //mRectPaint.setColor(mIndicatorColor);
+            //Pair<Float, Float> lines = getIndicatorCoordinates();
             //Log.e("onDraw: ","Pair is "+ lines.first+", "+lines.second);
-            canvas.drawRect(lines.first + mPaddingLeft, height - mIndicatorHeight, lines.second + mPaddingLeft, height, mRectPaint);
+            //canvas.drawRect(lines.first + mPaddingLeft, height - mIndicatorHeight, lines.second + mPaddingLeft, height, mRectPaint);
         }
     }
 
@@ -647,5 +652,19 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
                 return new SavedState[size];
             }
         };
+    }
+
+    private CallbackManager callbackManager = null;
+
+
+    public void setCallbackManager(CallbackManager c){
+        this.callbackManager = c;
+    }
+
+//    public abstract class CallbackManager{
+//        public abstract void notifyChange();
+//    }
+    interface CallbackManager{
+        void notifyChange(int position);
     }
 }
