@@ -87,4 +87,9 @@ public class PGDatabaseManager {
         return cal.getTime();
     }
 
+    public Map<String, List> filteringDictionay(int date,String common,String meal){
+
+        return null;
+    }
+
 }
