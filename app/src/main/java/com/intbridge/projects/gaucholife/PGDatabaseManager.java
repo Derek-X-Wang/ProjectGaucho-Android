@@ -73,14 +73,25 @@ public class PGDatabaseManager {
         return dictionary;
     }
 
+    // get a dict of commons in a day, wrap for Date object
+    public Map<String, Map> getUCSBCommonsDataFromHTML(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        String year = String.format("%d", cal.get(Calendar.YEAR));
+        String month = String.format("%02d", cal.get(Calendar.MONTH) + 1); // Note: zero based!
+        String day = String.format("%02d", cal.get(Calendar.DAY_OF_MONTH));
+
+        return getUCSBCommonsDataFromHTML(year,month,day);
+    }
+
+
     // the range starts from today and include today
     public List<Map> getUCSBCommonsDataFromHTMLWithRange(int range){
 
         return null;
     }
 
-    public Date addDays(Date date, int days)
-    {
+    public Date addDays(Date date, int days) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.DATE, days); //minus number would decrement the days
