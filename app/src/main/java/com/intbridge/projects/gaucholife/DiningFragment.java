@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +78,7 @@ public class DiningFragment extends Fragment{
         StickyListHeadersListView stickyList = (StickyListHeadersListView) v.findViewById(R.id.list);
         adapter = new StickyHeaderListViewAdapter(getActivity());
         stickyList.setAdapter(adapter);
+        new WebRequestTask().execute();
         return v;
     }
 
@@ -142,12 +144,22 @@ public class DiningFragment extends Fragment{
         String dayString = dates.get(currentDay);
         String mealString = meals.get(currentMeal);
         int dateInt = matchDayWithTempDictDate(dayString);
-        // unpack the dict, is there a better way?
-        Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
-        Map<String, Map> unpackedDict2 = unpackedDict1.get(commonString);
-        Map<String, List> unpackedDict3 = unpackedDict2.get(mealString);
+        if(dateInt == -1){
+            // no data available for the given dateInt
+            adapter.setFoodList(null);
+            adapter.notifyDataSetChanged();
+        }else{
+            // unpack the dict, is there a better way?
+            Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
+            Map<String, Map> unpackedDict2 = unpackedDict1.get(commonString);
+            Map<String, List> unpackedDict3 = unpackedDict2.get(mealString);
 
-        
+            // set new data to adapter
+            adapter.setFoodList(unpackedDict3);
+            adapter.notifyDataSetChanged();
+        }
+
+
 //        Log.e("Callback: ","Common is changed to "+newString);
 //        Log.e("Callback: ","Date is changed to "+newString);
 //        Log.e("Callback: ","Meal is changed to "+newString);
@@ -220,26 +232,46 @@ public class DiningFragment extends Fragment{
 
     public class StickyHeaderListViewAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
-        private String[] countries;
         private LayoutInflater inflater;
         private Map<String, List> foodList;
 
 
         public StickyHeaderListViewAdapter(Context context) {
             inflater = LayoutInflater.from(context);
-            //countries = context.getResources().getStringArray(R.array.countries);
+        }
 
+        public Map<String, List> getFoodList() {
+            return foodList;
+        }
 
+        public void setFoodList(Map<String, List> foodList) {
+            this.foodList = foodList;
         }
 
         @Override
-        public int getCount() {
-            return countries.length;
+        public int getCount(){
+            if(foodList == null) return 0;
+            int sum = 0;
+            for (List value : foodList.values()) {
+                // sum all arraylist
+                sum = sum + value.size();
+            }
+            return sum;
         }
 
         @Override
         public Object getItem(int position) {
-            return countries[position];
+            if(foodList == null) return null;
+            int sum = 0;
+            for (List value : foodList.values()) {
+                int offset = sum;
+                // sum all arraylist
+                sum = sum + value.size();
+                // the item is in this list
+                if(sum > position) return value.get(position-offset);
+            }
+            // out of the range
+            return null;
         }
 
         @Override
@@ -254,13 +286,13 @@ public class DiningFragment extends Fragment{
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.listview_dining_item, parent, false);
-                //holder.text = (TextView) convertView.findViewById(R.id.text);
+                holder.text = (TextView) convertView.findViewById(R.id.listview_dining_item);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
-            //holder.text.setText(countries[position]);
+            String itemText = (String)getItem(position);
+            holder.text.setText(itemText);
 
             return convertView;
         }
@@ -271,29 +303,53 @@ public class DiningFragment extends Fragment{
             if (convertView == null) {
                 holder = new HeaderViewHolder();
                 convertView = inflater.inflate(R.layout.listview_dining_header, parent, false);
-                //holder.text = (TextView) convertView.findViewById(R.id.text);
+                holder.text = (TextView) convertView.findViewById(R.id.listview_dining_header);
                 convertView.setTag(holder);
             } else {
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text as first char in name
-            String headerText = "" + countries[position].subSequence(0, 1).charAt(0);
-            //holder.text.setText(headerText);
+            String headerText = (String)getHeaderItem(position);
+            holder.text.setText(headerText);
             return convertView;
         }
 
         @Override
         public long getHeaderId(int position) {
-            //return the first character of the country as ID because this is what headers are based upon
-            return countries[position].subSequence(0, 1).charAt(0);
+            //return by the group number(count) * 107
+            if(foodList == null) return 0;
+            int sum = 0;
+            int count = 1;
+            for (List value : foodList.values()) {
+                // sum all arraylist
+                sum = sum + value.size();
+                // the item is in this list
+                if(sum > position) return count*107;
+                count++;
+            }
+            return 0;
+        }
+
+        public Object getHeaderItem(int position){
+            if(foodList == null) return null;
+            int sum = 0;
+            for (Map.Entry<String, List> entry : foodList.entrySet()) {
+                String key = entry.getKey();
+                List value = entry.getValue();
+                // sum all arraylist
+                sum = sum + value.size();
+                if(sum > position) return key;
+            }
+            // out of the range
+            return null;
         }
 
         class HeaderViewHolder {
-            //TextView text;
+            TextView text;
         }
 
         class ViewHolder {
-            //TextView text;
+            TextView text;
         }
 
     }

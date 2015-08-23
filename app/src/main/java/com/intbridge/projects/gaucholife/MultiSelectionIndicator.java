@@ -15,7 +15,6 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -293,7 +292,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
     //public abstract void notifyChangeToHost();
 
     private void updateTabStyles() {
-        Log.e("updateTabStyles: ","start");
+        //Log.e("updateTabStyles: ","start");
         for (int i = 0; i < mTabCount; i++) {
             View v = mTabsContainer.getChildAt(i);
             //v.setBackgroundResource(mTabBackgroundResId);
@@ -317,7 +316,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
     }
 
     private void scrollToChild(int position, int offset) {
-        Log.e("scrollToChild: ","start");
+        //Log.e("scrollToChild: ","start");
         if (mTabCount == 0) {
             return;
         }
@@ -359,7 +358,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.e("onLayout: ","start");
+        //Log.e("onLayout: ","start");
         if (isPaddingMiddle || mPaddingLeft > 0 || mPaddingRight > 0) {
             int width;
             if (isPaddingMiddle) {
@@ -389,7 +388,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
         @Override
         public void onGlobalLayout() {
-            Log.e("onGlobalLayout: ","start");
+            //Log.e("onGlobalLayout: ","start");
             View view = mTabsContainer.getChildAt(0);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
                 removeGlobalLayoutListenerPreJB();
@@ -588,7 +587,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        Log.e("onRestoreInstance: ","start");
+        //Log.e("onRestoreInstance: ","start");
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPosition = savedState.currentPosition;
@@ -601,7 +600,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
     @Override
     public Parcelable onSaveInstanceState() {
-        Log.e("onSaveInstanceState: ","start");
+        //Log.e("onSaveInstanceState: ","start");
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
         savedState.currentPosition = mCurrentPosition;

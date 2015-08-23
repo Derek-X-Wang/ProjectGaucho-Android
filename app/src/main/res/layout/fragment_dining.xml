@@ -39,18 +39,18 @@
         <com.intbridge.projects.gaucholife.MultiSelectionIndicator
             android:id="@+id/msi_common"
             android:layout_width="match_parent"
-            android:layout_height="48dp"/>
+            android:layout_height="44dp"/>
 
         <com.intbridge.projects.gaucholife.MultiSelectionIndicator
             android:id="@+id/msi_date"
             android:layout_width="match_parent"
-            android:layout_height="48dp"/>
+            android:layout_height="44dp"/>
 
 
         <com.intbridge.projects.gaucholife.MultiSelectionIndicator
             android:id="@+id/msi_meal"
             android:layout_width="match_parent"
-            android:layout_height="48dp"/>
+            android:layout_height="44dp"/>
 
     </LinearLayout>
 
