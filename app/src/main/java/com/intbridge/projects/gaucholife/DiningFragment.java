@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -78,6 +80,18 @@ public class DiningFragment extends Fragment{
         StickyListHeadersListView stickyList = (StickyListHeadersListView) v.findViewById(R.id.list);
         adapter = new StickyHeaderListViewAdapter(getActivity());
         stickyList.setAdapter(adapter);
+        stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView t = (TextView)view.findViewById(R.id.listview_dining_item);
+                ImageView i = (ImageView)view.findViewById(R.id.listview_dining_item_heart);
+
+                String text = (String)t.getText();
+                // check text with favor list
+                // existed -> user would like to delete a favor
+                // not existed -> add new item to the favor list
+            }
+        });
         new WebRequestTask().execute();
         return v;
     }
@@ -353,5 +367,7 @@ public class DiningFragment extends Fragment{
         }
 
     }
+
+
 
 }
