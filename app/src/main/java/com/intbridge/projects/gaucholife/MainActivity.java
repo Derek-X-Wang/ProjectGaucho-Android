@@ -7,7 +7,6 @@ import android.content.Context;
 import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,22 +48,22 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     .commit();
         }
 
-        Thread thread = new Thread(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    //Your code goes here
-                    Log.e("Start", " here1");
-                    PGDatabaseManager databaseManager = new PGDatabaseManager();
-                    databaseManager.getUCSBCommonsDataFromHTML("2015", "08", "19");
-                    Log.e("Start", " here2");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        thread.start();
+//        Thread thread = new Thread(new Runnable(){
+//            @Override
+//            public void run() {
+//                try {
+//                    //Your code goes here
+//                    Log.e("Start", " here1");
+//                    PGDatabaseManager databaseManager = new PGDatabaseManager();
+//                    databaseManager.getUCSBCommonsDataFromHTML("2015", "08", "19");
+//                    Log.e("Start", " here2");
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//
+//        thread.start();
 
 
     }

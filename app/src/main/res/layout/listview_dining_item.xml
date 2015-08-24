@@ -5,11 +5,16 @@
     android:gravity="center_vertical"
     android:background="#ffffff">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp"
+        android:src="@drawable/emptyfavoriteheart"/>
     <TextView
         android:id="@+id/listview_dining_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="40dp"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
