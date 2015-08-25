@@ -1,5 +1,9 @@
 package com.intbridge.projects.gaucholife;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,6 +21,7 @@ import java.util.Map;
  * Created by Derek on 8/10/2015.
  */
 public class PGDatabaseManager {
+    private List<String> favoriteList;
     // get a dict of commons in a day
     public Map<String, Map> getUCSBCommonsDataFromHTML(String year,String month,String day){
         Document doc = null;
@@ -103,4 +108,51 @@ public class PGDatabaseManager {
         return null;
     }
 
+    public boolean isFoodInLocalFavoriteList(String food){
+        ParseQuery query = ParseQuery.getQuery("DiningFavorite");
+        query.fromLocalDatastore();
+        try {
+            ParseObject listObject = query.getFirst();
+            if(listObject == null){
+                listObject = new ParseObject("DiningFavorite");
+                listObject.put("myFavorite",new ArrayList<String>());
+                favoriteList = listObject.getList("myFavorite");
+                listObject.pin();
+                return false;
+            }else{
+                favoriteList = listObject.getList("myFavorite");
+                return favoriteList.contains(food);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void addFoodToLocalFavoriteList(String food){
+        ParseQuery query = ParseQuery.getQuery("DiningFavorite");
+        query.fromLocalDatastore();
+        try {
+            ParseObject listObject = query.getFirst();
+            if(listObject == null){
+                listObject = new ParseObject("DiningFavorite");
+                listObject.put("myFavorite",new ArrayList<String>());
+            }
+            List<String> favorite = listObject.getList("myFavorite");
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean removeFoodToLocalFavoriteList(String food){
+        if(favoriteList == null){
+
+        }else{
+
+        }
+
+        return false;
+    }
 }
