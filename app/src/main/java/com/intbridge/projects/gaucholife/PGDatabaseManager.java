@@ -21,7 +21,6 @@ import java.util.Map;
  * Created by Derek on 8/10/2015.
  */
 public class PGDatabaseManager {
-    private List<String> favoriteList;
     // get a dict of commons in a day
     public Map<String, Map> getUCSBCommonsDataFromHTML(String year,String month,String day){
         Document doc = null;
@@ -108,51 +107,86 @@ public class PGDatabaseManager {
         return null;
     }
 
-    public boolean isFoodInLocalFavoriteList(String food){
+    public List<String> getFavoriteList(){
+        List<String> favoriteList = null;
         ParseQuery query = ParseQuery.getQuery("DiningFavorite");
         query.fromLocalDatastore();
+        ParseObject listObject;
         try {
-            ParseObject listObject = query.getFirst();
-            if(listObject == null){
-                listObject = new ParseObject("DiningFavorite");
-                listObject.put("myFavorite",new ArrayList<String>());
-                favoriteList = listObject.getList("myFavorite");
-                listObject.pin();
-                return false;
-            }else{
-                favoriteList = listObject.getList("myFavorite");
-                return favoriteList.contains(food);
-            }
-
+            listObject = query.getFirst();
+            favoriteList = listObject.getList("myFavorite");
         } catch (ParseException e) {
-            e.printStackTrace();
+            listObject = new ParseObject("DiningFavorite");
+            listObject.put("myFavorite",new ArrayList<String>());
+            favoriteList = listObject.getList("myFavorite");
+            try {
+                listObject.pin();
+            } catch (ParseException pin) {
+                pin.printStackTrace();
+            }
         }
-        return false;
+        return  favoriteList;
     }
+//    public boolean isFoodInLocalFavoriteList(String food){
+//        ParseQuery query = ParseQuery.getQuery("DiningFavorite");
+//        query.fromLocalDatastore();
+//        try {
+//            ParseObject listObject = query.getFirst();
+//            if(listObject == null){
+//                listObject = new ParseObject("DiningFavorite");
+//                listObject.put("myFavorite",new ArrayList<String>());
+//                favoriteList = listObject.getList("myFavorite");
+//                listObject.pin();
+//                return false;
+//            }else{
+//                favoriteList = listObject.getList("myFavorite");
+//                return favoriteList.contains(food);
+//            }
+//
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
     public void addFoodToLocalFavoriteList(String food){
+        List<String> favoriteList = null;
         ParseQuery query = ParseQuery.getQuery("DiningFavorite");
         query.fromLocalDatastore();
+        ParseObject listObject;
         try {
-            ParseObject listObject = query.getFirst();
-            if(listObject == null){
-                listObject = new ParseObject("DiningFavorite");
-                listObject.put("myFavorite",new ArrayList<String>());
-            }
-            List<String> favorite = listObject.getList("myFavorite");
-
+            listObject = query.getFirst();
+            favoriteList = listObject.getList("myFavorite");
+            favoriteList.add(food);
+            //listObject.put("myFavorite", favoriteList);
         } catch (ParseException e) {
-            e.printStackTrace();
+            // favoriteList is null
+            listObject = new ParseObject("DiningFavorite");
+            listObject.put("myFavorite",new ArrayList<String>());
+            favoriteList = listObject.getList("myFavorite");
+            favoriteList.add(food);
         }
     }
 
-    public boolean removeFoodToLocalFavoriteList(String food){
-        if(favoriteList == null){
-
-        }else{
-
+    public void removeFoodToLocalFavoriteList(String food){
+        List<String> favoriteList = null;
+        ParseQuery query = ParseQuery.getQuery("DiningFavorite");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            listObject = query.getFirst();
+            favoriteList = listObject.getList("myFavorite");
+            favoriteList.remove(food);
+        } catch (ParseException e) {
+            // favoriteList is null, which might be unnecessary for removing
+            listObject = new ParseObject("DiningFavorite");
+            listObject.put("myFavorite",new ArrayList<String>());
+            //favoriteList = listObject.getList("myFavorite");
+            try {
+                listObject.pin();
+            } catch (ParseException pin) {
+                pin.printStackTrace();
+            }
         }
-
-        return false;
     }
 }

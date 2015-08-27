@@ -34,7 +34,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/pickerbackgroundcolorimage">
+        android:background="@drawable/pickerbackgroundcolorimage"
+        android:alpha="0.7">
 
         <com.intbridge.projects.gaucholife.MultiSelectionIndicator
             android:id="@+id/msi_common"

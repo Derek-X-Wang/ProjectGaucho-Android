@@ -65,6 +65,13 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 //
 //        thread.start();
 
+//        PGDatabaseManager databaseManager = new PGDatabaseManager();
+//        List<String> s = databaseManager.getFavoriteList();
+//        databaseManager.addFoodToLocalFavoriteList("testMethod");
+//        s = databaseManager.getFavoriteList();
+//        Log.e("main: ","size is "+s.size());
+//        Log.e("main: ","first is "+s.get(0));
+
 
     }
 

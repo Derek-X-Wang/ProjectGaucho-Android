@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -48,6 +49,9 @@ public class DiningFragment extends Fragment{
     private PGDatabaseManager databaseManager;
     private Map<Integer, Map> tempDataStorage;
 
+    private List<String> favoriteList;
+    private ImageView heart;
+
 
     public DiningFragment() {
         // Required empty public constructor
@@ -67,6 +71,7 @@ public class DiningFragment extends Fragment{
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
         currentDate = new Date();
+        favoriteList = databaseManager.getFavoriteList();
 
     }
 
@@ -83,12 +88,68 @@ public class DiningFragment extends Fragment{
         stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView t = (TextView)view.findViewById(R.id.listview_dining_item);
-                ImageView i = (ImageView)view.findViewById(R.id.listview_dining_item_heart);
 
-                String text = (String)t.getText();
+
+                TextView t = (TextView)view.findViewById(R.id.listview_dining_item);
+                heart = (ImageView)view.findViewById(R.id.listview_dining_item_heart);
+
+                final String text = (String)t.getText();
                 // check text with favor list
-                // existed -> user would like to delete a favor
+                if(favoriteList.contains(text)){
+                    // existed -> user would like to delete a favor
+                    String deleteFavoriteContent = String.format("GauchoLife will no longer notify you when \"%s\" is being served.", text);
+                    new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Unmark Favorite")
+                            .setContentText(deleteFavoriteContent)
+                            .setConfirmText("Ok")
+                            .setCancelText("Cancel")
+                            .showCancelButton(true)
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    // reuse previous dialog instance
+                                    sDialog.setTitleText("Deleted!")
+                                            .setContentText("\""+text+"\" is deleted to your favorite list!")
+                                            .setConfirmText("OK")
+                                            .setConfirmClickListener(null)
+                                            .showCancelButton(false)
+                                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                    databaseManager.removeFoodToLocalFavoriteList(text);
+                                    heart.setImageResource(R.drawable.emptyfavoriteheart);
+                                    // can be improve by favoriteList.remove(), but it may ruin the concept
+                                    favoriteList = databaseManager.getFavoriteList();
+                                }
+                            })
+                            .show();
+
+                }else{
+                    // not existed -> add new item to the favor list
+                    String addFavoriteContent = String.format("Do you want to mark \"%s\" as favorite?\n\nGauchoLife will let you know when it is being served.", text);
+                    new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE)
+                            .setTitleText("Mark as Favorite")
+                            .setContentText(addFavoriteContent)
+                            .setConfirmText("Yes!")
+                            .setCancelText("Cancel")
+                            .showCancelButton(true)
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sDialog) {
+                                    // reuse previous dialog instance
+                                    sDialog.setTitleText("Added!")
+                                            .setContentText("\"" + text + "\" is added to your favorite list!")
+                                            .setConfirmText("OK")
+                                            .setConfirmClickListener(null)
+                                            .showCancelButton(false)
+                                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                    databaseManager.addFoodToLocalFavoriteList(text);
+                                    heart.setImageResource(R.drawable.favoriteheart);
+                                    // can be improve by favoriteList.add(), but it may ruin the programming concept
+                                    favoriteList = databaseManager.getFavoriteList();
+                                }
+                            })
+                            .show();
+                }
+
                 // not existed -> add new item to the favor list
             }
         });
