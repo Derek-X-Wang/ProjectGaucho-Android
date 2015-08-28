@@ -227,7 +227,6 @@ public class DiningFragment extends Fragment{
             // unpack the dict, is there a better way?
             Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
             Map<String, Map> unpackedDict2 = unpackedDict1.get(commonString);
-            // TODO: sometime crash here, if common is null
             Map<String, List> unpackedDict3 = null;
             if(unpackedDict2 != null) unpackedDict3 = unpackedDict2.get(mealString);
 
@@ -313,6 +312,7 @@ public class DiningFragment extends Fragment{
         private Map<String, List> foodList;
 
 
+
         public StickyHeaderListViewAdapter(Context context) {
             inflater = LayoutInflater.from(context);
         }
@@ -370,6 +370,8 @@ public class DiningFragment extends Fragment{
             }
             String itemText = (String)getItem(position);
             holder.text.setText(itemText);
+            
+            if(favoriteList.contains(itemText)) ((ImageView)convertView.findViewById(R.id.listview_dining_item_heart)).setImageResource(R.drawable.favoriteheart);
 
             return convertView;
         }
