@@ -189,4 +189,51 @@ public class PGDatabaseManager {
             }
         }
     }
+
+    public void storeDictToParseLocalDatastore(int dateInt, Map<String, Map> dict){
+        ParseObject listObject = new ParseObject("DiningDictionary");
+        listObject.put("dateInt", dateInt);
+        listObject.put("dictionary", dict);
+        listObject.pinInBackground();
+    }
+
+    public boolean isDictExistInParseLocalDatastore(int dateInt){
+        ParseQuery query = ParseQuery.getQuery("DiningDictionary");
+        query.fromLocalDatastore();
+        query.whereEqualTo("dateInt", dateInt);
+        try {
+            List parseList = query.find();
+        } catch (ParseException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public List<ParseObject> getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(int dateInt){
+        ParseQuery query = ParseQuery.getQuery("DiningDictionary");
+        query.fromLocalDatastore();
+        query.whereGreaterThanOrEqualTo("dateInt", dateInt);
+        query.orderByAscending("dateInt");
+        List<ParseObject> parseList = null;
+        try {
+            parseList = query.find();
+            return  parseList;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    public List<ParseObject> getDictionariesLessThanFromParseLocalDatastore(int dateInt){
+        ParseQuery query = ParseQuery.getQuery("DiningDictionary");
+        query.fromLocalDatastore();
+        query.whereLessThan("dateInt", dateInt);
+        query.orderByDescending("dateInt");
+        List<ParseObject> parseList = null;
+        try {
+            parseList = query.find();
+            return  parseList;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.intbridge.projects.gaucholife;
 
 
 import android.app.Fragment;
+import android.app.Notification;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.parse.ParseObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,6 +156,19 @@ public class DiningFragment extends Fragment{
                 // not existed -> add new item to the favor list
             }
         });
+        int dateInt = convertDateToInteger(currentDate);
+        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
+        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
+        if(todayAndAfter != null){
+            for(ParseObject dict : todayAndAfter){
+                AsyncTaskProgressCheck((Map<String, Map>)dict.get("dictionary"));
+            }
+        }
+        if(beforeToday != null){
+            for(ParseObject dict : beforeToday){
+                dict.unpinInBackground();
+            }
+        }
         new WebRequestTask().execute();
         return v;
     }
@@ -234,12 +250,6 @@ public class DiningFragment extends Fragment{
             adapter.setFoodList(unpackedDict3);
             adapter.notifyDataSetChanged();
         }
-
-
-//        Log.e("Callback: ","Common is changed to "+newString);
-//        Log.e("Callback: ","Date is changed to "+newString);
-//        Log.e("Callback: ","Meal is changed to "+newString);
-
     }
 
     private int matchDayWithTempDictDate(String day){
@@ -256,7 +266,10 @@ public class DiningFragment extends Fragment{
     private int loadLoopIndicator = 0;
     private void AsyncTaskProgressCheck(Map<String, Map> result){
         // store the result in the fragment
-        tempDataStorage.put(convertDateToInteger(currentDate),result);
+        int dateInt = convertDateToInteger(currentDate);
+        tempDataStorage.put(dateInt,result);
+        // add to local datastore if it isn't been added yet
+        if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
         // get day 2 digit string
         String[] dateStrings = convertDateToStringArray(currentDate);
         // first MultiSelectionIndicator of day is added already, avoid to add the first again
@@ -304,6 +317,14 @@ public class DiningFragment extends Fragment{
             AsyncTaskProgressCheck(result);
             currentDate = databaseManager.addDays(currentDate,1);
         }
+    }
+
+    private void notifyUser(){
+        Notification notification = new Notification.Builder(getActivity())
+                .setContentTitle("GauchoLife")
+                .setContentText("Your favorite food is served at")
+                .setSmallIcon(R.drawable.pg_launcher)
+                .build();
     }
 
     public class StickyHeaderListViewAdapter extends BaseAdapter implements StickyListHeadersAdapter {
@@ -370,7 +391,7 @@ public class DiningFragment extends Fragment{
             }
             String itemText = (String)getItem(position);
             holder.text.setText(itemText);
-            
+
             if(favoriteList.contains(itemText)) ((ImageView)convertView.findViewById(R.id.listview_dining_item_heart)).setImageResource(R.drawable.favoriteheart);
 
             return convertView;
