@@ -137,7 +137,7 @@ public class DiningFragment extends Fragment{
                                     // reuse previous dialog instance
                                     sDialog.setTitleText("Added!")
                                             .setContentText("\"" + text + "\" is added to your favorite list!")
-                                            .setConfirmText("OK")
+                                            .setConfirmText("Ok")
                                             .setConfirmClickListener(null)
                                             .showCancelButton(false)
                                             .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
@@ -227,7 +227,9 @@ public class DiningFragment extends Fragment{
             // unpack the dict, is there a better way?
             Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
             Map<String, Map> unpackedDict2 = unpackedDict1.get(commonString);
-            Map<String, List> unpackedDict3 = unpackedDict2.get(mealString);
+            // TODO: sometime crash here, if common is null
+            Map<String, List> unpackedDict3 = null;
+            if(unpackedDict2 != null) unpackedDict3 = unpackedDict2.get(mealString);
 
             // set new data to adapter
             adapter.setFoodList(unpackedDict3);
