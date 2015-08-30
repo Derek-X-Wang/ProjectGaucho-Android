@@ -165,6 +165,18 @@ public class DiningFragment extends Fragment{
         if(todayAndAfter != null){
             // load local data if there is any
             for(ParseObject dict : todayAndAfter){
+                String[] dateStrings = convertDateToStringArray(currentDate);
+                if(dateInt==convertDateToInteger(new Date())){
+                    // first round, no UI change
+                    // This function may call after loading local data
+                }else{
+                    // need to add new day to MultiSelectionIndicator
+                    dates.add(dateStrings[2]);
+                    mIndicatorDate.setTabItemTitles(dates);
+                    mIndicatorDate.updateSelection(currentDay);
+                    mIndicatorDate.invalidate();
+                }
+
                 dateInt = convertDateToInteger(currentDate);
                 tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
                 // reduce the amount needed to load from internet
