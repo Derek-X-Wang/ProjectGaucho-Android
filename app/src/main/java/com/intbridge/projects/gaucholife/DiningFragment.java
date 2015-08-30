@@ -165,10 +165,20 @@ public class DiningFragment extends Fragment{
         if(todayAndAfter != null){
             // load local data if there is any
             for(ParseObject dict : todayAndAfter){
+                dateInt = convertDateToInteger(currentDate);
                 String[] dateStrings = convertDateToStringArray(currentDate);
+                tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
+
                 if(dateInt==convertDateToInteger(new Date())){
-                    // first round, no UI change
+                    // first round, update listview when data is ready
                     // This function may call after loading local data
+                    Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
+                    Map<String, Map> unpackedDict2 = unpackedDict1.get(commons.get(0));
+                    Map<String, List> unpackedDict3 = null;
+                    if(unpackedDict2 != null) unpackedDict3 = unpackedDict2.get(meals.get(0));
+                    // set new data to adapter
+                    adapter.setFoodList(unpackedDict3);
+                    adapter.notifyDataSetChanged();
                 }else{
                     // need to add new day to MultiSelectionIndicator
                     dates.add(dateStrings[2]);
@@ -177,8 +187,7 @@ public class DiningFragment extends Fragment{
                     mIndicatorDate.invalidate();
                 }
 
-                dateInt = convertDateToInteger(currentDate);
-                tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
+
                 // reduce the amount needed to load from internet
                 // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
                 loadDayLimit--;
@@ -203,7 +212,7 @@ public class DiningFragment extends Fragment{
 
         String[] dateStrings = convertDateToStringArray(new Date());
 
-        commons = Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
+        commons = Arrays.asList("Ortega","Carrillo", "De La Guerra",  "Portola");
         dates = new ArrayList<>();
         dates.add(dateStrings[2]);
         meals = Arrays.asList("Breakfast", "Brunch", "Lunch", "Dinner", "Late Night");
@@ -292,13 +301,20 @@ public class DiningFragment extends Fragment{
         int dateInt = convertDateToInteger(currentDate);
         tempDataStorage.put(dateInt,result);
         // add to local datastore if it isn't been added yet; the if check may not be necessary
-        if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
+        //if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
         // get day 2 digit string
         String[] dateStrings = convertDateToStringArray(currentDate);
         // first MultiSelectionIndicator of day is added already, avoid to add the first again
         if(dateInt==convertDateToInteger(new Date())){
-            // first round, no UI change
+            // first round, update listview when data is ready
             // This function may call after loading local data
+            Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
+            Map<String, Map> unpackedDict2 = unpackedDict1.get(commons.get(currentCommon));
+            Map<String, List> unpackedDict3 = null;
+            if(unpackedDict2 != null) unpackedDict3 = unpackedDict2.get(meals.get(currentMeal));
+            // set new data to adapter
+            adapter.setFoodList(unpackedDict3);
+            adapter.notifyDataSetChanged();
         }else{
             // need to add new day to MultiSelectionIndicator
             dates.add(dateStrings[2]);

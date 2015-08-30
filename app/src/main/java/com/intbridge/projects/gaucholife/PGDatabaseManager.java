@@ -201,7 +201,7 @@ public class PGDatabaseManager {
             listObject.pin();
             Log.e("store: ", dateInt + "stored");
         } catch (ParseException e) {
-            Log.e("store: ", dateInt + "store fail");
+            Log.e("store: ", dateInt + "store fail "+e.getMessage());
         }
     }
 
