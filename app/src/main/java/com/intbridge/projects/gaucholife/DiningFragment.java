@@ -54,6 +54,7 @@ public class DiningFragment extends Fragment{
 
     private List<String> favoriteList;
     private ImageView heart;
+    private TextView hint;
 
 
     public DiningFragment() {
@@ -82,6 +83,8 @@ public class DiningFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dining, container, false);
+        
+        hint = (TextView)v.findViewById(R.id.fragemt_dining_hint);
 
         initMultiSelectionIndicators(v);
 
@@ -170,15 +173,12 @@ public class DiningFragment extends Fragment{
                 tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
 
                 if(dateInt==convertDateToInteger(new Date())){
+                    String commonString = commons.get(currentCommon);
+                    String mealString = meals.get(currentMeal);
                     // first round, update listview when data is ready
                     // This function may call after loading local data
-                    Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
-                    Map<String, Map> unpackedDict2 = unpackedDict1.get(commons.get(0));
-                    Map<String, List> unpackedDict3 = null;
-                    if(unpackedDict2 != null) unpackedDict3 = unpackedDict2.get(meals.get(0));
-                    // set new data to adapter
-                    adapter.setFoodList(unpackedDict3);
-                    adapter.notifyDataSetChanged();
+                    hint.setVisibility(View.GONE);
+                    updateStickyListView(commonString, mealString, dateInt);
                 }else{
                     // need to add new day to MultiSelectionIndicator
                     dates.add(dateStrings[2]);
@@ -212,7 +212,7 @@ public class DiningFragment extends Fragment{
 
         String[] dateStrings = convertDateToStringArray(new Date());
 
-        commons = Arrays.asList("Ortega","Carrillo", "De La Guerra",  "Portola");
+        commons = Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
         dates = new ArrayList<>();
         dates.add(dateStrings[2]);
         meals = Arrays.asList("Breakfast", "Brunch", "Lunch", "Dinner", "Late Night");
@@ -257,7 +257,7 @@ public class DiningFragment extends Fragment{
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         // Note: zero based!
-        String dateString = String.format("%d%02d%02d",cal.get(Calendar.YEAR),cal.get(Calendar.MONTH) + 1,cal.get(Calendar.DAY_OF_MONTH));
+        String dateString = String.format("%d%02d%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
         return Integer.parseInt(dateString);
     }
 
@@ -272,16 +272,30 @@ public class DiningFragment extends Fragment{
             adapter.setFoodList(null);
             adapter.notifyDataSetChanged();
         }else{
-            // unpack the dict, is there a better way?
-            Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
-            Map<String, Map> unpackedDict2 = unpackedDict1.get(commonString);
-            Map<String, List> unpackedDict3 = null;
-            if(unpackedDict2 != null) unpackedDict3 = unpackedDict2.get(mealString);
-
-            // set new data to adapter
-            adapter.setFoodList(unpackedDict3);
-            adapter.notifyDataSetChanged();
+            updateStickyListView(commonString, mealString, dateInt);
         }
+    }
+
+    private void updateStickyListView(String commonString, String mealString, int dateInt) {
+        // unpack the dict, is there a better way?
+        Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
+        Map<String, Map> unpackedDict2 = unpackedDict1.get(commonString);
+        Map<String, List> unpackedDict3 = null;
+        if(unpackedDict2 != null){
+            unpackedDict3 = unpackedDict2.get(mealString);
+            if(unpackedDict3 == null){
+                hint.setText("Not serving");
+                hint.setVisibility(View.VISIBLE);
+            }else {
+                hint.setVisibility(View.GONE);
+            }
+        }else{
+            hint.setText("The common is closed");
+            hint.setVisibility(View.VISIBLE);
+        }
+        // set new data to adapter
+        adapter.setFoodList(unpackedDict3);
+        adapter.notifyDataSetChanged();
     }
 
     private int matchDayWithTempDictDate(String day){
@@ -301,20 +315,17 @@ public class DiningFragment extends Fragment{
         int dateInt = convertDateToInteger(currentDate);
         tempDataStorage.put(dateInt,result);
         // add to local datastore if it isn't been added yet; the if check may not be necessary
-        //if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
+        if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
         // get day 2 digit string
         String[] dateStrings = convertDateToStringArray(currentDate);
         // first MultiSelectionIndicator of day is added already, avoid to add the first again
         if(dateInt==convertDateToInteger(new Date())){
+            String commonString = commons.get(currentCommon);
+            String mealString = meals.get(currentMeal);
             // first round, update listview when data is ready
             // This function may call after loading local data
-            Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
-            Map<String, Map> unpackedDict2 = unpackedDict1.get(commons.get(currentCommon));
-            Map<String, List> unpackedDict3 = null;
-            if(unpackedDict2 != null) unpackedDict3 = unpackedDict2.get(meals.get(currentMeal));
-            // set new data to adapter
-            adapter.setFoodList(unpackedDict3);
-            adapter.notifyDataSetChanged();
+            hint.setVisibility(View.GONE);
+            updateStickyListView(commonString, mealString, dateInt);
         }else{
             // need to add new day to MultiSelectionIndicator
             dates.add(dateStrings[2]);

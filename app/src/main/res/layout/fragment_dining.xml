@@ -55,6 +55,17 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/fragemt_dining_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:text="Loading......"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"/>
+
     <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list"
         android:layout_width="match_parent"
