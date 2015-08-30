@@ -1,5 +1,7 @@
 package com.intbridge.projects.gaucholife;
 
+import android.util.Log;
+
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class PGDatabaseManager {
     // get a dict of commons in a day
     public Map<String, Map> getUCSBCommonsDataFromHTML(String year,String month,String day){
+        //Log.e("currentdatabaseM: ",year+month+day);
         Document doc = null;
         // init the return value
         Map<String, Map> dictionary = new LinkedHashMap<>();
@@ -194,18 +197,26 @@ public class PGDatabaseManager {
         ParseObject listObject = new ParseObject("DiningDictionary");
         listObject.put("dateInt", dateInt);
         listObject.put("dictionary", dict);
-        listObject.pinInBackground();
+        try {
+            listObject.pin();
+            Log.e("store: ", dateInt + "stored");
+        } catch (ParseException e) {
+            Log.e("store: ", dateInt + "store fail");
+        }
     }
 
     public boolean isDictExistInParseLocalDatastore(int dateInt){
         ParseQuery query = ParseQuery.getQuery("DiningDictionary");
         query.fromLocalDatastore();
         query.whereEqualTo("dateInt", dateInt);
+        List parseList = null;
         try {
-            List parseList = query.find();
+            parseList = query.find();
         } catch (ParseException e) {
-            return false;
+            e.printStackTrace();
         }
+        //if(parseList == null) return false;
+        if(parseList.size() == 0) return false;
         return true;
     }
 

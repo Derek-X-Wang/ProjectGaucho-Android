@@ -2,10 +2,10 @@ package com.intbridge.projects.gaucholife;
 
 
 import android.app.Fragment;
-import android.app.Notification;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -156,15 +156,21 @@ public class DiningFragment extends Fragment{
                 // not existed -> add new item to the favor list
             }
         });
-        // count for loading data and local data
+
         int dateInt = convertDateToInteger(currentDate);
         // get local data
         List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
         // get need-to-delete data
         List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
         if(todayAndAfter != null){
+            // load local data if there is any
             for(ParseObject dict : todayAndAfter){
-                AsyncTaskProgressCheck((Map<String, Map>)dict.get("dictionary"));
+                dateInt = convertDateToInteger(currentDate);
+                tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
+                // reduce the amount needed to load from internet
+                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
+                loadDayLimit--;
+                currentDate = databaseManager.addDays(currentDate,1);
             }
         }
         if(beforeToday != null){
@@ -172,8 +178,9 @@ public class DiningFragment extends Fragment{
                 dict.unpinInBackground();
             }
         }
-        // count size
-        new WebRequestTask().execute();
+        // load from internet if needed
+        Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
+        if(loadDayLimit > 0) new WebRequestTask().execute();
         return v;
     }
 
@@ -272,13 +279,14 @@ public class DiningFragment extends Fragment{
         // store the result in the fragment
         int dateInt = convertDateToInteger(currentDate);
         tempDataStorage.put(dateInt,result);
-        // add to local datastore if it isn't been added yet
+        // add to local datastore if it isn't been added yet; the if check may not be necessary
         if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
         // get day 2 digit string
         String[] dateStrings = convertDateToStringArray(currentDate);
         // first MultiSelectionIndicator of day is added already, avoid to add the first again
-        if(loadLoopIndicator == 0){
-            // first round
+        if(dateInt==convertDateToInteger(new Date())){
+            // first round, no UI change
+            // This function may call after loading local data
         }else{
             // need to add new day to MultiSelectionIndicator
             dates.add(dateStrings[2]);
@@ -289,12 +297,14 @@ public class DiningFragment extends Fragment{
         loadLoopIndicator++;
         if(loadLoopIndicator < loadDayLimit){
             // execute next
+            currentDate = databaseManager.addDays(currentDate,1);
             new WebRequestTask().execute(0);
         }else{
             // reset
             loadLoopIndicator = 0;
         }
     }
+
     private class WebRequestTask extends AsyncTask<Integer, Integer, Map<String, Map>> {
         @Override
         protected void onPreExecute() {
@@ -318,18 +328,36 @@ public class DiningFragment extends Fragment{
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(Map<String, Map> result) {
+            //Log.e("current: ",convertDateToInteger(currentDate)+"");
             AsyncTaskProgressCheck(result);
-            currentDate = databaseManager.addDays(currentDate,1);
         }
     }
 
-    private void notifyUser(){
-        Notification notification = new Notification.Builder(getActivity())
-                .setContentTitle("GauchoLife")
-                .setContentText("Your favorite food is served at")
-                .setSmallIcon(R.drawable.pg_launcher)
-                .build();
-    }
+//    private void notifyUser(){
+//        Notification notification = new Notification.Builder(getActivity())
+//                .setContentTitle("GauchoLife")
+//                .setContentText("Your favorite food is served at")
+//                .setSmallIcon(R.drawable.pg_launcher)
+//                .build();
+//    }
+
+//    public void notifyUser(){
+//
+//        NotificationManager notificationManager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        Intent intent = new Intent(MyActivity.this, SomeActivity.class);
+//
+//        //use the flag FLAG_UPDATE_CURRENT to override any notification already there
+//        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        Notification notification = new Notification(R.drawable.ic_launcher, "Some Text", System.currentTimeMillis());
+//        notification.flags = Notification.FLAG_AUTO_CANCEL | Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND;
+//
+//        notification.setLatestEventInfo(this, "This is a notification Title", "Notification Text", contentIntent);
+//        //10 is a random number I chose to act as the id for this notification
+//        notificationManager.notify(10, notification);
+//
+//    }
 
     public class StickyHeaderListViewAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
