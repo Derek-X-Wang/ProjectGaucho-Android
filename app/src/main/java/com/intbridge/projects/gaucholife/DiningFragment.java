@@ -156,8 +156,11 @@ public class DiningFragment extends Fragment{
                 // not existed -> add new item to the favor list
             }
         });
+        // count for loading data and local data
         int dateInt = convertDateToInteger(currentDate);
+        // get local data
         List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
+        // get need-to-delete data
         List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
         if(todayAndAfter != null){
             for(ParseObject dict : todayAndAfter){
@@ -169,6 +172,7 @@ public class DiningFragment extends Fragment{
                 dict.unpinInBackground();
             }
         }
+        // count size
         new WebRequestTask().execute();
         return v;
     }
