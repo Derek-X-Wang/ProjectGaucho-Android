@@ -1,11 +1,11 @@
 package com.intbridge.projects.gaucholife;
 
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +85,10 @@ public class DiningFragment extends Fragment{
         View v = inflater.inflate(R.layout.fragment_dining, container, false);
         
         hint = (TextView)v.findViewById(R.id.fragemt_dining_hint);
+
+        // prevent action bar to show when the program is reopen from background and the view is re-init
+        ActionBar actionBar = getActivity().getActionBar();
+        if(actionBar != null && actionBar.isShowing()) actionBar.hide();
 
         initMultiSelectionIndicators(v);
 
@@ -200,7 +204,7 @@ public class DiningFragment extends Fragment{
             }
         }
         // load from internet if needed
-        Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
+        //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
         if(loadDayLimit > 0) new WebRequestTask().execute();
         return v;
     }

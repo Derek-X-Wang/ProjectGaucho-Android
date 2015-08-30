@@ -1,7 +1,5 @@
 package com.intbridge.projects.gaucholife;
 
-import android.util.Log;
-
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -199,9 +197,9 @@ public class PGDatabaseManager {
         listObject.put("dictionary", dict);
         try {
             listObject.pin();
-            Log.e("store: ", dateInt + "stored");
+            //Log.e("store: ", dateInt + "stored");
         } catch (ParseException e) {
-            Log.e("store: ", dateInt + "store fail "+e.getMessage());
+            //Log.e("store: ", dateInt + "store fail "+e.getMessage());
         }
     }
 
