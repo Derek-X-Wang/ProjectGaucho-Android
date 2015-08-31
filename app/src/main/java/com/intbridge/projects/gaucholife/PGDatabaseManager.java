@@ -1,5 +1,7 @@
 package com.intbridge.projects.gaucholife;
 
+import android.util.Log;
+
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -115,6 +117,7 @@ public class PGDatabaseManager {
         ParseObject listObject;
         try {
             listObject = query.getFirst();
+            if(listObject == null) listObject.put("myFavorite",new ArrayList<String>());
             favoriteList = listObject.getList("myFavorite");
         } catch (ParseException e) {
             listObject = new ParseObject("DiningFavorite");
@@ -243,6 +246,36 @@ public class PGDatabaseManager {
             return  parseList;
         } catch (ParseException e) {
             return null;
+        }
+    }
+
+    public boolean updateLocalNotificationTimestamp(int dateInt){
+        ParseQuery query = ParseQuery.getQuery("DiningNotification");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            Log.e("update: ","start");
+            listObject = query.getFirst();
+            if(listObject == null) {
+                // new item haven't schedule notification yet, return true
+                Log.e("update: ","return null");
+                listObject = new ParseObject("DiningNotification");
+                listObject.put("notificationTimestamp", dateInt);
+                return true;
+            }
+            Log.e("update: ","c");
+            if ((int)listObject.get("notificationTimestamp") <= dateInt) return false;
+            else{
+                listObject.put("notificationTimestamp", dateInt);
+                return true;
+            }
+        } catch (ParseException e) {
+            // DiningNotification is null
+            // new item haven't schedule notification yet, return true
+            Log.e("update: ","ParseException");
+            listObject = new ParseObject("DiningNotification");
+            listObject.put("notificationTimestamp", dateInt);
+            return true;
         }
     }
 }

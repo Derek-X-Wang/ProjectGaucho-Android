@@ -2,8 +2,11 @@ package com.intbridge.projects.gaucholife;
 
 
 import android.app.ActionBar;
+import android.app.AlarmManager;
 import android.app.Fragment;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -92,6 +95,89 @@ public class DiningFragment extends Fragment{
 
         initMultiSelectionIndicators(v);
 
+        initStickyListView(v);
+
+        int dateInt = convertDateToInteger(currentDate);
+        // get local data
+        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
+        // get need-to-delete data
+        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
+        if(todayAndAfter != null){
+            // load local data if there is any
+            for(ParseObject dict : todayAndAfter){
+                dateInt = convertDateToInteger(currentDate);
+                String[] dateStrings = convertDateToStringArray(currentDate);
+                tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
+
+                if(dateInt==convertDateToInteger(new Date())){
+                    String commonString = commons.get(currentCommon);
+                    String mealString = meals.get(currentMeal);
+                    // first round, update listview when data is ready
+                    // This function may call after loading local data
+                    hint.setVisibility(View.GONE);
+                    updateStickyListView(commonString, mealString, dateInt);
+                }else{
+                    // need to add new day to MultiSelectionIndicator
+                    dates.add(dateStrings[2]);
+                    mIndicatorDate.setTabItemTitles(dates);
+                    mIndicatorDate.updateSelection(currentDay);
+                    mIndicatorDate.invalidate();
+                }
+
+//                if(databaseManager.updateLocalNotificationTimestamp(dateInt)){
+//                    // loop through the dict and match with favorite list
+//                    // schedule a notification
+//
+//                }
+
+                // reduce the amount needed to load from internet
+                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
+                loadDayLimit--;
+                currentDate = databaseManager.addDays(currentDate,1);
+            }
+        }
+        if(beforeToday != null){
+            for(ParseObject dict : beforeToday){
+                dict.unpinInBackground();
+            }
+        }
+        // load from internet if needed
+        //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
+        if(loadDayLimit > 0) new WebRequestTask().execute();
+        createScheduledNotification(1,"TestCommon","testItem1");
+        createScheduledNotification(5,"TestCommon","testItem2");
+        return v;
+    }
+
+    private void createScheduledNotification(int days, String common, String food)
+    {
+        // Get new calendar object and set the date to now
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        // Add defined amount of days to the date
+        //calendar.add(Calendar.HOUR_OF_DAY, days * 24);
+        calendar.add(Calendar.SECOND, 10);
+
+        // Retrieve alarm manager from the system
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        // Every scheduled intent needs a different ID, else it is just executed once
+        int id = (int) System.currentTimeMillis() + days;
+
+        // Prepare the intent which should be launched at the date
+        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+        notificationIntent.addCategory("android.intent.category.DEFAULT");
+        notificationIntent.putExtra("common", common);
+        notificationIntent.putExtra("item",food);
+        notificationIntent.putExtra("id",id);
+
+        // Prepare the pending intent
+        PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
+
+        // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), broadcast );
+    }
+
+    private void initStickyListView(View v) {
         StickyListHeadersListView stickyList = (StickyListHeadersListView) v.findViewById(R.id.list);
         adapter = new StickyHeaderListViewAdapter(getActivity());
         stickyList.setAdapter(adapter);
@@ -163,50 +249,6 @@ public class DiningFragment extends Fragment{
                 // not existed -> add new item to the favor list
             }
         });
-
-        int dateInt = convertDateToInteger(currentDate);
-        // get local data
-        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
-        // get need-to-delete data
-        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
-        if(todayAndAfter != null){
-            // load local data if there is any
-            for(ParseObject dict : todayAndAfter){
-                dateInt = convertDateToInteger(currentDate);
-                String[] dateStrings = convertDateToStringArray(currentDate);
-                tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
-
-                if(dateInt==convertDateToInteger(new Date())){
-                    String commonString = commons.get(currentCommon);
-                    String mealString = meals.get(currentMeal);
-                    // first round, update listview when data is ready
-                    // This function may call after loading local data
-                    hint.setVisibility(View.GONE);
-                    updateStickyListView(commonString, mealString, dateInt);
-                }else{
-                    // need to add new day to MultiSelectionIndicator
-                    dates.add(dateStrings[2]);
-                    mIndicatorDate.setTabItemTitles(dates);
-                    mIndicatorDate.updateSelection(currentDay);
-                    mIndicatorDate.invalidate();
-                }
-
-
-                // reduce the amount needed to load from internet
-                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
-                loadDayLimit--;
-                currentDate = databaseManager.addDays(currentDate,1);
-            }
-        }
-        if(beforeToday != null){
-            for(ParseObject dict : beforeToday){
-                dict.unpinInBackground();
-            }
-        }
-        // load from internet if needed
-        //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
-        if(loadDayLimit > 0) new WebRequestTask().execute();
-        return v;
     }
 
     private void initMultiSelectionIndicators(View v) {
@@ -377,11 +419,12 @@ public class DiningFragment extends Fragment{
     }
 
 //    private void notifyUser(){
-//        Notification notification = new Notification.Builder(getActivity())
+//        Notification notification = new NotificationCompat.Builder(getActivity())
 //                .setContentTitle("GauchoLife")
 //                .setContentText("Your favorite food is served at")
 //                .setSmallIcon(R.drawable.pg_launcher)
 //                .build();
+//        notification.flags = Notification.FLAG_AUTO_CANCEL;
 //    }
 
 //    public void notifyUser(){
