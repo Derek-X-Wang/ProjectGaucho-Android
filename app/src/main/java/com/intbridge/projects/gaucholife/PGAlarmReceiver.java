@@ -30,7 +30,7 @@ public class PGAlarmReceiver extends BroadcastReceiver {
 //            Log.e("receive: ", bundle.getString("item"));
             id = bundle.getInt("id");
 
-            notification = buildNotification(context, pendingIntent,bundle.getString("common"),bundle.getString("item"));
+            notification = buildNotification(context, pendingIntent,bundle.getString("common"),bundle.getString("meal"));
         }else{
             notification = buildNotification(context, pendingIntent,"none","none");
         }
@@ -43,14 +43,56 @@ public class PGAlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(id, notification);
     }
 
-    private Notification buildNotification(Context context, PendingIntent pendingIntent, String common,String food){
+    private Notification buildNotification(Context context, PendingIntent pendingIntent, String common,String meal){
+//        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+//        bigTextStyle.setBigContentTitle("Your favorite food is coming");
+//        bigTextStyle.bigText(String.format("Your favorite food, %s, will be served at %s tomorrow", food, common));
+
         Notification notification = new NotificationCompat.Builder(context)
                 .setContentTitle("GauchoLife")
-                .setContentText(String.format("Your favorite food %s is served at %s",food,common))
+                .setContentText(String.format("Your favorite %s is serving at %s",meal,common))
                 .setSmallIcon(R.drawable.pg_launcher)
                 .setContentIntent(pendingIntent)
                 .build();
         notification.flags = Notification.FLAG_AUTO_CANCEL;
         return notification;
+    }
+
+    private int generateNotificationID(String common,String meal){
+        String encodedCommon = "0";
+        String encodedMeal = "0";
+        switch (common){
+            case "Carrillo":
+                encodedCommon = "1";
+                break;
+            case "De La Guerra":
+                encodedCommon = "2";
+                break;
+            case "Ortega":
+                encodedCommon = "3";
+                break;
+            case "Portola":
+                encodedCommon = "4";
+                break;
+        }
+        switch (meal) {
+            case "Breakfast":
+                encodedMeal = "1";
+                break;
+            case "Brunch":
+                encodedMeal = "2";
+                break;
+            case "Lunch":
+                encodedMeal = "3";
+                break;
+            case "Dinner":
+                encodedMeal = "4";
+                break;
+            case "Late Night":
+                encodedMeal = "5";
+                break;
+        }
+
+        return Integer.parseInt(encodedCommon+encodedMeal);
     }
 }

@@ -144,12 +144,12 @@ public class DiningFragment extends Fragment{
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
         if(loadDayLimit > 0) new WebRequestTask().execute();
-        createScheduledNotification(1,"TestCommon","testItem1");
-        createScheduledNotification(5,"TestCommon","testItem2");
+        createScheduledNotification(1,"TestCommon","meal");
+        createScheduledNotification(5,"TestCommon2","meal");
         return v;
     }
 
-    private void createScheduledNotification(int days, String common, String food)
+    private void createScheduledNotification(int days, String common, String meal)
     {
         // Get new calendar object and set the date to now
         Calendar calendar = Calendar.getInstance();
@@ -167,7 +167,7 @@ public class DiningFragment extends Fragment{
         Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
         notificationIntent.addCategory("android.intent.category.DEFAULT");
         notificationIntent.putExtra("common", common);
-        notificationIntent.putExtra("item",food);
+        notificationIntent.putExtra("meal", meal);
         notificationIntent.putExtra("id",id);
 
         // Prepare the pending intent
