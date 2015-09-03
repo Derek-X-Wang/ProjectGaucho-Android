@@ -144,8 +144,9 @@ public class DiningFragment extends Fragment{
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
         if(loadDayLimit > 0) new WebRequestTask().execute();
-        createScheduledNotification(1,"TestCommon","meal");
-        createScheduledNotification(5,"TestCommon2","meal");
+        createScheduledNotification(1,"Carrillo","Brunch");
+        createScheduledNotification(5,"Ortega","Brunch");
+        createScheduledNotification(5, "Ortega", "Lunch");
         return v;
     }
 
@@ -154,6 +155,7 @@ public class DiningFragment extends Fragment{
         // Get new calendar object and set the date to now
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
+
         // Add defined amount of days to the date
         //calendar.add(Calendar.HOUR_OF_DAY, days * 24);
         calendar.add(Calendar.SECOND, 10);
@@ -174,7 +176,40 @@ public class DiningFragment extends Fragment{
         PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
 
         // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), broadcast );
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), broadcast);
+    }
+
+    private Calendar getScheduledNotificationTime(Date date, String common, String meal){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        switch (meal) {
+            case "Breakfast":
+                calendar.set(Calendar.HOUR_OF_DAY,6);
+                calendar.set(Calendar.MINUTE,15);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Brunch":
+                calendar.set(Calendar.HOUR_OF_DAY,9);
+                calendar.set(Calendar.MINUTE,30);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Lunch":
+                calendar.set(Calendar.HOUR_OF_DAY,10);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Dinner":
+                calendar.set(Calendar.HOUR_OF_DAY,16);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Late Night":
+                calendar.set(Calendar.HOUR_OF_DAY,20);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.SECOND,0);
+                break;
+        }
+        return  calendar;
     }
 
     private void initStickyListView(View v) {

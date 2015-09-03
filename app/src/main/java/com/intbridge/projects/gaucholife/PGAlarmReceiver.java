@@ -15,21 +15,21 @@ import android.support.v4.app.NotificationCompat;
 public class PGAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-//        Intent notificationIntent = new Intent(context, MainActivity.class);
+        Intent notificationIntent = new Intent(context, MainActivity.class);
 
 //        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 //        stackBuilder.addParentStack(MainActivity.class);
 //        stackBuilder.addNextIntent(notificationIntent);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Bundle bundle = intent.getExtras();
         Notification notification;
         int id = 0;
         if(bundle!=null){
 //            Log.e("receive: ",bundle.getString("common"));
 //            Log.e("receive: ", bundle.getString("item"));
-            id = bundle.getInt("id");
-
+            //id = bundle.getInt("id");
+            id = generateNotificationID(bundle.getString("common"),bundle.getString("meal"));
             notification = buildNotification(context, pendingIntent,bundle.getString("common"),bundle.getString("meal"));
         }else{
             notification = buildNotification(context, pendingIntent,"none","none");
