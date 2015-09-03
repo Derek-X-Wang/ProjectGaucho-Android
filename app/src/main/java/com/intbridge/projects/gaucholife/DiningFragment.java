@@ -144,13 +144,11 @@ public class DiningFragment extends Fragment{
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
         if(loadDayLimit > 0) new WebRequestTask().execute();
-        createScheduledNotification(1,"Carrillo","Brunch");
-        createScheduledNotification(5,"Ortega","Brunch");
-        createScheduledNotification(5, "Ortega", "Lunch");
+        createScheduledNotification(new Date(),"Carrillo","Late Night");
         return v;
     }
 
-    private void createScheduledNotification(int days, String common, String meal)
+    private void createScheduledNotification(Date date, String common, String meal)
     {
         // Get new calendar object and set the date to now
         Calendar calendar = Calendar.getInstance();
@@ -163,7 +161,7 @@ public class DiningFragment extends Fragment{
         // Retrieve alarm manager from the system
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         // Every scheduled intent needs a different ID, else it is just executed once
-        int id = (int) System.currentTimeMillis() + days;
+        int id = (int) System.currentTimeMillis();
 
         // Prepare the intent which should be launched at the date
         Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
@@ -176,7 +174,7 @@ public class DiningFragment extends Fragment{
         PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
 
         // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), broadcast);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, getScheduledNotificationTime(date,common,meal).getTimeInMillis(), broadcast);
     }
 
     private Calendar getScheduledNotificationTime(Date date, String common, String meal){
