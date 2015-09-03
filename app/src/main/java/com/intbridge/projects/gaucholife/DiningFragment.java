@@ -59,6 +59,8 @@ public class DiningFragment extends Fragment{
     private ImageView heart;
     private TextView hint;
 
+    private List<PendingIntent> pendingIntents;
+
 
     public DiningFragment() {
         // Required empty public constructor
@@ -79,7 +81,7 @@ public class DiningFragment extends Fragment{
         tempDataStorage = new LinkedHashMap<>();
         currentDate = new Date();
         favoriteList = databaseManager.getFavoriteList();
-
+        pendingIntents = new ArrayList<>();
     }
 
     @Override
@@ -143,8 +145,19 @@ public class DiningFragment extends Fragment{
         }
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
-        if(loadDayLimit > 0) new WebRequestTask().execute();
+        if(loadDayLimit > 0){
+            if(databaseManager.checkDataSourse()){
+                // load from html
+                new WebRequestTask().execute();
+            }else{
+                // load from Parse
+                
+            }
+
+        }
         createScheduledNotification(new Date(),"Carrillo","Late Night");
+        createScheduledNotification(new Date(), "Ortega", "Late Night");
+        cancelAllScheduledNotification();
         return v;
     }
 
@@ -173,8 +186,19 @@ public class DiningFragment extends Fragment{
         // Prepare the pending intent
         PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
 
+        // store PendingIntent for canceling reference
+        pendingIntents.add(broadcast);
+
         // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
-        alarmManager.set(AlarmManager.RTC_WAKEUP, getScheduledNotificationTime(date,common,meal).getTimeInMillis(), broadcast);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);
+    }
+
+    private void cancelAllScheduledNotification(){
+        // Retrieve alarm manager from the system
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        for(PendingIntent pendingIntent : pendingIntents){
+            alarmManager.cancel(pendingIntent);
+        }
     }
 
     private Calendar getScheduledNotificationTime(Date date, String common, String meal){
@@ -202,8 +226,8 @@ public class DiningFragment extends Fragment{
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Late Night":
-                calendar.set(Calendar.HOUR_OF_DAY,20);
-                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.HOUR_OF_DAY,2);
+                calendar.set(Calendar.MINUTE,40);
                 calendar.set(Calendar.SECOND,0);
                 break;
         }

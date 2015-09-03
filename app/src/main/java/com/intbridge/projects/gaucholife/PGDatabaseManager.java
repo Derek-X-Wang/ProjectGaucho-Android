@@ -1,5 +1,6 @@
 package com.intbridge.projects.gaucholife;
 
+import android.app.PendingIntent;
 import android.util.Log;
 
 import com.parse.ParseException;
@@ -23,6 +24,24 @@ import java.util.Map;
  * Created by Derek on 8/10/2015.
  */
 public class PGDatabaseManager {
+    public boolean checkDataSourse(){
+        ParseObject controlPanel = (ParseObject)getControlPanelFromParse();
+        // if no panel, run default -> use html
+        if(controlPanel == null) return true;
+
+        return controlPanel.getBoolean("DataSource");
+    }
+
+    private Object getControlPanelFromParse(){
+        ParseQuery query = ParseQuery.getQuery("ControlPanel");
+        try {
+            return query.getFirst();
+        } catch (ParseException e) {
+            Log.e("ControlPanel: ", "ParseException");
+            e.printStackTrace();
+            return null;
+        }
+    }
     // get a dict of commons in a day
     public Map<String, Map> getUCSBCommonsDataFromHTML(String year,String month,String day){
         //Log.e("currentdatabaseM: ",year+month+day);
@@ -108,6 +127,21 @@ public class PGDatabaseManager {
     public Map<String, List> filteringDictionay(int date,String common,String meal){
 
         return null;
+    }
+
+    public List getCommonDataFromParse(String common, int startDateInt, int endDateInt){
+        if(common.equals("De La Guerra")) common = "DeLaGuerra";
+        ParseQuery query = ParseQuery.getQuery(common);
+        query.whereGreaterThanOrEqualTo("date",startDateInt);
+        query.whereLessThanOrEqualTo("date",endDateInt);
+        List listObjects = null;
+        try {
+            listObjects = query.find();
+            return listObjects;
+        } catch (ParseException e) {
+            Log.e("getCommon: ","ParseException");
+        }
+        return  listObjects;
     }
 
     public List<String> getFavoriteList(){
@@ -276,6 +310,75 @@ public class PGDatabaseManager {
             listObject = new ParseObject("DiningNotification");
             listObject.put("notificationTimestamp", dateInt);
             return true;
+        }
+    }
+
+    public void resetLocalNotificationTimestamp(int dateInt){
+        ParseQuery query = ParseQuery.getQuery("DiningNotification");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            Log.e("reset: ","start");
+            listObject = query.getFirst();
+            if(listObject == null) {
+                // new item haven't schedule notification yet
+                Log.e("update: ","return null");
+                listObject = new ParseObject("DiningNotification");
+            }
+            Log.e("reset: ","c");
+            listObject.put("notificationTimestamp", dateInt);
+        } catch (ParseException e) {
+            // DiningNotification is null
+            // new item haven't schedule notification yet, return true
+            Log.e("reset: ","ParseException");
+            listObject = new ParseObject("DiningNotification");
+            listObject.put("notificationTimestamp", dateInt);
+        }
+    }
+
+    public void storePendingIntentArray(List<PendingIntent> pendingIntents){
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            Log.e("storePending: ","start");
+            listObject = query.getFirst();
+            if(listObject == null) {
+                // new item haven't schedule notification yet
+                Log.e("storePending: ","return null");
+                listObject = new ParseObject("Setting");
+                listObject.put("notificationPendingIntent", new ArrayList<PendingIntent>());
+            }
+            Log.e("storePending: ", "c");
+            List<PendingIntent> storedArray = (ArrayList<PendingIntent>)listObject.get("notificationPendingIntent");
+            listObject.put("notificationPendingIntent", storedArray.addAll(pendingIntents));
+        } catch (ParseException e) {
+            // Setting is null
+            // new item haven't schedule notification yet
+            Log.e("storePending: ","ParseException");
+            listObject = new ParseObject("Setting");
+            listObject.put("notificationPendingIntent", pendingIntents);
+        }
+    }
+
+    public List<PendingIntent> getPendingIntentArray(){
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            Log.e("getPending: ","start");
+            listObject = query.getFirst();
+            if(listObject == null) {
+                // new item haven't schedule notification yet
+                return  null;
+            }
+            Log.e("getPending: ","c");
+            return (List<PendingIntent>)listObject.get("notificationPendingIntent");
+        } catch (ParseException e) {
+            // Setting is null
+            // new item haven't schedule notification yet
+            Log.e("getPending: ","ParseException");
+            return  null;
         }
     }
 }
