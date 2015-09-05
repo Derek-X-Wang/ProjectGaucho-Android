@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Derek on 8/10/2015.
@@ -142,6 +143,59 @@ public class PGDatabaseManager {
             Log.e("getCommon: ","ParseException");
         }
         return  listObjects;
+    }
+
+    public Map getUCSBDiningCommonsDictionaryFromParse(Date startDate,int range){
+        int startDateInt = convertDateToInteger(startDate);
+        int endDateInt = convertDateToInteger(addDays(startDate, range));
+        List<ParseObject> Carrillo = getCommonDataFromParse("Carrillo", startDateInt, endDateInt);
+        List<ParseObject> DeLaGuerra = getCommonDataFromParse("DeLaGuerra", startDateInt, endDateInt);
+        List<ParseObject> Ortega = getCommonDataFromParse("Ortega", startDateInt, endDateInt);
+        List<ParseObject> Portola = getCommonDataFromParse("Portola", startDateInt, endDateInt);
+
+        Date dateItr = startDate;
+        Map<Integer, Map> dictionary = new LinkedHashMap<>();
+        for(int i = 0;i<range;i++){
+            Map<String, Map> dateDictionary = new LinkedHashMap<>();
+
+            constructDictFromParseObject("Carrillo",Carrillo, dateItr, dateDictionary);
+            constructDictFromParseObject("De La Guerra",DeLaGuerra, dateItr, dateDictionary);
+            constructDictFromParseObject("Ortega",Ortega, dateItr, dateDictionary);
+            constructDictFromParseObject("Portola",Portola, dateItr, dateDictionary);
+
+            dictionary.put(convertDateToInteger(dateItr), dateDictionary);
+            dateItr = addDays(dateItr,1);
+        }
+
+
+        return dictionary;
+    }
+
+    private void constructDictFromParseObject(String commonName, List<ParseObject> parseObjectList, Date dateItr, Map<String, Map> dateDictionary) {
+        for(ParseObject common : parseObjectList){
+            Map<String, Map> commonDictionary = null;
+            int date = common.getInt("date");
+            if(date == convertDateToInteger(dateItr)){
+                Set<String> keySet = common.keySet();
+                //keySet.remove("date");
+                Map<String, List> mealDict = null;
+                for(String key:keySet){
+                    if(key.equals("date")) continue;
+                    String[] mealAndFood = key.split("_");
+                    String meal = mealAndFood[0];
+                    if(meal.equals("LateNight")) meal = "Late Night";
+                    List<String> foods = common.getList(key);
+                    if(commonDictionary==null) commonDictionary = new LinkedHashMap<>();
+                    mealDict = commonDictionary.get(meal);
+                    if(mealDict == null) mealDict = new LinkedHashMap<>();
+                    mealDict.put(mealAndFood[1], foods);
+                    commonDictionary.put(meal,mealDict);
+                }
+                dateDictionary.put(commonName,commonDictionary);
+            }else{
+                // not the right date
+            }
+        }
     }
 
     public List<String> getFavoriteList(){
@@ -372,13 +426,21 @@ public class PGDatabaseManager {
                 // new item haven't schedule notification yet
                 return  null;
             }
-            Log.e("getPending: ","c");
+            Log.e("getPending: ", "c");
             return (List<PendingIntent>)listObject.get("notificationPendingIntent");
         } catch (ParseException e) {
             // Setting is null
             // new item haven't schedule notification yet
-            Log.e("getPending: ","ParseException");
+            Log.e("getPending: ", "ParseException");
             return  null;
         }
+    }
+
+    public int convertDateToInteger(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        // Note: zero based!
+        String dateString = String.format("%d%02d%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+        return Integer.parseInt(dateString);
     }
 }

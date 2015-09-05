@@ -151,13 +151,39 @@ public class DiningFragment extends Fragment{
                 new WebRequestTask().execute();
             }else{
                 // load from Parse
-                
+                Map<Integer, Map> parseDict = databaseManager.getUCSBDiningCommonsDictionaryFromParse(currentDate, loadDayLimit);
+                tempDataStorage.putAll(parseDict);
+
+                for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
+                    int key = entry.getKey();
+                    Map<String,Map> value = entry.getValue();
+                    String keyString = key + "";
+                    // get day 2 digit string
+                    String dateString = keyString.substring(6);
+                    // first MultiSelectionIndicator of day is added already, avoid to add the first again
+                    if(key==convertDateToInteger(new Date())){
+                        String commonString = commons.get(currentCommon);
+                        String mealString = meals.get(currentMeal);
+                        // first round, update listview when data is ready
+                        // This function may call after loading local data
+                        hint.setVisibility(View.GONE);
+                        updateStickyListView(commonString, mealString, dateInt);
+                    }else{
+                        // need to add new day to MultiSelectionIndicator
+                        dates.add(dateString);
+                        mIndicatorDate.setTabItemTitles(dates);
+                        mIndicatorDate.updateSelection(currentDay);
+                        mIndicatorDate.invalidate();
+                    }
+                }
+                currentDate = databaseManager.addDays(currentDate,loadDayLimit);
+                loadDayLimit = 0;
             }
 
         }
-        createScheduledNotification(new Date(),"Carrillo","Late Night");
-        createScheduledNotification(new Date(), "Ortega", "Late Night");
-        cancelAllScheduledNotification();
+//        createScheduledNotification(new Date(),"Carrillo","Late Night");
+//        createScheduledNotification(new Date(), "Ortega", "Late Night");
+//        cancelAllScheduledNotification();
         return v;
     }
 
