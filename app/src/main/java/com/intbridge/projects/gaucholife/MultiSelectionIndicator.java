@@ -320,7 +320,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
         if (mTabCount == 0) {
             return;
         }
-
+        View v = mTabsContainer.getChildAt(position);
         int newScrollX = mTabsContainer.getChildAt(position).getLeft() + offset;
         if (position > 0 || offset > 0) {
             //Half screen offset.

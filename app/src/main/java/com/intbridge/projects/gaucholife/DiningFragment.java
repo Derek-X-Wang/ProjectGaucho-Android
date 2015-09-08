@@ -17,8 +17,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.parse.ParseObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -59,6 +57,12 @@ public class DiningFragment extends Fragment{
     private ImageView heart;
     private TextView hint;
 
+    private Date currentDate;
+    private int loadDayLimit = 9;
+    private int loadLoopIndicator = 0;
+
+    private final int LOADDAYRANGE = 9;
+
     private List<PendingIntent> pendingIntents;
 
 
@@ -77,6 +81,8 @@ public class DiningFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // it is a bit messy now since loading html will not reduce loadDayLimit but loading parse will
+        loadDayLimit = LOADDAYRANGE;
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
         currentDate = new Date();
@@ -99,85 +105,43 @@ public class DiningFragment extends Fragment{
 
         initStickyListView(v);
 
-        int dateInt = convertDateToInteger(currentDate);
-        // get local data
-        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
-        // get need-to-delete data
-        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
-        if(todayAndAfter != null){
-            // load local data if there is any
-            for(ParseObject dict : todayAndAfter){
-                dateInt = convertDateToInteger(currentDate);
-                String[] dateStrings = convertDateToStringArray(currentDate);
-                tempDataStorage.put(dateInt, (Map<String, Map>) dict.get("dictionary"));
-
-                if(dateInt==convertDateToInteger(new Date())){
-                    String commonString = commons.get(currentCommon);
-                    String mealString = meals.get(currentMeal);
-                    // first round, update listview when data is ready
-                    // This function may call after loading local data
-                    hint.setVisibility(View.GONE);
-                    updateStickyListView(commonString, mealString, dateInt);
-                }else{
-                    // need to add new day to MultiSelectionIndicator
-                    dates.add(dateStrings[2]);
-                    mIndicatorDate.setTabItemTitles(dates);
-                    mIndicatorDate.updateSelection(currentDay);
-                    mIndicatorDate.invalidate();
-                }
-
-//                if(databaseManager.updateLocalNotificationTimestamp(dateInt)){
-//                    // loop through the dict and match with favorite list
-//                    // schedule a notification
+//        int dateInt = convertDateToInteger(currentDate);
+//        // get local data
+//        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
+//        // get need-to-delete data
+//        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
+//        if(todayAndAfter != null){
+//            // load local data if there is any
+//            for(ParseObject dict : todayAndAfter){
+//                updateStickyListView((Map<String,Map>)dict.get("dictionary"));
 //
-//                }
-
-                // reduce the amount needed to load from internet
-                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
-                loadDayLimit--;
-                currentDate = databaseManager.addDays(currentDate,1);
-            }
-        }
-        if(beforeToday != null){
-            for(ParseObject dict : beforeToday){
-                dict.unpinInBackground();
-            }
-        }
+////                if(databaseManager.updateLocalNotificationTimestamp(dateInt)){
+////                    // loop through the dict and match with favorite list
+////                    // schedule a notification
+////
+////                }
+//
+//                // reduce the amount needed to load from internet
+//                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
+//                loadDayLimit--;
+//                currentDate = databaseManager.addDays(currentDate,1);
+//            }
+//        }
+//        if(beforeToday != null){
+//            for(ParseObject dict : beforeToday){
+//                dict.unpinInBackground();
+//            }
+//        }
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
         if(loadDayLimit > 0){
             if(databaseManager.checkDataSourse()){
                 // load from html
-                new WebRequestTask().execute();
+                //new WebRequestTask().execute();
+                new ParseRequestTask().execute();
             }else{
                 // load from Parse
-                Map<Integer, Map> parseDict = databaseManager.getUCSBDiningCommonsDictionaryFromParse(currentDate, loadDayLimit);
-                tempDataStorage.putAll(parseDict);
-
-                for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
-                    int key = entry.getKey();
-                    Map<String,Map> value = entry.getValue();
-                    String keyString = key + "";
-                    // get day 2 digit string
-                    String dateString = keyString.substring(6);
-                    // first MultiSelectionIndicator of day is added already, avoid to add the first again
-                    if(key==convertDateToInteger(new Date())){
-                        String commonString = commons.get(currentCommon);
-                        String mealString = meals.get(currentMeal);
-                        // first round, update listview when data is ready
-                        // This function may call after loading local data
-                        hint.setVisibility(View.GONE);
-                        updateStickyListView(commonString, mealString, dateInt);
-                    }else{
-                        // need to add new day to MultiSelectionIndicator
-                        dates.add(dateString);
-                        mIndicatorDate.setTabItemTitles(dates);
-                        mIndicatorDate.updateSelection(currentDay);
-                        mIndicatorDate.invalidate();
-                    }
-                }
-                currentDate = databaseManager.addDays(currentDate,loadDayLimit);
-                loadDayLimit = 0;
+                new ParseRequestTask().execute();
             }
 
         }
@@ -269,12 +233,12 @@ public class DiningFragment extends Fragment{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                TextView t = (TextView)view.findViewById(R.id.listview_dining_item);
-                heart = (ImageView)view.findViewById(R.id.listview_dining_item_heart);
+                TextView t = (TextView) view.findViewById(R.id.listview_dining_item);
+                heart = (ImageView) view.findViewById(R.id.listview_dining_item_heart);
 
-                final String text = (String)t.getText();
+                final String text = (String) t.getText();
                 // check text with favor list
-                if(favoriteList.contains(text)){
+                if (favoriteList.contains(text)) {
                     // existed -> user would like to delete a favor
                     String deleteFavoriteContent = String.format("GauchoLife will no longer notify you when \"%s\" is being served.", text);
                     new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
@@ -288,7 +252,7 @@ public class DiningFragment extends Fragment{
                                 public void onClick(SweetAlertDialog sDialog) {
                                     // reuse previous dialog instance
                                     sDialog.setTitleText("Deleted!")
-                                            .setContentText("\""+text+"\" is deleted to your favorite list!")
+                                            .setContentText("\"" + text + "\" is deleted to your favorite list!")
                                             .setConfirmText("OK")
                                             .setConfirmClickListener(null)
                                             .showCancelButton(false)
@@ -301,7 +265,7 @@ public class DiningFragment extends Fragment{
                             })
                             .show();
 
-                }else{
+                } else {
                     // not existed -> add new item to the favor list
                     String addFavoriteContent = String.format("Do you want to mark \"%s\" as favorite?\n\nGauchoLife will let you know when it is being served.", text);
                     new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE)
@@ -339,11 +303,17 @@ public class DiningFragment extends Fragment{
         mIndicatorDate = (MultiSelectionIndicator) v.findViewById(R.id.msi_date);
         mIndicatorMeal = (MultiSelectionIndicator) v.findViewById(R.id.msi_meal);
 
-        String[] dateStrings = convertDateToStringArray(new Date());
+
 
         commons = Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
         dates = new ArrayList<>();
-        dates.add(dateStrings[2]);
+        for(int i=0;i<loadDayLimit;i++){
+            Date addDate = databaseManager.addDays(new Date(),i);
+            String[] dateStrings = convertDateToStringArray(addDate);
+            dates.add(dateStrings[2]);
+        }
+
+
         meals = Arrays.asList("Breakfast", "Brunch", "Lunch", "Dinner", "Late Night");
 
         mIndicatorCommon.setTabItemTitles(commons);
@@ -357,7 +327,7 @@ public class DiningFragment extends Fragment{
                 changeFragmentData();
             }
         });
-        mIndicatorDate.setCallbackManager(new MultiSelectionIndicator.CallbackManager(){
+        mIndicatorDate.setCallbackManager(new MultiSelectionIndicator.CallbackManager() {
             @Override
             public void notifyChange(int position) {
                 currentDay = position;
@@ -407,24 +377,50 @@ public class DiningFragment extends Fragment{
 
     private void updateStickyListView(String commonString, String mealString, int dateInt) {
         // unpack the dict, is there a better way?
+        hint.setVisibility(View.GONE);
         Map<String, Map> unpackedDict1 = tempDataStorage.get(dateInt);
-        Map<String, Map> unpackedDict2 = unpackedDict1.get(commonString);
+        Map<String, Map> unpackedDict2 = null;
         Map<String, List> unpackedDict3 = null;
-        if(unpackedDict2 != null){
-            unpackedDict3 = unpackedDict2.get(mealString);
-            if(unpackedDict3 == null){
-                hint.setText("Not serving");
-                hint.setVisibility(View.VISIBLE);
-            }else {
-                hint.setVisibility(View.GONE);
-            }
-        }else{
-            hint.setText("The common is closed");
+        if(unpackedDict1==null){
+            hint.setText("Loading....");
             hint.setVisibility(View.VISIBLE);
+        }else{
+            unpackedDict2 = unpackedDict1.get(commonString);
+            if(unpackedDict2 == null){
+                hint.setText("The common is closed");
+                hint.setVisibility(View.VISIBLE);
+            }else{
+                unpackedDict3 = unpackedDict2.get(mealString);
+                if(unpackedDict3 == null) {
+                    hint.setText("Not serving");
+                    hint.setVisibility(View.VISIBLE);
+                }
+            }
         }
+
         // set new data to adapter
         adapter.setFoodList(unpackedDict3);
         adapter.notifyDataSetChanged();
+    }
+
+    private void updateStickyListView(Map<String, Map> result) {
+        // get current status
+        String commonString = commons.get(currentCommon);
+        String dayString = dates.get(currentDay);
+        String mealString = meals.get(currentMeal);
+
+        // store the result in the fragment
+        int dateInt = convertDateToInteger(currentDate);
+        tempDataStorage.put(dateInt, result);
+        // add to local datastore if it isn't been added yet; the if check may not be necessary
+        if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
+        // get day 2 digit string
+        String[] dateStrings = convertDateToStringArray(currentDate);
+        // if user open this fragment current and data is ready -> update the listview
+        if(dateStrings[2].equals(dayString)){
+            hint.setVisibility(View.GONE);
+            updateStickyListView(commonString, mealString, dateInt);
+        }
     }
 
     private int matchDayWithTempDictDate(String day){
@@ -436,32 +432,10 @@ public class DiningFragment extends Fragment{
         return -1;
     }
 
-    private Date currentDate;
-    private int loadDayLimit = 9;
-    private int loadLoopIndicator = 0;
+
     private void AsyncTaskProgressCheck(Map<String, Map> result){
-        // store the result in the fragment
-        int dateInt = convertDateToInteger(currentDate);
-        tempDataStorage.put(dateInt,result);
-        // add to local datastore if it isn't been added yet; the if check may not be necessary
-        if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
-        // get day 2 digit string
-        String[] dateStrings = convertDateToStringArray(currentDate);
-        // first MultiSelectionIndicator of day is added already, avoid to add the first again
-        if(dateInt==convertDateToInteger(new Date())){
-            String commonString = commons.get(currentCommon);
-            String mealString = meals.get(currentMeal);
-            // first round, update listview when data is ready
-            // This function may call after loading local data
-            hint.setVisibility(View.GONE);
-            updateStickyListView(commonString, mealString, dateInt);
-        }else{
-            // need to add new day to MultiSelectionIndicator
-            dates.add(dateStrings[2]);
-            mIndicatorDate.setTabItemTitles(dates);
-            mIndicatorDate.updateSelection(currentDay);
-            mIndicatorDate.invalidate();
-        }
+        updateStickyListView(result);
+
         loadLoopIndicator++;
         if(loadLoopIndicator < loadDayLimit){
             // execute next
@@ -472,6 +446,8 @@ public class DiningFragment extends Fragment{
             loadLoopIndicator = 0;
         }
     }
+
+
 
     private class WebRequestTask extends AsyncTask<Integer, Integer, Map<String, Map>> {
         @Override
@@ -490,7 +466,29 @@ public class DiningFragment extends Fragment{
         @Override
         protected Map<String, Map> doInBackground(Integer... params) {
             // params comes from the execute() call: use params[0] for the first.
-            return databaseManager.getUCSBCommonsDataFromHTML(currentDate);
+            Map<String, Map> result = databaseManager.getUCSBCommonsDataFromHTML(currentDate);
+//            for (Map.Entry<String, Map> entry : result.entrySet())
+//            {
+//                String commonName = entry.getKey();
+//                Map<String, Map> mealDict = entry.getValue();
+//                if(mealDict==null) continue;
+//                for(Map.Entry<String, Map> meal : mealDict.entrySet()){
+//                    String mealName = meal.getKey();
+//                    Map<String, List> foodDict = entry.getValue();
+//                    if(foodDict==null) continue;
+//                    for(Map.Entry<String,List> food : foodDict.entrySet()){
+//                        String foodName = food.getKey();
+//                        List<String> itemList = food.getValue();
+//                        if(itemList==null) continue;
+//                        for(String item : itemList){
+//                            if(favoriteList.contains(item)){
+//                                createScheduledNotification(currentDate,commonName,mealName);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+            return result;
         }
 
         // onPostExecute displays the results of the AsyncTask.
@@ -498,6 +496,42 @@ public class DiningFragment extends Fragment{
         protected void onPostExecute(Map<String, Map> result) {
             //Log.e("current: ",convertDateToInteger(currentDate)+"");
             AsyncTaskProgressCheck(result);
+        }
+    }
+
+    private class ParseRequestTask extends AsyncTask<Integer, Integer, Map<Integer, Map>> {
+        @Override
+        protected void onPreExecute() {
+            if(databaseManager == null){
+                databaseManager = new PGDatabaseManager();
+            }
+            if(tempDataStorage == null){
+                tempDataStorage = new LinkedHashMap<>();
+            }
+            if(currentDate == null){
+                currentDate = new Date();
+            }
+        }
+
+        @Override
+        protected Map<Integer, Map> doInBackground(Integer... params) {
+            // params comes from the execute() call: use params[0] for the first.
+            return databaseManager.getUCSBDiningCommonsDictionaryFromParse(currentDate,loadDayLimit);
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(Map<Integer, Map> parseDict) {
+            //Log.e("current: ",convertDateToInteger(currentDate)+"");
+            tempDataStorage.putAll(parseDict);
+            int i = 0;
+            for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
+                currentDate = databaseManager.addDays(currentDate,i);
+                Map<String,Map> value = entry.getValue();
+                updateStickyListView(value);
+                i++;
+                loadDayLimit--;
+            }
         }
     }
 
