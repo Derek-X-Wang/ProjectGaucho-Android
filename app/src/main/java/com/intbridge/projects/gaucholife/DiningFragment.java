@@ -134,17 +134,16 @@ public class DiningFragment extends Fragment{
 //        }
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
-        if(loadDayLimit > 0){
-            if(databaseManager.checkDataSourse()){
-                // load from html
-                //new WebRequestTask().execute();
-                new ParseRequestTask().execute();
-            }else{
-                // load from Parse
-                new ParseRequestTask().execute();
-            }
-
-        }
+//        if(loadDayLimit > 0){
+//            if(databaseManager.checkDataSourse()){
+//                // load from html
+//                new WebRequestTask().execute();
+//            }else{
+//                // load from Parse
+//                new ParseRequestTask().execute();
+//            }
+//
+//        }
 //        createScheduledNotification(new Date(),"Carrillo","Late Night");
 //        createScheduledNotification(new Date(), "Ortega", "Late Night");
 //        cancelAllScheduledNotification();
