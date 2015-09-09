@@ -110,15 +110,19 @@ public class DiningFragment extends Fragment{
         Bundle args = getArguments();
         boolean dataSource = args.getBoolean("DATASOURCE");
         boolean cleanLocal = args.getBoolean("CLEANLOCAL");
-        int dateInt = convertDateToInteger(currentDate);
-        // get local data
-        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
-        // get need-to-delete data
-        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
-        if(todayAndAfter != null){
-            // load local data if there is any
-            for(ParseObject dict : todayAndAfter){
-                updateStickyListView((Map<String,Map>)dict.get("dictionary"));
+
+        if(cleanLocal){
+            databaseManager.clearAllDiningDataFromParseLocalDatastore();
+        }else{
+            int dateInt = convertDateToInteger(currentDate);
+            // get local data
+            List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
+            // get need-to-delete data
+            List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
+            if(todayAndAfter != null){
+                // load local data if there is any
+                for(ParseObject dict : todayAndAfter){
+                    updateStickyListView((Map<String,Map>)dict.get("dictionary"));
 
 //                if(databaseManager.updateLocalNotificationTimestamp(dateInt)){
 //                    // loop through the dict and match with favorite list
@@ -126,17 +130,19 @@ public class DiningFragment extends Fragment{
 //
 //                }
 
-                // reduce the amount needed to load from internet
-                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
-                loadDayLimit--;
-                currentDate = databaseManager.addDays(currentDate,1);
+                    // reduce the amount needed to load from internet
+                    // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
+                    loadDayLimit--;
+                    currentDate = databaseManager.addDays(currentDate,1);
+                }
+            }
+            if(beforeToday != null){
+                for(ParseObject dict : beforeToday){
+                    dict.unpinInBackground();
+                }
             }
         }
-        if(beforeToday != null){
-            for(ParseObject dict : beforeToday){
-                dict.unpinInBackground();
-            }
-        }
+
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
         if(loadDayLimit > 0){

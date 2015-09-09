@@ -337,6 +337,22 @@ public class PGDatabaseManager {
         }
     }
 
+    public void clearAllDiningDataFromParseLocalDatastore(){
+        ParseQuery query = ParseQuery.getQuery("DiningDictionary");
+        query.fromLocalDatastore();
+        List<ParseObject> parseList = null;
+        try {
+            parseList = query.find();
+            if(parseList != null){
+                for(ParseObject dict : parseList){
+                    dict.unpinInBackground();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e("clearAllDining","ParseException");
+        }
+    }
+
     public boolean updateLocalNotificationTimestamp(int dateInt){
         ParseQuery query = ParseQuery.getQuery("DiningNotification");
         query.fromLocalDatastore();
