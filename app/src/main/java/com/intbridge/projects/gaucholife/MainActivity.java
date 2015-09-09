@@ -33,6 +33,9 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     IconWithTextView tabDining;
     IconWithTextView tabSettings;
 
+    private boolean dataSource = true;
+    private boolean cleanLocal = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,30 +51,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                     .commit();
         }
 
-//        Thread thread = new Thread(new Runnable(){
-//            @Override
-//            public void run() {
-//                try {
-//                    //Your code goes here
-//                    Log.e("Start", " here1");
-//                    PGDatabaseManager databaseManager = new PGDatabaseManager();
-//                    databaseManager.getUCSBCommonsDataFromHTML("2015", "08", "19");
-//                    Log.e("Start", " here2");
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//        thread.start();
-
-//        PGDatabaseManager databaseManager = new PGDatabaseManager();
-//        List<String> s = databaseManager.getFavoriteList();
-//        databaseManager.addFoodToLocalFavoriteList("testMethod");
-//        s = databaseManager.getFavoriteList();
-//        Log.e("main: ","size is "+s.size());
-//        Log.e("main: ","first is "+s.get(0));
-
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            dataSource = extras.getBoolean("DATASOURCE");
+            cleanLocal = extras.getBoolean("CLEANLOCAL");
+        }
 
     }
 
@@ -116,11 +100,16 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 ft.commit();
                 break;
             case R.id.tab_dining:
+
                 tabDining.setIconAlpha(1.0f);
                 if (!search.isIconified()) search.setIconified(true);
                 if(actionBar != null && actionBar.isShowing()) actionBar.hide();
                 if(diningFragment == null) diningFragment = new DiningFragment();
                 if(diningFragment.isAdded()) break;
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("DATASOURCE",dataSource);
+                bundle.putBoolean("CLEANLOCAL",cleanLocal);
+                diningFragment.setArguments(bundle);
                 ft.replace(R.id.fragment_content, diningFragment);
                 ft.commit();
                 break;

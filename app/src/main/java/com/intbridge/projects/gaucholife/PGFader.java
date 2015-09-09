@@ -29,4 +29,9 @@ public class PGFader {
             v.startAnimation(animation);
         }
     }
+
+    public static void stopAlphaAnimation(Activity act, int viewId){
+        View v = act.findViewById(viewId);
+        v.clearAnimation();
+    }
 }

@@ -33,12 +33,17 @@
             android:value="AIzaSyBv-FPmRvUyEQBs9JhpoJs-hWyRZuBlswY" />
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_maps" >
+            android:name=".PGSplashScreen"
+            android:label="@string/title_activity_maps"
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_maps" >
         </activity>
 
         <receiver android:name=".PGAlarmReceiver">

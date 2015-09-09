@@ -17,6 +17,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -105,45 +107,48 @@ public class DiningFragment extends Fragment{
 
         initStickyListView(v);
 
-//        int dateInt = convertDateToInteger(currentDate);
-//        // get local data
-//        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
-//        // get need-to-delete data
-//        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
-//        if(todayAndAfter != null){
-//            // load local data if there is any
-//            for(ParseObject dict : todayAndAfter){
-//                updateStickyListView((Map<String,Map>)dict.get("dictionary"));
+        Bundle args = getArguments();
+        boolean dataSource = args.getBoolean("DATASOURCE");
+        boolean cleanLocal = args.getBoolean("CLEANLOCAL");
+        int dateInt = convertDateToInteger(currentDate);
+        // get local data
+        List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
+        // get need-to-delete data
+        List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
+        if(todayAndAfter != null){
+            // load local data if there is any
+            for(ParseObject dict : todayAndAfter){
+                updateStickyListView((Map<String,Map>)dict.get("dictionary"));
+
+//                if(databaseManager.updateLocalNotificationTimestamp(dateInt)){
+//                    // loop through the dict and match with favorite list
+//                    // schedule a notification
 //
-////                if(databaseManager.updateLocalNotificationTimestamp(dateInt)){
-////                    // loop through the dict and match with favorite list
-////                    // schedule a notification
-////
-////                }
-//
-//                // reduce the amount needed to load from internet
-//                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
-//                loadDayLimit--;
-//                currentDate = databaseManager.addDays(currentDate,1);
-//            }
-//        }
-//        if(beforeToday != null){
-//            for(ParseObject dict : beforeToday){
-//                dict.unpinInBackground();
-//            }
-//        }
+//                }
+
+                // reduce the amount needed to load from internet
+                // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
+                loadDayLimit--;
+                currentDate = databaseManager.addDays(currentDate,1);
+            }
+        }
+        if(beforeToday != null){
+            for(ParseObject dict : beforeToday){
+                dict.unpinInBackground();
+            }
+        }
         // load from internet if needed
         //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
-//        if(loadDayLimit > 0){
-//            if(databaseManager.checkDataSourse()){
-//                // load from html
-//                new WebRequestTask().execute();
-//            }else{
-//                // load from Parse
-//                new ParseRequestTask().execute();
-//            }
-//
-//        }
+        if(loadDayLimit > 0){
+            if(dataSource){
+                // load from html
+                new WebRequestTask().execute();
+            }else{
+                // load from Parse
+                new ParseRequestTask().execute();
+            }
+
+        }
 //        createScheduledNotification(new Date(),"Carrillo","Late Night");
 //        createScheduledNotification(new Date(), "Ortega", "Late Night");
 //        cancelAllScheduledNotification();

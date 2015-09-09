@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -28,6 +29,7 @@ public class PGSplashScreen extends Activity {
          * data before launching the app Will use AsyncTask to make http call
          */
         PGFader.runAlphaAnimation(this, R.id.imgLogo);
+        final ImageView logo = (ImageView)findViewById(R.id.imgLogo);
         //new PrefetchData().execute();
         ParseQuery query = ParseQuery.getQuery("ControlPanel");
         query.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -36,6 +38,11 @@ public class PGSplashScreen extends Activity {
                     Log.d("RBSE", "The getFirst request failed.");
                 } else {
                     // get the panel
+                    logo.clearAnimation();
+                    Intent i = new Intent(PGSplashScreen.this, MainActivity.class);
+                    i.putExtra("DATASOURCE", object.getBoolean("DataSource"));
+                    i.putExtra("CLEANLOCAL", object.getBoolean("CleanLocal"));
+                    startActivity(i);
                 }
             }
         });
