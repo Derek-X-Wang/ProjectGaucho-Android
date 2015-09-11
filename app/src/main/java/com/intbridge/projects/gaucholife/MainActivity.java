@@ -57,6 +57,16 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             cleanLocal = extras.getBoolean("CLEANLOCAL");
         }
 
+//        new Thread(){
+//            @Override
+//            public void run() {
+//                super.run();
+//                PGDatabaseManager databaseManager = new PGDatabaseManager();
+//                databaseManager.getUCSBCommonsDataFromHTML("2015", "09", "19");
+//            }
+//        }.start();
+
+
     }
 
 

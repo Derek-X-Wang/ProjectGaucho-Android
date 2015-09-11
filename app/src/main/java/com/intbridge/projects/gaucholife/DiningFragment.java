@@ -324,7 +324,7 @@ public class DiningFragment extends Fragment{
         }
 
 
-        meals = Arrays.asList("Breakfast", "Brunch", "Lunch", "Dinner", "Late Night");
+        meals = Arrays.asList("Breakfast", "Brunch", "Lunch", "Dinner", "Late Night","Bright Meal");
 
         mIndicatorCommon.setTabItemTitles(commons);
         mIndicatorDate.setTabItemTitles(dates);
@@ -376,6 +376,7 @@ public class DiningFragment extends Fragment{
         String dayString = dates.get(currentDay);
         String mealString = meals.get(currentMeal);
         int dateInt = matchDayWithTempDictDate(dayString);
+        hint.setText("Loading....");
         if(dateInt == -1){
             // no data available for the given dateInt
             adapter.setFoodList(null);
