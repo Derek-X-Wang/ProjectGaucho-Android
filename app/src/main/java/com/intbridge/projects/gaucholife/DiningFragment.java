@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.parse.ParseObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -65,8 +67,9 @@ public class DiningFragment extends Fragment{
 
     private final int LOADDAYRANGE = 9;
 
-    private List<PendingIntent> pendingIntents;
+    private List<Integer> pendingIntents;
 
+    private boolean dataSource;
 
     public DiningFragment() {
         // Required empty public constructor
@@ -87,6 +90,7 @@ public class DiningFragment extends Fragment{
         loadDayLimit = LOADDAYRANGE;
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
+        ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
         currentDate = new Date();
         favoriteList = databaseManager.getFavoriteList();
         pendingIntents = new ArrayList<>();
@@ -108,56 +112,28 @@ public class DiningFragment extends Fragment{
         initStickyListView(v);
 
         Bundle args = getArguments();
-        boolean dataSource = args.getBoolean("DATASOURCE");
+        dataSource = args.getBoolean("DATASOURCE");
         boolean cleanLocal = args.getBoolean("CLEANLOCAL");
 
         if(cleanLocal){
             databaseManager.clearAllDiningDataFromParseLocalDatastore();
-        }else{
-            int dateInt = convertDateToInteger(currentDate);
-            // get local data
-            List<ParseObject> todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
-            // get need-to-delete data
-            List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
-            if(todayAndAfter != null){
-                // load local data if there is any
-                for(ParseObject dict : todayAndAfter){
-                    updateStickyListView((Map<String,Map>)dict.get("dictionary"));
-
-//                if(databaseManager.updateLocalNotificationTimestamp(dateInt)){
-//                    // loop through the dict and match with favorite list
-//                    // schedule a notification
-//
-//                }
-
-                    // reduce the amount needed to load from internet
-                    // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
-                    loadDayLimit--;
-                    currentDate = databaseManager.addDays(currentDate,1);
-                }
-            }
-            if(beforeToday != null){
-                for(ParseObject dict : beforeToday){
-                    dict.unpinInBackground();
-                }
-            }
-        }
-
-        // load from internet if needed
-        //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
-        if(loadDayLimit > 0){
             if(dataSource){
                 // load from html
-                new WebRequestTask().execute();
+                //new WebRequestTask().execute();
+                new ParseRequestTask().execute();
             }else{
                 // load from Parse
                 new ParseRequestTask().execute();
             }
-
+        }else{
+            new LoadLocalTask().execute();
         }
-//        createScheduledNotification(new Date(),"Carrillo","Late Night");
-//        createScheduledNotification(new Date(), "Ortega", "Late Night");
-//        cancelAllScheduledNotification();
+
+        pendingIntents = databaseManager.getPendingIntentArray();
+        cancelAllScheduledNotification();
+        pendingIntents = new ArrayList<>();;
+        databaseManager.storePendingIntentArray(new ArrayList<Integer>());
+
         return v;
     }
 
@@ -178,7 +154,7 @@ public class DiningFragment extends Fragment{
 
         // Prepare the intent which should be launched at the date
         Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-        notificationIntent.addCategory("android.intent.category.DEFAULT");
+        //notificationIntent.addCategory("android.intent.category.DEFAULT");
         notificationIntent.putExtra("common", common);
         notificationIntent.putExtra("meal", meal);
         notificationIntent.putExtra("id",id);
@@ -187,51 +163,26 @@ public class DiningFragment extends Fragment{
         PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
 
         // store PendingIntent for canceling reference
-        pendingIntents.add(broadcast);
+//        Map<String,String> pIntent = new LinkedHashMap<>();
+//        pIntent.put("common", common);
+//        pIntent.put("meal", meal);
+//        pIntent.put("id", ""+id);
+        pendingIntents.add(id);
+
 
         // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
-        alarmManager.set(AlarmManager.RTC_WAKEUP, getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, databaseManager.getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);
     }
 
     private void cancelAllScheduledNotification(){
+        if(pendingIntents == null) return;
         // Retrieve alarm manager from the system
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        for(PendingIntent pendingIntent : pendingIntents){
-            alarmManager.cancel(pendingIntent);
+        for(Integer pendingIntent : pendingIntents){
+            Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+            PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), pendingIntent, notificationIntent, 0);
+            alarmManager.cancel(broadcast);
         }
-    }
-
-    private Calendar getScheduledNotificationTime(Date date, String common, String meal){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        switch (meal) {
-            case "Breakfast":
-                calendar.set(Calendar.HOUR_OF_DAY,6);
-                calendar.set(Calendar.MINUTE,15);
-                calendar.set(Calendar.SECOND,0);
-                break;
-            case "Brunch":
-                calendar.set(Calendar.HOUR_OF_DAY,9);
-                calendar.set(Calendar.MINUTE,30);
-                calendar.set(Calendar.SECOND,0);
-                break;
-            case "Lunch":
-                calendar.set(Calendar.HOUR_OF_DAY,10);
-                calendar.set(Calendar.MINUTE,0);
-                calendar.set(Calendar.SECOND,0);
-                break;
-            case "Dinner":
-                calendar.set(Calendar.HOUR_OF_DAY,16);
-                calendar.set(Calendar.MINUTE,0);
-                calendar.set(Calendar.SECOND,0);
-                break;
-            case "Late Night":
-                calendar.set(Calendar.HOUR_OF_DAY,2);
-                calendar.set(Calendar.MINUTE,40);
-                calendar.set(Calendar.SECOND,0);
-                break;
-        }
-        return  calendar;
     }
 
     private void initStickyListView(View v) {
@@ -370,6 +321,19 @@ public class DiningFragment extends Fragment{
         return Integer.parseInt(dateString);
     }
 
+    private Date convertIntegerToDate(int dateInt){
+        String dateString = Integer.toString(dateInt);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        Date date;
+        try {
+            date = formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            date = null;
+        }
+        return date;
+    }
+
     private void changeFragmentData(){
         // get current status
         String commonString = commons.get(currentCommon);
@@ -423,6 +387,7 @@ public class DiningFragment extends Fragment{
         // store the result in the fragment
         int dateInt = convertDateToInteger(currentDate);
         tempDataStorage.put(dateInt, result);
+        ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
         // add to local datastore if it isn't been added yet; the if check may not be necessary
         if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
         // get day 2 digit string
@@ -455,10 +420,154 @@ public class DiningFragment extends Fragment{
         }else{
             // reset
             loadLoopIndicator = 0;
+            scheduleAllNotificationInBackground();
         }
     }
 
+    private void scheduleAllNotification(){
+        for(Map.Entry<Integer,Map> entry : tempDataStorage.entrySet()){
+            int dateInt = entry.getKey();
+            Date date = convertIntegerToDate(dateInt);
+            Map<String,Map> commonDict = entry.getValue();
+            List<String> notifiedCommon = databaseManager.getNotifiedCommons();
+            for(Map.Entry<String,Map> common : commonDict.entrySet()){
+                String commonName = common.getKey();
+                if(notifiedCommon.contains(commonName)){
+                    Map<String,Map> mealDict = common.getValue();
+                    for(Map.Entry<String,Map> meal : mealDict.entrySet()){
+                        String mealName = meal.getKey();
+                        Map<String,List> foodDict = meal.getValue();
+                        breakLoop:
+                        for(Map.Entry<String,List> food : foodDict.entrySet()){
+                            String foodName = food.getKey();
+                            List<String> itemList = food.getValue();
+                            for(String item : itemList){
+                                if(favoriteList.contains(item)){
+                                    createScheduledNotification(date,commonName,mealName);
+                                    break breakLoop;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    private void scheduleAllNotificationInBackground(){
+        cancelAllScheduledNotification();
+        Thread notificationThread = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                scheduleAllNotification();
+                databaseManager.storePendingIntentArray(pendingIntents);
+            }
+        };
+        notificationThread.start();
+    }
+
+    private class LoadLocalTask extends AsyncTask<Integer, Integer, Void> {
+
+        private List<ParseObject> todayAndAfter;
+        @Override
+        protected void onPreExecute() {
+            if(databaseManager == null){
+                databaseManager = new PGDatabaseManager();
+            }
+            if(tempDataStorage == null){
+                tempDataStorage = new LinkedHashMap<>();
+            }
+            if(currentDate == null){
+                currentDate = new Date();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+            // params comes from the execute() call: use params[0] for the first.
+            int dateInt = convertDateToInteger(currentDate);
+            // get local data
+            todayAndAfter = databaseManager.getDictionariesGreaterThanOrEqualToFromParseLocalDatastore(dateInt);
+            // get need-to-delete data
+            List<ParseObject> beforeToday = databaseManager.getDictionariesLessThanFromParseLocalDatastore(dateInt);
+
+            if(beforeToday != null){
+                for(ParseObject dict : beforeToday){
+                    dict.unpinInBackground();
+                }
+            }
+            return null;
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(Void result) {
+            if(todayAndAfter != null){
+                // load local data if there is any
+                for(ParseObject dict : todayAndAfter){
+                    updateStickyListView((Map<String,Map>)dict.get("dictionary"));
+                    // reduce the amount needed to load from internet
+                    // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
+                    loadDayLimit--;
+                    currentDate = databaseManager.addDays(currentDate,1);
+                }
+            }
+            // load from internet if needed
+            //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
+            if(loadDayLimit > 0){
+                if(dataSource){
+                    // load from html
+                    new WebRequestTask().execute();
+                }else{
+                    // load from Parse
+                    new ParseRequestTask().execute();
+                }
+            }else{
+                // tempdata is ready
+                ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
+                scheduleAllNotificationInBackground();
+            }
+        }
+    }
+
+    private class ParseRequestTask extends AsyncTask<Integer, Integer, Map<Integer, Map>> {
+        @Override
+        protected void onPreExecute() {
+            if(databaseManager == null){
+                databaseManager = new PGDatabaseManager();
+            }
+            if(tempDataStorage == null){
+                tempDataStorage = new LinkedHashMap<>();
+            }
+            if(currentDate == null){
+                currentDate = new Date();
+            }
+        }
+
+        @Override
+        protected Map<Integer, Map> doInBackground(Integer... params) {
+            // params comes from the execute() call: use params[0] for the first.
+            return databaseManager.getUCSBDiningCommonsDictionaryFromParse(currentDate,loadDayLimit);
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(Map<Integer, Map> parseDict) {
+            //Log.e("current: ",convertDateToInteger(currentDate)+"");
+            tempDataStorage.putAll(parseDict);
+            ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
+            int i = 0;
+            for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
+                currentDate = databaseManager.addDays(currentDate,i);
+                Map<String,Map> value = entry.getValue();
+                updateStickyListView(value);
+                i++;
+                loadDayLimit--;
+            }
+            scheduleAllNotificationInBackground();
+        }
+    }
 
     private class WebRequestTask extends AsyncTask<Integer, Integer, Map<String, Map>> {
         @Override
@@ -507,42 +616,6 @@ public class DiningFragment extends Fragment{
         protected void onPostExecute(Map<String, Map> result) {
             //Log.e("current: ",convertDateToInteger(currentDate)+"");
             AsyncTaskProgressCheck(result);
-        }
-    }
-
-    private class ParseRequestTask extends AsyncTask<Integer, Integer, Map<Integer, Map>> {
-        @Override
-        protected void onPreExecute() {
-            if(databaseManager == null){
-                databaseManager = new PGDatabaseManager();
-            }
-            if(tempDataStorage == null){
-                tempDataStorage = new LinkedHashMap<>();
-            }
-            if(currentDate == null){
-                currentDate = new Date();
-            }
-        }
-
-        @Override
-        protected Map<Integer, Map> doInBackground(Integer... params) {
-            // params comes from the execute() call: use params[0] for the first.
-            return databaseManager.getUCSBDiningCommonsDictionaryFromParse(currentDate,loadDayLimit);
-        }
-
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(Map<Integer, Map> parseDict) {
-            //Log.e("current: ",convertDateToInteger(currentDate)+"");
-            tempDataStorage.putAll(parseDict);
-            int i = 0;
-            for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
-                currentDate = databaseManager.addDays(currentDate,i);
-                Map<String,Map> value = entry.getValue();
-                updateStickyListView(value);
-                i++;
-                loadDayLimit--;
-            }
         }
     }
 
@@ -639,6 +712,9 @@ public class DiningFragment extends Fragment{
             holder.text.setText(itemText);
 
             if(favoriteList.contains(itemText)) ((ImageView)convertView.findViewById(R.id.listview_dining_item_heart)).setImageResource(R.drawable.favoriteheart);
+            else{
+                ((ImageView)convertView.findViewById(R.id.listview_dining_item_heart)).setImageResource(R.drawable.emptyfavoriteheart);
+            }
 
             return convertView;
         }
@@ -699,7 +775,6 @@ public class DiningFragment extends Fragment{
         }
 
     }
-
 
 
 }

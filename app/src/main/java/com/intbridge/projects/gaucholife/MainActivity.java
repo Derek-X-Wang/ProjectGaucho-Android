@@ -16,6 +16,7 @@ import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends Activity implements SearchView.OnQueryTextListener, SearchView.OnFocusChangeListener, SearchView.OnSuggestionListener, View.OnClickListener{
@@ -35,6 +36,8 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     private boolean dataSource = true;
     private boolean cleanLocal = false;
+
+    private Map<Integer, Map> tempDataStorage = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,14 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    public Map<Integer, Map> getTempDataStorage() {
+        return tempDataStorage;
+    }
+
+    public void setTempDataStorage(Map<Integer, Map> tempDataStorage) {
+        this.tempDataStorage = tempDataStorage;
     }
 
     private void initView(){

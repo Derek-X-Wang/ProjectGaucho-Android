@@ -1,6 +1,5 @@
 package com.intbridge.projects.gaucholife;
 
-import android.app.PendingIntent;
 import android.util.Log;
 
 import com.parse.ParseException;
@@ -14,6 +13,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -184,11 +184,12 @@ public class PGDatabaseManager {
                     String[] mealAndFood = key.split("_");
                     String meal = mealAndFood[0];
                     if(meal.equals("LateNight")) meal = "Late Night";
+                    if(meal.equals("BrightMeal")) meal = "Bright Meal";
                     List<String> foods = common.getList(key);
                     if(commonDictionary==null) commonDictionary = new LinkedHashMap<>();
                     mealDict = commonDictionary.get(meal);
                     if(mealDict == null) mealDict = new LinkedHashMap<>();
-                    mealDict.put(mealAndFood[1], foods);
+                    mealDict.put(convertCombinedStringToSeparated(mealAndFood[1]), foods);
                     commonDictionary.put(meal,mealDict);
                 }
                 dateDictionary.put(commonName,commonDictionary);
@@ -205,7 +206,6 @@ public class PGDatabaseManager {
         ParseObject listObject;
         try {
             listObject = query.getFirst();
-            if(listObject == null) listObject.put("myFavorite",new ArrayList<String>());
             favoriteList = listObject.getList("myFavorite");
         } catch (ParseException e) {
             listObject = new ParseObject("DiningFavorite");
@@ -254,14 +254,20 @@ public class PGDatabaseManager {
         } catch (ParseException e) {
             // favoriteList is null
             listObject = new ParseObject("DiningFavorite");
-            listObject.put("myFavorite",new ArrayList<String>());
-            favoriteList = listObject.getList("myFavorite");
+            favoriteList = new ArrayList<String>();
             favoriteList.add(food);
+            listObject.put("myFavorite",favoriteList);
+        }
+
+        try {
+            listObject.pin();
+        } catch (ParseException pin) {
+            pin.printStackTrace();
         }
     }
 
     public void removeFoodToLocalFavoriteList(String food){
-        List<String> favoriteList = null;
+        List<String> favoriteList = new ArrayList<>();
         ParseQuery query = ParseQuery.getQuery("DiningFavorite");
         query.fromLocalDatastore();
         ParseObject listObject;
@@ -272,13 +278,12 @@ public class PGDatabaseManager {
         } catch (ParseException e) {
             // favoriteList is null, which might be unnecessary for removing
             listObject = new ParseObject("DiningFavorite");
-            listObject.put("myFavorite",new ArrayList<String>());
-            //favoriteList = listObject.getList("myFavorite");
-            try {
-                listObject.pin();
-            } catch (ParseException pin) {
-                pin.printStackTrace();
-            }
+        }
+        listObject.put("myFavorite",favoriteList);
+        try {
+            listObject.pin();
+        } catch (ParseException pin) {
+            pin.printStackTrace();
         }
     }
 
@@ -354,7 +359,7 @@ public class PGDatabaseManager {
     }
 
     public boolean updateLocalNotificationTimestamp(int dateInt){
-        ParseQuery query = ParseQuery.getQuery("DiningNotification");
+        ParseQuery query = ParseQuery.getQuery("Setting");
         query.fromLocalDatastore();
         ParseObject listObject;
         try {
@@ -363,28 +368,31 @@ public class PGDatabaseManager {
             if(listObject == null) {
                 // new item haven't schedule notification yet, return true
                 Log.e("update: ","return null");
-                listObject = new ParseObject("DiningNotification");
+                listObject = new ParseObject("Setting");
                 listObject.put("notificationTimestamp", dateInt);
+                listObject.pinInBackground();
                 return true;
             }
             Log.e("update: ","c");
             if ((int)listObject.get("notificationTimestamp") <= dateInt) return false;
             else{
                 listObject.put("notificationTimestamp", dateInt);
+                listObject.pinInBackground();
                 return true;
             }
         } catch (ParseException e) {
             // DiningNotification is null
             // new item haven't schedule notification yet, return true
             Log.e("update: ","ParseException");
-            listObject = new ParseObject("DiningNotification");
+            listObject = new ParseObject("Setting");
             listObject.put("notificationTimestamp", dateInt);
+            listObject.pinInBackground();
             return true;
         }
     }
 
     public void resetLocalNotificationTimestamp(int dateInt){
-        ParseQuery query = ParseQuery.getQuery("DiningNotification");
+        ParseQuery query = ParseQuery.getQuery("Setting");
         query.fromLocalDatastore();
         ParseObject listObject;
         try {
@@ -392,8 +400,8 @@ public class PGDatabaseManager {
             listObject = query.getFirst();
             if(listObject == null) {
                 // new item haven't schedule notification yet
-                Log.e("update: ","return null");
-                listObject = new ParseObject("DiningNotification");
+                Log.e("update: ", "return null");
+                listObject = new ParseObject("Setting");
             }
             Log.e("reset: ","c");
             listObject.put("notificationTimestamp", dateInt);
@@ -401,12 +409,13 @@ public class PGDatabaseManager {
             // DiningNotification is null
             // new item haven't schedule notification yet, return true
             Log.e("reset: ","ParseException");
-            listObject = new ParseObject("DiningNotification");
+            listObject = new ParseObject("Setting");
             listObject.put("notificationTimestamp", dateInt);
         }
+        listObject.pinInBackground();
     }
 
-    public void storePendingIntentArray(List<PendingIntent> pendingIntents){
+    public void storePendingIntentArray(List<Integer> pendingIntents){
         ParseQuery query = ParseQuery.getQuery("Setting");
         query.fromLocalDatastore();
         ParseObject listObject;
@@ -417,11 +426,10 @@ public class PGDatabaseManager {
                 // new item haven't schedule notification yet
                 Log.e("storePending: ","return null");
                 listObject = new ParseObject("Setting");
-                listObject.put("notificationPendingIntent", new ArrayList<PendingIntent>());
             }
             Log.e("storePending: ", "c");
-            List<PendingIntent> storedArray = (ArrayList<PendingIntent>)listObject.get("notificationPendingIntent");
-            listObject.put("notificationPendingIntent", storedArray.addAll(pendingIntents));
+            listObject.put("notificationPendingIntent", pendingIntents);
+
         } catch (ParseException e) {
             // Setting is null
             // new item haven't schedule notification yet
@@ -429,9 +437,10 @@ public class PGDatabaseManager {
             listObject = new ParseObject("Setting");
             listObject.put("notificationPendingIntent", pendingIntents);
         }
+        listObject.pinInBackground();
     }
 
-    public List<PendingIntent> getPendingIntentArray(){
+    public List<Integer> getPendingIntentArray(){
         ParseQuery query = ParseQuery.getQuery("Setting");
         query.fromLocalDatastore();
         ParseObject listObject;
@@ -443,7 +452,7 @@ public class PGDatabaseManager {
                 return  null;
             }
             Log.e("getPending: ", "c");
-            return (List<PendingIntent>)listObject.get("notificationPendingIntent");
+            return listObject.getList("notificationPendingIntent");
         } catch (ParseException e) {
             // Setting is null
             // new item haven't schedule notification yet
@@ -452,11 +461,120 @@ public class PGDatabaseManager {
         }
     }
 
+    public List<String> getNotifiedCommons(){
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            Log.e("getNotified: ","start");
+            listObject = query.getFirst();
+            if(listObject == null || listObject.getList("notifiedCommons") == null) {
+                // new item haven't schedule notification yet
+                return  Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
+            }
+            Log.e("getNotified: ", "c");
+            return listObject.getList("notifiedCommons");
+        } catch (ParseException e) {
+            // Setting is null
+            // new item haven't schedule notification yet
+            Log.e("getNotified: ", "ParseException");
+            return  Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
+        }
+    }
+
+    public void setNotifiedCommons(boolean carrillo,boolean delaguerra,boolean ortega,boolean portola){
+        List<String> notifiedCommons = new ArrayList<>();
+        if(carrillo){
+            notifiedCommons.add("Carrillo");
+        }
+        if(delaguerra){
+            notifiedCommons.add("De La Guerra");
+        }
+        if(ortega){
+            notifiedCommons.add("Ortega");
+        }
+        if(portola){
+            notifiedCommons.add("Portola");
+        }
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            Log.e("setNotified: ","start");
+            listObject = query.getFirst();
+            if(listObject == null) {
+                // new item haven't schedule notification yet
+                Log.e("setNotified: ","return null");
+                listObject = new ParseObject("Setting");
+            }
+            Log.e("setNotified: ", "c");
+            listObject.put("notifiedCommons", notifiedCommons);
+        } catch (ParseException e) {
+            // Setting is null
+            // new item haven't schedule notification yet
+            Log.e("setNotified: ","ParseException");
+            listObject = new ParseObject("Setting");
+            listObject.put("notifiedCommons", notifiedCommons);
+        }
+        listObject.pinInBackground();
+    }
+
+    public Calendar getScheduledNotificationTime(Date date, String common, String meal){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        switch (meal) {
+            case "Breakfast":
+                calendar.set(Calendar.HOUR_OF_DAY,6);
+                calendar.set(Calendar.MINUTE,15);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Brunch":
+                calendar.set(Calendar.HOUR_OF_DAY,9);
+                calendar.set(Calendar.MINUTE,30);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Lunch":
+                calendar.set(Calendar.HOUR_OF_DAY,10);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Dinner":
+                calendar.set(Calendar.HOUR_OF_DAY,22);
+                calendar.set(Calendar.MINUTE,58);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Late Night":
+                calendar.set(Calendar.HOUR_OF_DAY,20);
+                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.SECOND,0);
+                break;
+            case "Bright Meal":
+                calendar.set(Calendar.HOUR_OF_DAY,6);
+                calendar.set(Calendar.MINUTE,40);
+                calendar.set(Calendar.SECOND,0);
+                break;
+        }
+        return  calendar;
+    }
+
+
     public int convertDateToInteger(Date date){
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         // Note: zero based!
         String dateString = String.format("%d%02d%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
         return Integer.parseInt(dateString);
+    }
+
+    private String convertCombinedStringToSeparated(String str){
+        String res = ""+str.charAt(0);
+        for(int i = 1; i < str.length(); i++) {
+            Character ch = str.charAt(i);
+            if(Character.isUpperCase(ch))
+                res += " " + ch;
+            else
+                res += ch;
+        }
+        return  res;
     }
 }
