@@ -35,7 +35,6 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
     private Switch portolaSwitch;
 
     PGDatabaseManager databaseManager;
-    private List<PendingIntent> pendingIntents;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -60,8 +59,6 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         delaguerraSwitch = (Switch)v.findViewById(R.id.delaguerraswitch);
         ortegaSwitch = (Switch)v.findViewById(R.id.ortegaswitch);
         portolaSwitch = (Switch)v.findViewById(R.id.portolaswitch);
-
-        pendingIntents = new ArrayList<>();
 
         carrilloSwitch.setOnCheckedChangeListener(this);
         delaguerraSwitch.setOnCheckedChangeListener(this);
@@ -118,7 +115,7 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
 
         // Prepare the intent which should be launched at the date
         Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-        notificationIntent.addCategory("android.intent.category.DEFAULT");
+        //notificationIntent.addCategory("android.intent.category.DEFAULT");
         notificationIntent.putExtra("common", common);
         notificationIntent.putExtra("meal", meal);
         notificationIntent.putExtra("id",id);
@@ -127,7 +124,7 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
 
         // store PendingIntent for canceling reference
-        pendingIntents.add(broadcast);
+        databaseManager.addPendingIntentIDTolocalDatastore(id);
 
         // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
         alarmManager.set(AlarmManager.RTC_WAKEUP, databaseManager.getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);

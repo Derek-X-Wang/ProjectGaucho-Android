@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.database.MatrixCursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +17,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.SearchView;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +42,8 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private boolean cleanLocal = false;
 
     private Map<Integer, Map> tempDataStorage = null;
+    Date currentDate;
+    int dateLoaded = 14;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,9 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 //            }
 //        }.start();
 
+        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
+        currentDate = new Date();
+            new SyncWebRequestTask().execute(currentDate);
 
     }
 
@@ -152,6 +161,41 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         tabSettings.setIconAlpha(0);
     }
 
+
+    private class SyncWebRequestTask extends AsyncTask<Date, Integer, Map<String, Map>> {
+        PGDatabaseManager databaseManager;
+
+        @Override
+        protected void onPreExecute() {
+            if(databaseManager == null){
+                databaseManager = new PGDatabaseManager();
+            }
+            if(tempDataStorage == null){
+                tempDataStorage = new LinkedHashMap<>();
+            }
+        }
+
+        @Override
+        protected Map<String, Map> doInBackground(Date... params) {
+            // params comes from the execute() call: use params[0] for the first.
+            currentDate = params[0];
+            Map<String, Map> result = databaseManager.getUCSBCommonsDataFromHTML(currentDate);
+            int dateInt = databaseManager.convertDateToInteger(currentDate);
+            databaseManager.getParseObjectFromHTML(dateInt, result);
+            return result;
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(Map<String, Map> result) {
+            Log.e("Mcurrent: ", databaseManager.convertDateToInteger(currentDate) + "");
+            dateLoaded--;
+            if(dateLoaded > 0){
+                currentDate = databaseManager.addDays(currentDate,1);
+                new SyncWebRequestTask().execute(currentDate);
+            }
+        }
+    }
 
     /*
      * The code below will make the location search

@@ -67,7 +67,6 @@ public class DiningFragment extends Fragment{
 
     private final int LOADDAYRANGE = 9;
 
-    private List<Integer> pendingIntents;
 
     private boolean dataSource;
 
@@ -87,13 +86,12 @@ public class DiningFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // it is a bit messy now since loading html will not reduce loadDayLimit but loading parse will
-        loadDayLimit = LOADDAYRANGE;
+
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
         ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
         currentDate = new Date();
         favoriteList = databaseManager.getFavoriteList();
-        pendingIntents = new ArrayList<>();
     }
 
     @Override
@@ -114,7 +112,7 @@ public class DiningFragment extends Fragment{
         Bundle args = getArguments();
         dataSource = args.getBoolean("DATASOURCE");
         boolean cleanLocal = args.getBoolean("CLEANLOCAL");
-
+        loadDayLimit = LOADDAYRANGE;
         if(cleanLocal){
             databaseManager.clearAllDiningDataFromParseLocalDatastore();
             if(dataSource){
@@ -129,9 +127,7 @@ public class DiningFragment extends Fragment{
             new LoadLocalTask().execute();
         }
 
-        pendingIntents = databaseManager.getPendingIntentArray();
         cancelAllScheduledNotification();
-        pendingIntents = new ArrayList<>();;
         databaseManager.storePendingIntentArray(new ArrayList<Integer>());
 
         return v;
@@ -150,7 +146,9 @@ public class DiningFragment extends Fragment{
         // Retrieve alarm manager from the system
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         // Every scheduled intent needs a different ID, else it is just executed once
-        int id = (int) System.currentTimeMillis();
+        int Min = 9;
+        int Max = 99999;
+        int id = Min + (int)(Math.random() * ((Max - Min) + 1));
 
         // Prepare the intent which should be launched at the date
         Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
@@ -167,7 +165,7 @@ public class DiningFragment extends Fragment{
 //        pIntent.put("common", common);
 //        pIntent.put("meal", meal);
 //        pIntent.put("id", ""+id);
-        pendingIntents.add(id);
+        databaseManager.addPendingIntentIDTolocalDatastore(id);
 
 
         // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
@@ -175,6 +173,7 @@ public class DiningFragment extends Fragment{
     }
 
     private void cancelAllScheduledNotification(){
+        List<Integer> pendingIntents = databaseManager.getPendingIntentArray();
         if(pendingIntents == null) return;
         // Retrieve alarm manager from the system
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
@@ -222,6 +221,9 @@ public class DiningFragment extends Fragment{
                                     heart.setImageResource(R.drawable.emptyfavoriteheart);
                                     // can be improve by favoriteList.remove(), but it may ruin the concept
                                     favoriteList = databaseManager.getFavoriteList();
+                                    // reset push
+                                    cancelAllScheduledNotification();
+                                    scheduleAllNotification();
                                 }
                             })
                             .show();
@@ -249,6 +251,9 @@ public class DiningFragment extends Fragment{
                                     heart.setImageResource(R.drawable.favoriteheart);
                                     // can be improve by favoriteList.add(), but it may ruin the programming concept
                                     favoriteList = databaseManager.getFavoriteList();
+                                    // reset push
+                                    cancelAllScheduledNotification();
+                                    scheduleAllNotification();
                                 }
                             })
                             .show();
@@ -461,7 +466,7 @@ public class DiningFragment extends Fragment{
             public void run() {
                 super.run();
                 scheduleAllNotification();
-                databaseManager.storePendingIntentArray(pendingIntents);
+                //databaseManager.storePendingIntentArray(pendingIntents);
             }
         };
         notificationThread.start();
@@ -525,7 +530,6 @@ public class DiningFragment extends Fragment{
                 }
             }else{
                 // tempdata is ready
-                ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
                 scheduleAllNotificationInBackground();
             }
         }
@@ -556,7 +560,6 @@ public class DiningFragment extends Fragment{
         protected void onPostExecute(Map<Integer, Map> parseDict) {
             //Log.e("current: ",convertDateToInteger(currentDate)+"");
             tempDataStorage.putAll(parseDict);
-            ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
             int i = 0;
             for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
                 currentDate = databaseManager.addDays(currentDate,i);
@@ -587,27 +590,6 @@ public class DiningFragment extends Fragment{
         protected Map<String, Map> doInBackground(Integer... params) {
             // params comes from the execute() call: use params[0] for the first.
             Map<String, Map> result = databaseManager.getUCSBCommonsDataFromHTML(currentDate);
-//            for (Map.Entry<String, Map> entry : result.entrySet())
-//            {
-//                String commonName = entry.getKey();
-//                Map<String, Map> mealDict = entry.getValue();
-//                if(mealDict==null) continue;
-//                for(Map.Entry<String, Map> meal : mealDict.entrySet()){
-//                    String mealName = meal.getKey();
-//                    Map<String, List> foodDict = entry.getValue();
-//                    if(foodDict==null) continue;
-//                    for(Map.Entry<String,List> food : foodDict.entrySet()){
-//                        String foodName = food.getKey();
-//                        List<String> itemList = food.getValue();
-//                        if(itemList==null) continue;
-//                        for(String item : itemList){
-//                            if(favoriteList.contains(item)){
-//                                createScheduledNotification(currentDate,commonName,mealName);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
             return result;
         }
 

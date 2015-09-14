@@ -440,6 +440,30 @@ public class PGDatabaseManager {
         listObject.pinInBackground();
     }
 
+    public void addPendingIntentIDTolocalDatastore(int id){
+        List<Integer> idList = new ArrayList<>();
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        try {
+            Log.e("addPending: ", "start");
+            listObject = query.getFirst();
+            idList = listObject.getList("notificationPendingIntent");
+        } catch (ParseException e) {
+            // Setting is null
+            // new item haven't schedule notification yet
+            Log.e("addPending: ","ParseException");
+            listObject = new ParseObject("Setting");
+        }
+        idList.add(id);
+        listObject.put("notificationPendingIntent", idList);
+        try {
+            listObject.pin();
+        } catch (ParseException pin) {
+            pin.printStackTrace();
+        }
+    }
+
     public List<Integer> getPendingIntentArray(){
         ParseQuery query = ParseQuery.getQuery("Setting");
         query.fromLocalDatastore();
@@ -539,8 +563,8 @@ public class PGDatabaseManager {
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Dinner":
-                calendar.set(Calendar.HOUR_OF_DAY,22);
-                calendar.set(Calendar.MINUTE,58);
+                calendar.set(Calendar.HOUR_OF_DAY,1);
+                calendar.set(Calendar.MINUTE,11);
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Late Night":
@@ -576,5 +600,40 @@ public class PGDatabaseManager {
                 res += ch;
         }
         return  res;
+    }
+
+    private String convertSeparatedStringToCombined(String str){
+        String res = "";
+        for(int i = 0; i < str.length(); i++) {
+            Character ch = str.charAt(i);
+            if(Character.isWhitespace(ch))
+                res += "";
+            else
+                res += ch;
+        }
+        return  res;
+    }
+
+    public void getParseObjectFromHTML(int dateInt,Map<String, Map> dict){
+        for(Map.Entry<String,Map> common : dict.entrySet()){
+            String commonName = common.getKey();
+            if(commonName.equals("De La Guerra")) commonName = "DeLaGuerra";
+            ParseObject listObject = new ParseObject(commonName);
+            listObject.put("date",dateInt);
+            Map<String, Map> mealDict = common.getValue();
+            for(Map.Entry<String,Map> meal : mealDict.entrySet()){
+                String mealName = meal.getKey();
+                mealName = convertSeparatedStringToCombined(mealName);
+                Map<String, List> foodDict = meal.getValue();
+                for(Map.Entry<String,List> food : foodDict.entrySet()){
+                    String foodName = food.getKey();
+                    foodName = convertSeparatedStringToCombined(foodName);
+                    List<String> itemList = food.getValue();
+                    String column = mealName+"_"+foodName;
+                    listObject.put(column,itemList);
+                }
+            }
+            listObject.saveInBackground();
+        }
     }
 }
