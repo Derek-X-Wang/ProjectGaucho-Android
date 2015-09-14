@@ -618,22 +618,44 @@ public class PGDatabaseManager {
         for(Map.Entry<String,Map> common : dict.entrySet()){
             String commonName = common.getKey();
             if(commonName.equals("De La Guerra")) commonName = "DeLaGuerra";
-            ParseObject listObject = new ParseObject(commonName);
-            listObject.put("date",dateInt);
             Map<String, Map> mealDict = common.getValue();
-            for(Map.Entry<String,Map> meal : mealDict.entrySet()){
-                String mealName = meal.getKey();
-                mealName = convertSeparatedStringToCombined(mealName);
-                Map<String, List> foodDict = meal.getValue();
-                for(Map.Entry<String,List> food : foodDict.entrySet()){
-                    String foodName = food.getKey();
-                    foodName = convertSeparatedStringToCombined(foodName);
-                    List<String> itemList = food.getValue();
-                    String column = mealName+"_"+foodName;
-                    listObject.put(column,itemList);
-                }
-            }
-            listObject.saveInBackground();
+            if(mealDict != null) saveCommonToParse(dateInt,commonName,mealDict);
         }
+    }
+
+    private void saveCommonToParse(int dateInt, String commonName, Map<String, Map> mealDict){
+        ParseObject listObject = new ParseObject(commonName);
+        listObject.put("date",dateInt);
+        for(Map.Entry<String,Map> meal : mealDict.entrySet()){
+            String mealName = meal.getKey();
+            mealName = convertSeparatedStringToCombined(mealName);
+            Map<String, List> foodDict = meal.getValue();
+            for(Map.Entry<String,List> food : foodDict.entrySet()){
+                String foodName = food.getKey();
+                foodName = cleanStringForParseColumn(foodName);
+                List<String> itemList = food.getValue();
+                String column = mealName+"_"+foodName;
+                listObject.put(column,itemList);
+            }
+        }
+        try {
+            listObject.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String cleanStringForParseColumn(String str){
+        String res = "";
+        for(int i = 0; i < str.length(); i++) {
+            Character ch = str.charAt(i);
+            if(ch =='(') break;
+            else if(ch ==' ') {}
+            else if(ch == '/'){}
+            else{
+                res += ch;
+            }
+        }
+        return  res;
     }
 }
