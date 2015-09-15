@@ -62,10 +62,11 @@ public class DiningFragment extends Fragment{
     private TextView hint;
 
     private Date currentDate;
-    private int loadDayLimit = 9;
+
     private int loadLoopIndicator = 0;
 
     private final int LOADDAYRANGE = 9;
+    private int loadDayLimit = LOADDAYRANGE;
 
 
     private boolean dataSource;
@@ -92,6 +93,7 @@ public class DiningFragment extends Fragment{
         ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
         currentDate = new Date();
         favoriteList = databaseManager.getFavoriteList();
+        loadDayLimit = LOADDAYRANGE;
     }
 
     @Override
@@ -117,8 +119,7 @@ public class DiningFragment extends Fragment{
             databaseManager.clearAllDiningDataFromParseLocalDatastore();
             if(dataSource){
                 // load from html
-                //new WebRequestTask().execute();
-                new ParseRequestTask().execute();
+                new WebRequestTask().execute();
             }else{
                 // load from Parse
                 new ParseRequestTask().execute();
@@ -559,13 +560,12 @@ public class DiningFragment extends Fragment{
         @Override
         protected void onPostExecute(Map<Integer, Map> parseDict) {
             //Log.e("current: ",convertDateToInteger(currentDate)+"");
-            tempDataStorage.putAll(parseDict);
             int i = 0;
             for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
-                currentDate = databaseManager.addDays(currentDate,i);
                 Map<String,Map> value = entry.getValue();
                 updateStickyListView(value);
                 i++;
+                currentDate = databaseManager.addDays(currentDate,1);
                 loadDayLimit--;
             }
             scheduleAllNotificationInBackground();

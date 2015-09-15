@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     private Map<Integer, Map> tempDataStorage = null;
     Date currentDate;
-    int dateLoaded = 14;
+    int dateLoaded = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +75,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 //            }
 //        }.start();
 
-        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
-        currentDate = new Date();
-            new SyncWebRequestTask().execute(currentDate);
+//        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
+//        currentDate = new Date();
+//        currentDate = pgDatabaseManager.addDays(currentDate,13);
+//        //currentDate = null;
+//        new SyncWebRequestTask().execute(currentDate);
 
     }
 
