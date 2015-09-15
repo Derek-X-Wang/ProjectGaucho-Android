@@ -40,6 +40,8 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class DiningFragment extends Fragment{
 
+    MainActivity host;
+
     private int currentCommon = 0;
     private int currentDay = 0;
     private int currentMeal = 0;
@@ -87,10 +89,10 @@ public class DiningFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // it is a bit messy now since loading html will not reduce loadDayLimit but loading parse will
-
+        host = (MainActivity)getActivity();
+        host.setTempDataStorage(tempDataStorage);
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
-        ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
         currentDate = new Date();
         favoriteList = databaseManager.getFavoriteList();
         loadDayLimit = LOADDAYRANGE;
@@ -104,7 +106,7 @@ public class DiningFragment extends Fragment{
         hint = (TextView)v.findViewById(R.id.fragemt_dining_hint);
 
         // prevent action bar to show when the program is reopen from background and the view is re-init
-        ActionBar actionBar = getActivity().getActionBar();
+        ActionBar actionBar = host.getActionBar();
         if(actionBar != null && actionBar.isShowing()) actionBar.hide();
 
         initMultiSelectionIndicators(v);
@@ -145,7 +147,7 @@ public class DiningFragment extends Fragment{
         calendar.add(Calendar.SECOND, 10);
 
         // Retrieve alarm manager from the system
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) host.getSystemService(Context.ALARM_SERVICE);
         // Every scheduled intent needs a different ID, else it is just executed once
         int Min = 9;
         int Max = 99999;
@@ -159,7 +161,7 @@ public class DiningFragment extends Fragment{
         notificationIntent.putExtra("id",id);
 
         // Prepare the pending intent
-        PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
+        PendingIntent broadcast = PendingIntent.getBroadcast(host, id, notificationIntent, 0);
 
         // store PendingIntent for canceling reference
 //        Map<String,String> pIntent = new LinkedHashMap<>();
@@ -177,17 +179,17 @@ public class DiningFragment extends Fragment{
         List<Integer> pendingIntents = databaseManager.getPendingIntentArray();
         if(pendingIntents == null) return;
         // Retrieve alarm manager from the system
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) host.getSystemService(Context.ALARM_SERVICE);
         for(Integer pendingIntent : pendingIntents){
             Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-            PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), pendingIntent, notificationIntent, 0);
+            PendingIntent broadcast = PendingIntent.getBroadcast(host, pendingIntent, notificationIntent, 0);
             alarmManager.cancel(broadcast);
         }
     }
 
     private void initStickyListView(View v) {
         StickyListHeadersListView stickyList = (StickyListHeadersListView) v.findViewById(R.id.list);
-        adapter = new StickyHeaderListViewAdapter(getActivity());
+        adapter = new StickyHeaderListViewAdapter(host);
         stickyList.setAdapter(adapter);
         stickyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -202,7 +204,7 @@ public class DiningFragment extends Fragment{
                 if (favoriteList.contains(text)) {
                     // existed -> user would like to delete a favor
                     String deleteFavoriteContent = String.format("GauchoLife will no longer notify you when \"%s\" is being served.", text);
-                    new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                    new SweetAlertDialog(host, SweetAlertDialog.WARNING_TYPE)
                             .setTitleText("Unmark Favorite")
                             .setContentText(deleteFavoriteContent)
                             .setConfirmText("Ok")
@@ -232,7 +234,7 @@ public class DiningFragment extends Fragment{
                 } else {
                     // not existed -> add new item to the favor list
                     String addFavoriteContent = String.format("Do you want to mark \"%s\" as favorite?\n\nGauchoLife will let you know when it is being served.", text);
-                    new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE)
+                    new SweetAlertDialog(host, SweetAlertDialog.NORMAL_TYPE)
                             .setTitleText("Mark as Favorite")
                             .setContentText(addFavoriteContent)
                             .setConfirmText("Yes!")
@@ -393,7 +395,7 @@ public class DiningFragment extends Fragment{
         // store the result in the fragment
         int dateInt = convertDateToInteger(currentDate);
         tempDataStorage.put(dateInt, result);
-        ((MainActivity)getActivity()).setTempDataStorage(tempDataStorage);
+        host.setTempDataStorage(tempDataStorage);
         // add to local datastore if it isn't been added yet; the if check may not be necessary
         if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
         // get day 2 digit string
@@ -602,7 +604,7 @@ public class DiningFragment extends Fragment{
     }
 
 //    private void notifyUser(){
-//        Notification notification = new NotificationCompat.Builder(getActivity())
+//        Notification notification = new NotificationCompat.Builder(host)
 //                .setContentTitle("GauchoLife")
 //                .setContentText("Your favorite food is served at")
 //                .setSmallIcon(R.drawable.pg_launcher)
@@ -612,7 +614,7 @@ public class DiningFragment extends Fragment{
 
 //    public void notifyUser(){
 //
-//        NotificationManager notificationManager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+//        NotificationManager notificationManager = (NotificationManager)host.getSystemService(Context.NOTIFICATION_SERVICE);
 //
 //        Intent intent = new Intent(MyActivity.this, SomeActivity.class);
 //
