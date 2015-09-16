@@ -41,7 +41,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private boolean dataSource = true;
     private boolean cleanLocal = false;
 
-    private Map<Integer, Map> tempDataStorage = null;
     Date currentDate;
     int dateLoaded = 1;
 
@@ -54,17 +53,34 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         initView();
 
         mapsFragemnt = new MapsFragment();
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_content, mapsFragemnt)
-                    .commit();
-        }
+        diningFragment = new DiningFragment();
+        settingsFragment = new SettingsFragment();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             dataSource = extras.getBoolean("DATASOURCE");
             cleanLocal = extras.getBoolean("CLEANLOCAL");
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("DATASOURCE",dataSource);
+        bundle.putBoolean("CLEANLOCAL", cleanLocal);
+        diningFragment.setArguments(bundle);
+
+
+
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_content, diningFragment)
+                    .hide(diningFragment)
+                    .commit();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_content, mapsFragemnt)
+                    .commit();
+
+        }
+
+
 
 //        new Thread(){
 //            @Override
@@ -96,11 +112,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     }
 
     public Map<Integer, Map> getTempDataStorage() {
-        return tempDataStorage;
+        return diningFragment.getTempDataStorage();
     }
 
-    public void setTempDataStorage(Map<Integer, Map> tempDataStorage) {
-        this.tempDataStorage = tempDataStorage;
+    public int getLoadDayLimit(){
+        return diningFragment.getLoadDayLimit();
     }
 
     private void initView(){
@@ -126,9 +142,17 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             case R.id.tab_maps:
                 tabMaps.setIconAlpha(1.0f);
                 if(actionBar != null && !actionBar.isShowing()) actionBar.show();
-                if(mapsFragemnt == null) mapsFragemnt = new MapsFragment();
-                if(mapsFragemnt.isAdded()) break;
-                ft.replace(R.id.fragment_content, mapsFragemnt);
+//                if(mapsFragemnt == null) mapsFragemnt = new MapsFragment();
+//                if(mapsFragemnt.isAdded()) break;
+//                ft.replace(R.id.fragment_content, mapsFragemnt);
+                if(mapsFragemnt.isAdded()){
+                    if(diningFragment.isAdded()) ft.hide(diningFragment);
+                    if(settingsFragment.isAdded()) ft.hide(settingsFragment);
+                    ft.show(mapsFragemnt);
+                }
+                else{
+                    ft.add(R.id.fragment_content, mapsFragemnt);
+                }
                 ft.commit();
                 break;
             case R.id.tab_dining:
@@ -136,22 +160,38 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 tabDining.setIconAlpha(1.0f);
                 if (!search.isIconified()) search.setIconified(true);
                 if(actionBar != null && actionBar.isShowing()) actionBar.hide();
-                if(diningFragment == null) diningFragment = new DiningFragment();
-                if(diningFragment.isAdded()) break;
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("DATASOURCE",dataSource);
-                bundle.putBoolean("CLEANLOCAL",cleanLocal);
-                diningFragment.setArguments(bundle);
-                ft.replace(R.id.fragment_content, diningFragment);
+//                if(diningFragment == null) diningFragment = new DiningFragment();
+//                if(diningFragment.isAdded()) break;
+
+//                ft.replace(R.id.fragment_content, diningFragment);
+                if(diningFragment.isAdded()){
+                    if(mapsFragemnt.isAdded()) ft.hide(mapsFragemnt);
+                    if(settingsFragment.isAdded()) ft.hide(settingsFragment);
+                    ft.show(diningFragment);
+                }
+                else{
+                    // since dining fragment has transparent component, it has to ensure others are hide.
+                    if(mapsFragemnt.isAdded()) ft.hide(mapsFragemnt);
+                    if(settingsFragment.isAdded()) ft.hide(settingsFragment);
+                    ft.add(R.id.fragment_content, diningFragment);
+                }
                 ft.commit();
                 break;
             case R.id.tab_settings:
                 tabSettings.setIconAlpha(1.0f);
                 if (!search.isIconified()) search.setIconified(true);
                 if(actionBar != null && actionBar.isShowing()) actionBar.hide();
-                if(settingsFragment == null) settingsFragment = new SettingsFragment();
-                if(settingsFragment.isAdded()) break;
-                ft.replace(R.id.fragment_content, settingsFragment);
+//                if(settingsFragment == null) settingsFragment = new SettingsFragment();
+//                if(settingsFragment.isAdded()) break;
+//                ft.replace(R.id.fragment_content, settingsFragment);
+                if(settingsFragment.isAdded()){
+                    if(diningFragment.isAdded()) ft.hide(diningFragment);
+                    if(mapsFragemnt.isAdded()) ft.hide(mapsFragemnt);
+                    ft.show(settingsFragment);
+                }
+                else{
+                    ft.add(R.id.fragment_content, settingsFragment);
+                }
                 ft.commit();
                 break;
         }
@@ -171,9 +211,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         protected void onPreExecute() {
             if(databaseManager == null){
                 databaseManager = new PGDatabaseManager();
-            }
-            if(tempDataStorage == null){
-                tempDataStorage = new LinkedHashMap<>();
             }
         }
 

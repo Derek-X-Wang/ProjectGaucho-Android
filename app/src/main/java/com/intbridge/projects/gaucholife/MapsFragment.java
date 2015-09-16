@@ -1,6 +1,7 @@
 package com.intbridge.projects.gaucholife;
 
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener{
 
+    private MainActivity host;
     MapView mMapView;
     private GoogleMap googleMap;
 
@@ -34,6 +36,11 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         // inflat and return the layout
         View v = inflater.inflate(R.layout.fragment_maps, container,
                 false);
+
+        host = (MainActivity)getActivity();
+        ActionBar actionBar = host.getActionBar();
+        if(actionBar != null && !actionBar.isShowing()) actionBar.show();
+
         mMapView = (MapView) v.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 

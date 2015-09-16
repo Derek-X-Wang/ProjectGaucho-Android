@@ -29,6 +29,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  */
 public class SettingsFragment extends Fragment implements Switch.OnCheckedChangeListener {
 
+    private MainActivity host;
     private Switch carrilloSwitch;
     private Switch delaguerraSwitch;
     private Switch ortegaSwitch;
@@ -44,6 +45,7 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseManager = new PGDatabaseManager();
+        host = (MainActivity)getActivity();
     }
 
     @Override
@@ -75,8 +77,8 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         cancelAllScheduledNotification(pendingIntents);
         databaseManager.storePendingIntentArray(new ArrayList<Integer>());
 
-        Map<Integer, Map> tempDataStorage = ((MainActivity)getActivity()).getTempDataStorage();
-        if(tempDataStorage != null){
+        Map<Integer, Map> tempDataStorage = host.getTempDataStorage();
+        if(host.getLoadDayLimit() == 0){
             scheduleAllNotification(tempDataStorage);
         }
         new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)

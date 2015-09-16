@@ -90,10 +90,10 @@ public class DiningFragment extends Fragment{
         super.onCreate(savedInstanceState);
         // it is a bit messy now since loading html will not reduce loadDayLimit but loading parse will
         host = (MainActivity)getActivity();
-        host.setTempDataStorage(tempDataStorage);
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
         currentDate = new Date();
+        //currentDate = databaseManager.addDays(currentDate,3);
         favoriteList = databaseManager.getFavoriteList();
         loadDayLimit = LOADDAYRANGE;
     }
@@ -134,6 +134,14 @@ public class DiningFragment extends Fragment{
         databaseManager.storePendingIntentArray(new ArrayList<Integer>());
 
         return v;
+    }
+
+    public int getLoadDayLimit(){
+        return this.loadDayLimit;
+    }
+
+    public Map<Integer, Map> getTempDataStorage() {
+        return tempDataStorage;
     }
 
     private void createScheduledNotification(Date date, String common, String meal)
@@ -276,8 +284,10 @@ public class DiningFragment extends Fragment{
 
         commons = Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
         dates = new ArrayList<>();
+        Date baseDate = new Date();
+        //baseDate = databaseManager.addDays(baseDate,3);
         for(int i=0;i<loadDayLimit;i++){
-            Date addDate = databaseManager.addDays(new Date(),i);
+            Date addDate = databaseManager.addDays(baseDate,i);
             String[] dateStrings = convertDateToStringArray(addDate);
             dates.add(dateStrings[2]);
         }
@@ -395,7 +405,6 @@ public class DiningFragment extends Fragment{
         // store the result in the fragment
         int dateInt = convertDateToInteger(currentDate);
         tempDataStorage.put(dateInt, result);
-        host.setTempDataStorage(tempDataStorage);
         // add to local datastore if it isn't been added yet; the if check may not be necessary
         if(!databaseManager.isDictExistInParseLocalDatastore(dateInt)) databaseManager.storeDictToParseLocalDatastore(dateInt,result);
         // get day 2 digit string

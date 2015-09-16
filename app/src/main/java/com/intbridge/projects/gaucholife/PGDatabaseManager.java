@@ -564,8 +564,8 @@ public class PGDatabaseManager {
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Dinner":
-                calendar.set(Calendar.HOUR_OF_DAY,1);
-                calendar.set(Calendar.MINUTE,11);
+                calendar.set(Calendar.HOUR_OF_DAY,16);
+                calendar.set(Calendar.MINUTE,0);
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Late Night":
