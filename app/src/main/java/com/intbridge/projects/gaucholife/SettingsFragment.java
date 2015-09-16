@@ -60,6 +60,7 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         ortegaSwitch = (Switch)v.findViewById(R.id.ortegaswitch);
         portolaSwitch = (Switch)v.findViewById(R.id.portolaswitch);
 
+        initSwitches();
         carrilloSwitch.setOnCheckedChangeListener(this);
         delaguerraSwitch.setOnCheckedChangeListener(this);
         ortegaSwitch.setOnCheckedChangeListener(this);
@@ -84,6 +85,32 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
                 .setConfirmText("Ok")
                 .showCancelButton(false)
                 .show();
+    }
+
+    private void initSwitches(){
+        List<String> switches = databaseManager.getNotifiedCommons();
+        if(switches != null){
+            carrilloSwitch.setChecked(false);
+            delaguerraSwitch.setChecked(false);
+            ortegaSwitch.setChecked(false);
+            portolaSwitch.setChecked(false);
+            for(String switchString : switches){
+                switch (switchString){
+                    case "Carrillo":
+                        carrilloSwitch.setChecked(true);
+                        break;
+                    case "De La Guerra":
+                        delaguerraSwitch.setChecked(true);
+                        break;
+                    case "Ortega":
+                        ortegaSwitch.setChecked(true);
+                        break;
+                    case "Portola":
+                        portolaSwitch.setChecked(true);
+                        break;
+                }
+            }
+        }
     }
 
 
