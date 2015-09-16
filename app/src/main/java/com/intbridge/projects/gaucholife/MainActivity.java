@@ -18,7 +18,6 @@ import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +92,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
 //        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
 //        currentDate = new Date();
-//        currentDate = pgDatabaseManager.addDays(currentDate,13);
+//        currentDate = pgDatabaseManager.addDays(currentDate,14);
 //        //currentDate = null;
 //        new SyncWebRequestTask().execute(currentDate);
 

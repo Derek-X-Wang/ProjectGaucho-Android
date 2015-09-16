@@ -659,4 +659,8 @@ public class PGDatabaseManager {
         }
         return  res;
     }
+
+    public void sendUserReport(){
+        
+    }
 }
