@@ -33,6 +33,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     private DiningFragment diningFragment;
     private SettingsFragment settingsFragment;
 
+    private int currentTab = 0;
     IconWithTextView tabMaps;
     IconWithTextView tabDining;
     IconWithTextView tabSettings;
@@ -127,8 +128,19 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         tabMaps.setOnClickListener(this);
         tabDining.setOnClickListener(this);
         tabSettings.setOnClickListener(this);
-        
-        tabMaps.setIconAlpha(1.0f);
+
+        resetOtherTabs();
+        switch (currentTab){
+            case 0:
+                tabMaps.setIconAlpha(1.0f);
+                break;
+            case 1:
+                tabDining.setIconAlpha(1.0f);
+                break;
+            case 2:
+                tabSettings.setIconAlpha(1.0f);
+                break;
+        }
         
     }
 
@@ -139,6 +151,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         switch (v.getId()){
             case R.id.tab_maps:
+                currentTab = 0;
                 tabMaps.setIconAlpha(1.0f);
                 if(actionBar != null && !actionBar.isShowing()) actionBar.show();
 //                if(mapsFragemnt == null) mapsFragemnt = new MapsFragment();
@@ -155,7 +168,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 ft.commit();
                 break;
             case R.id.tab_dining:
-
+                currentTab = 1;
                 tabDining.setIconAlpha(1.0f);
                 if (!search.isIconified()) search.setIconified(true);
                 if(actionBar != null && actionBar.isShowing()) actionBar.hide();
@@ -177,6 +190,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 ft.commit();
                 break;
             case R.id.tab_settings:
+                currentTab = 2;
                 tabSettings.setIconAlpha(1.0f);
                 if (!search.isIconified()) search.setIconified(true);
                 if(actionBar != null && actionBar.isShowing()) actionBar.hide();

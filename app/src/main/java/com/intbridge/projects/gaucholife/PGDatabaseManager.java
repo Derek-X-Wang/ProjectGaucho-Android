@@ -661,6 +661,6 @@ public class PGDatabaseManager {
     }
 
     public void sendUserReport(){
-        
+
     }
 }
