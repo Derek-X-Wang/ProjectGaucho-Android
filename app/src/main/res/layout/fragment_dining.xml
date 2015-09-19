@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/fragment_dining"
     android:orientation="vertical"
+    android:background="#ffffff"
     tools:context="com.intbridge.projects.gaucholife.DiningFragment">
 
     <LinearLayout

@@ -2,7 +2,6 @@ package com.intbridge.projects.gaucholife;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.database.MatrixCursor;
 import android.os.AsyncTask;
@@ -50,7 +49,13 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         setContentView(R.layout.activity_main);
 
         setActionBar();
-        initView();
+        
+        if (savedInstanceState == null) {
+        }else{
+            dataSource = savedInstanceState.getBoolean("DATASOURCE");
+            cleanLocal = savedInstanceState.getBoolean("CLEANLOCAL");
+            currentTab = savedInstanceState.getInt("CURRENTTAB");
+        }
 
         mapsFragemnt = new MapsFragment();
         diningFragment = new DiningFragment();
@@ -67,18 +72,10 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         bundle.putBoolean("CLEANLOCAL", cleanLocal);
         diningFragment.setArguments(bundle);
 
+        initView();
 
 
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_content, diningFragment)
-                    .hide(diningFragment)
-                    .commit();
-            getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_content, mapsFragemnt)
-                    .commit();
 
-        }
 
 
 
@@ -111,6 +108,14 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("CURRENTTAB",currentTab);
+        outState.putBoolean("DATASOURCE",dataSource);
+        outState.putBoolean("CLEANLOCAL", cleanLocal);
+    }
+
     public Map<Integer, Map> getTempDataStorage() {
         return diningFragment.getTempDataStorage();
     }
@@ -133,12 +138,36 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         switch (currentTab){
             case 0:
                 tabMaps.setIconAlpha(1.0f);
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
+                        .hide(diningFragment)
+                        .commit();
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
+                        .hide(settingsFragment)
+                        .commit();
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
+                        .commit();
                 break;
             case 1:
                 tabDining.setIconAlpha(1.0f);
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
+                        .hide(mapsFragemnt)
+                        .commit();
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
+                        .hide(settingsFragment)
+                        .commit();
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
+                        .commit();
                 break;
             case 2:
                 tabSettings.setIconAlpha(1.0f);
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
+                        .hide(diningFragment)
+                        .commit();
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
+                        .hide(mapsFragemnt)
+                        .commit();
+                getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
+                        .commit();
                 break;
         }
         
@@ -148,64 +177,50 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     public void onClick(View v) {
         resetOtherTabs();
         ActionBar actionBar = getActionBar();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
         switch (v.getId()){
             case R.id.tab_maps:
                 currentTab = 0;
                 tabMaps.setIconAlpha(1.0f);
                 if(actionBar != null && !actionBar.isShowing()) actionBar.show();
-//                if(mapsFragemnt == null) mapsFragemnt = new MapsFragment();
-//                if(mapsFragemnt.isAdded()) break;
-//                ft.replace(R.id.fragment_content, mapsFragemnt);
-                if(mapsFragemnt.isAdded()){
-                    if(diningFragment.isAdded()) ft.hide(diningFragment);
-                    if(settingsFragment.isAdded()) ft.hide(settingsFragment);
-                    ft.show(mapsFragemnt);
-                }
-                else{
-                    ft.add(R.id.fragment_content, mapsFragemnt);
-                }
-                ft.commit();
+                getFragmentManager().beginTransaction()
+                        .hide(diningFragment)
+                        .commit();
+                getFragmentManager().beginTransaction()
+                        .hide(settingsFragment)
+                        .commit();
+                getFragmentManager().beginTransaction()
+                        .show(mapsFragemnt)
+                        .commit();
                 break;
             case R.id.tab_dining:
                 currentTab = 1;
                 tabDining.setIconAlpha(1.0f);
                 if (!search.isIconified()) search.setIconified(true);
                 if(actionBar != null && actionBar.isShowing()) actionBar.hide();
-//                if(diningFragment == null) diningFragment = new DiningFragment();
-//                if(diningFragment.isAdded()) break;
-
-//                ft.replace(R.id.fragment_content, diningFragment);
-                if(diningFragment.isAdded()){
-                    if(mapsFragemnt.isAdded()) ft.hide(mapsFragemnt);
-                    if(settingsFragment.isAdded()) ft.hide(settingsFragment);
-                    ft.show(diningFragment);
-                }
-                else{
-                    // since dining fragment has transparent component, it has to ensure others are hide.
-                    if(mapsFragemnt.isAdded()) ft.hide(mapsFragemnt);
-                    if(settingsFragment.isAdded()) ft.hide(settingsFragment);
-                    ft.add(R.id.fragment_content, diningFragment);
-                }
-                ft.commit();
+                getFragmentManager().beginTransaction()
+                        .hide(mapsFragemnt)
+                        .commit();
+                getFragmentManager().beginTransaction()
+                        .hide(settingsFragment)
+                        .commit();
+                getFragmentManager().beginTransaction()
+                        .show(diningFragment)
+                        .commit();
                 break;
             case R.id.tab_settings:
                 currentTab = 2;
                 tabSettings.setIconAlpha(1.0f);
                 if (!search.isIconified()) search.setIconified(true);
                 if(actionBar != null && actionBar.isShowing()) actionBar.hide();
-//                if(settingsFragment == null) settingsFragment = new SettingsFragment();
-//                if(settingsFragment.isAdded()) break;
-//                ft.replace(R.id.fragment_content, settingsFragment);
-                if(settingsFragment.isAdded()){
-                    if(diningFragment.isAdded()) ft.hide(diningFragment);
-                    if(mapsFragemnt.isAdded()) ft.hide(mapsFragemnt);
-                    ft.show(settingsFragment);
-                }
-                else{
-                    ft.add(R.id.fragment_content, settingsFragment);
-                }
-                ft.commit();
+                getFragmentManager().beginTransaction()
+                        .hide(mapsFragemnt)
+                        .commit();
+                getFragmentManager().beginTransaction()
+                        .hide(diningFragment)
+                        .commit();
+                getFragmentManager().beginTransaction()
+                        .show(settingsFragment)
+                        .commit();
                 break;
         }
     }
