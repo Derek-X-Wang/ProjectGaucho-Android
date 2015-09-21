@@ -1,11 +1,7 @@
 package com.intbridge.projects.gaucholife;
 
 import android.app.ActionBar;
-import android.app.AlarmManager;
 import android.app.Fragment;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,12 +11,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -131,95 +122,4 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         }
     }
 
-    private void cancelAllScheduledNotification(List<Integer> pendingIntents){
-        if(pendingIntents == null) return;
-        // Retrieve alarm manager from the system
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        for(Integer pendingIntent : pendingIntents){
-            Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-            PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), pendingIntent, notificationIntent, 0);
-            alarmManager.cancel(broadcast);
-        }
-    }
-
-    private void createScheduledNotification(Date date, String common, String meal)
-    {
-        // Get new calendar object and set the date to now
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-
-        // Add defined amount of days to the date
-        //calendar.add(Calendar.HOUR_OF_DAY, days * 24);
-        calendar.add(Calendar.SECOND, 10);
-
-        // Retrieve alarm manager from the system
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        // Every scheduled intent needs a different ID, else it is just executed once
-        int Min = 9;
-        int Max = 99999;
-        int id = Min + (int)(Math.random() * ((Max - Min) + 1));
-
-        // Prepare the intent which should be launched at the date
-        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-        //notificationIntent.addCategory("android.intent.category.DEFAULT");
-        notificationIntent.putExtra("common", common);
-        notificationIntent.putExtra("meal", meal);
-        notificationIntent.putExtra("id",id);
-
-        // Prepare the pending intent
-        PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
-
-        // store PendingIntent for canceling reference
-        Log.e("Dinning: ", "add");
-        databaseManager.addPendingIntentIDToLocalDatastore(id);
-
-        // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
-        alarmManager.set(AlarmManager.RTC_WAKEUP, databaseManager.getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);
-    }
-
-
-
-    private void scheduleAllNotification(Map<Integer,Map> tempDataStorage){
-        List<String> notifiedCommon = databaseManager.getNotifiedCommons();
-        List<String> favoriteList = databaseManager.getFavoriteList();
-        for(Map.Entry<Integer,Map> entry : tempDataStorage.entrySet()){
-            int dateInt = entry.getKey();
-            Date date = convertIntegerToDate(dateInt);
-            Map<String,Map> commonDict = entry.getValue();
-            for(Map.Entry<String,Map> common : commonDict.entrySet()){
-                String commonName = common.getKey();
-                if(notifiedCommon.contains(commonName)){
-                    Map<String,Map> mealDict = common.getValue();
-                    for(Map.Entry<String,Map> meal : mealDict.entrySet()){
-                        String mealName = meal.getKey();
-                        Map<String,List> foodDict = meal.getValue();
-                        breakLoop:
-                        for(Map.Entry<String,List> food : foodDict.entrySet()){
-                            String foodName = food.getKey();
-                            List<String> itemList = food.getValue();
-                            for(String item : itemList){
-                                if(favoriteList.contains(item)){
-                                    createScheduledNotification(date,commonName,mealName);
-                                    break breakLoop;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private Date convertIntegerToDate(int dateInt){
-        String dateString = Integer.toString(dateInt);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        Date date;
-        try {
-            date = formatter.parse(dateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            date = null;
-        }
-        return date;
-    }
 }

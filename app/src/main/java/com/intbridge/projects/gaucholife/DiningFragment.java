@@ -2,14 +2,10 @@ package com.intbridge.projects.gaucholife;
 
 
 import android.app.ActionBar;
-import android.app.AlarmManager;
 import android.app.Fragment;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,7 +115,6 @@ public class DiningFragment extends Fragment{
         Bundle args = getArguments();
         dataSource = args.getBoolean("DATASOURCE");
         boolean cleanLocal = args.getBoolean("CLEANLOCAL");
-        boolean onResume = args.getBoolean("ONRESUME");
         loadDayLimit = LOADDAYRANGE;
         if(cleanLocal){
             databaseManager.clearAllDiningDataFromParseLocalDatastore();
@@ -134,72 +129,12 @@ public class DiningFragment extends Fragment{
             new LoadLocalTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
 
-//        cancelAllScheduledNotification();
-//        databaseManager.storePendingIntentArray(new ArrayList<Integer>());
-
         return v;
     }
 
-    public int getLoadDayLimit(){
-        return this.loadDayLimit;
-    }
 
     public Map<Integer, Map> getTempDataStorage() {
         return tempDataStorage;
-    }
-
-    private void createScheduledNotification(Date date, String common, String meal)
-    {
-        // Get new calendar object and set the date to now
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-
-        // Add defined amount of days to the date
-        //calendar.add(Calendar.HOUR_OF_DAY, days * 24);
-        calendar.add(Calendar.SECOND, 10);
-
-        // Retrieve alarm manager from the system
-        AlarmManager alarmManager = (AlarmManager) host.getSystemService(Context.ALARM_SERVICE);
-        // Every scheduled intent needs a different ID, else it is just executed once
-        int Min = 9;
-        int Max = 99999;
-        int id = Min + (int)(Math.random() * ((Max - Min) + 1));
-
-        // Prepare the intent which should be launched at the date
-        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-        //notificationIntent.addCategory("android.intent.category.DEFAULT");
-        notificationIntent.putExtra("common", common);
-        notificationIntent.putExtra("meal", meal);
-        notificationIntent.putExtra("id",id);
-
-        // Prepare the pending intent
-        PendingIntent broadcast = PendingIntent.getBroadcast(host, id, notificationIntent, 0);
-
-
-        databaseManager.addPendingIntentIDToLocalDatastore(id);
-        //Log.e("Dinning: ", "" + convertDateToInteger(date));
-        //Log.e("Dinning: ", meal);
-
-
-        // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
-        alarmManager.set(AlarmManager.RTC_WAKEUP, databaseManager.getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);
-    }
-
-    private void cancelAllScheduledNotification(){
-        List<Integer> pendingIntents = databaseManager.getPendingIntentArray();
-        if(pendingIntents == null) return;
-        List<Integer> newPendingIntents = new ArrayList<>();
-        for(int p : pendingIntents) {
-            newPendingIntents.add(p);
-        }
-        // Retrieve alarm manager from the system
-        AlarmManager alarmManager = (AlarmManager) host.getSystemService(Context.ALARM_SERVICE);
-        for(Integer pendingIntent : newPendingIntents){
-            Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-            PendingIntent broadcast = PendingIntent.getBroadcast(host, pendingIntent, notificationIntent, 0);
-            alarmManager.cancel(broadcast);
-        }
-        databaseManager.storePendingIntentArray(new ArrayList<Integer>());
     }
 
     private void initStickyListView(View v) {
@@ -434,66 +369,6 @@ public class DiningFragment extends Fragment{
         return -1;
     }
 
-
-    private void AsyncTaskProgressCheck(Map<String, Map> result){
-        updateStickyListView(result);
-
-        loadLoopIndicator++;
-        if(loadLoopIndicator < loadDayLimit){
-            // execute next
-            currentDate = databaseManager.addDays(currentDate,1);
-            Log.e("AsyncCheck: ", "loadLoopIndicator "+loadLoopIndicator);
-            new WebRequestTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-        }else{
-            // reset
-            loadLoopIndicator = 0;
-            scheduleAllNotificationInBackground();
-        }
-    }
-
-    private void scheduleAllNotification(){
-        List<String> notifiedCommon = databaseManager.getNotifiedCommons();
-        for(Map.Entry<Integer,Map> entry : tempDataStorage.entrySet()){
-            int dateInt = entry.getKey();
-            Date date = convertIntegerToDate(dateInt);
-            Map<String,Map> commonDict = entry.getValue();
-            for(Map.Entry<String,Map> common : commonDict.entrySet()){
-                String commonName = common.getKey();
-                if(notifiedCommon.contains(commonName)){
-                    Map<String,Map> mealDict = common.getValue();
-                    for(Map.Entry<String,Map> meal : mealDict.entrySet()){
-                        String mealName = meal.getKey();
-                        Map<String,List> foodDict = meal.getValue();
-                        breakLoop:
-                        for(Map.Entry<String,List> food : foodDict.entrySet()){
-                            String foodName = food.getKey();
-                            List<String> itemList = food.getValue();
-                            for(String item : itemList){
-                                if(favoriteList.contains(item)){
-                                    createScheduledNotification(date,commonName,mealName);
-                                    break breakLoop;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void scheduleAllNotificationInBackground(){
-        Thread notificationThread = new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                cancelAllScheduledNotification();
-                scheduleAllNotification();
-                //databaseManager.storePendingIntentArray(pendingIntents);
-            }
-        };
-        notificationThread.start();
-    }
-
     private class LoadLocalTask extends AsyncTask<Integer, Integer, Void> {
 
         private List<ParseObject> todayAndAfter;
@@ -589,9 +464,9 @@ public class DiningFragment extends Fragment{
         @Override
         protected void onPostExecute(Map<Integer, Map> parseDict) {
             super.onPostExecute(parseDict);
-            Log.e("ParseRequestTask: ", "onPostExecute");
+            //Log.e("ParseRequestTask: ", "onPostExecute");
             //if(!doublePostExecute){
-                Log.e("ParseRequestTask: ", "doublePostExecute");
+                //Log.e("ParseRequestTask: ", "doublePostExecute");
                 int i = 0;
                 for (Map.Entry<Integer, Map> entry : parseDict.entrySet()) {
                     Map<String,Map> value = entry.getValue();

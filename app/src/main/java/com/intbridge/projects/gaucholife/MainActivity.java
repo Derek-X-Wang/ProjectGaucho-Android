@@ -42,7 +42,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     Date currentDate;
     int dateLoaded = 1;
-    private boolean onResume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +51,10 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         setActionBar();
 
         if (savedInstanceState == null) {
-            onResume = false;
         }else{
             dataSource = savedInstanceState.getBoolean("DATASOURCE");
             cleanLocal = savedInstanceState.getBoolean("CLEANLOCAL");
             currentTab = savedInstanceState.getInt("CURRENTTAB");
-            onResume = savedInstanceState.getBoolean("CLEANLOCAL");
         }
         mapsFragemnt = new MapsFragment();
         diningFragment = new DiningFragment();
@@ -73,7 +70,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         Bundle bundle = new Bundle();
         bundle.putBoolean("DATASOURCE",dataSource);
         bundle.putBoolean("CLEANLOCAL", cleanLocal);
-        bundle.putBoolean("ONRESUME", onResume);
         diningFragment.setArguments(bundle);
         //TODO: 我只能说无语了。。。已经试了将近12个小时，还是没解决，何弃疗了。。问题在于activity重建时会自动attach Fragments。之后我init时fragment的view又建了一次，所以call了两次
 //        if (savedInstanceState != null){
@@ -109,20 +105,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 //        }
         initView();
 
-        Log.e("dsadd", "5");
-
-
-
-
-
-//        new Thread(){
-//            @Override
-//            public void run() {
-//                super.run();
-//                PGDatabaseManager databaseManager = new PGDatabaseManager();
-//                databaseManager.getUCSBCommonsDataFromHTML("2015", "09", "19");
-//            }
-//        }.start();
 
 //        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
 //        currentDate = new Date();
@@ -155,10 +137,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 
     public Map<Integer, Map> getTempDataStorage() {
         return diningFragment.getTempDataStorage();
-    }
-
-    public int getLoadDayLimit(){
-        return diningFragment.getLoadDayLimit();
     }
 
     private void initView(){
@@ -208,55 +186,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
                 break;
         }
         
-    }
-
-    private void reInitView(){
-
-        tabMaps = (IconWithTextView)findViewById(R.id.tab_maps);
-        tabDining = (IconWithTextView)findViewById(R.id.tab_dining);
-        tabSettings = (IconWithTextView)findViewById(R.id.tab_settings);
-
-        tabMaps.setOnClickListener(this);
-        tabDining.setOnClickListener(this);
-        tabSettings.setOnClickListener(this);
-
-        resetOtherTabs();
-        switch (currentTab){
-            case 0:
-                tabMaps.setIconAlpha(1.0f);
-//                getFragmentManager().beginTransaction().attach(diningFragment)
-//                        .hide(diningFragment)
-//                        .commit();
-//                getFragmentManager().beginTransaction().attach(settingsFragment)
-//                        .hide(settingsFragment)
-//                        .commit();
-//                getFragmentManager().beginTransaction().attach(mapsFragemnt)
-//                        .commit();
-                break;
-            case 1:
-                tabDining.setIconAlpha(1.0f);
-//                getFragmentManager().beginTransaction().attach(mapsFragemnt)
-//                        .hide(mapsFragemnt)
-//                        .commit();
-//                getFragmentManager().beginTransaction().attach(settingsFragment)
-//                        .hide(settingsFragment)
-//                        .commit();
-//                getFragmentManager().beginTransaction().attach(diningFragment)
-//                        .commit();
-                break;
-            case 2:
-                tabSettings.setIconAlpha(1.0f);
-//                getFragmentManager().beginTransaction().attach(diningFragment)
-//                        .hide(diningFragment)
-//                        .commit();
-//                getFragmentManager().beginTransaction().attach(mapsFragemnt)
-//                        .hide(mapsFragemnt)
-//                        .commit();
-//                getFragmentManager().beginTransaction().attach(settingsFragment)
-//                        .commit();
-                break;
-        }
-
     }
 
     @Override
