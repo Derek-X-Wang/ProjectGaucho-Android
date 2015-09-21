@@ -6,7 +6,9 @@ import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,6 @@ import android.widget.Switch;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -72,15 +73,9 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Log.e("Setting: ", "onCheckedChanged");
         databaseManager.setNotifiedCommons(carrilloSwitch.isChecked(), delaguerraSwitch.isChecked(), ortegaSwitch.isChecked(), portolaSwitch.isChecked());
-        List<Integer> pendingIntents = databaseManager.getPendingIntentArray();
-        cancelAllScheduledNotification(pendingIntents);
-        databaseManager.storePendingIntentArray(new ArrayList<Integer>());
-
-        Map<Integer, Map> tempDataStorage = host.getTempDataStorage();
-        if(host.getLoadDayLimit() == 0){
-            scheduleAllNotification(tempDataStorage);
-        }
+        new NotificationUpdateTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText("Change Notification")
                 .setContentText("Your Notifications are re-scheduled!")
@@ -90,6 +85,7 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
     }
 
     private void initSwitches(){
+        Log.e("Setting: ","initSwitches");
         List<String> switches = databaseManager.getNotifiedCommons();
         if(switches != null){
             carrilloSwitch.setChecked(false);
@@ -116,6 +112,25 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
     }
 
 
+    private class NotificationUpdateTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            databaseManager.cancelAllScheduledNotification(host);
+            databaseManager.scheduleAllNotification(host,host.getTempDataStorage());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
     private void cancelAllScheduledNotification(List<Integer> pendingIntents){
         if(pendingIntents == null) return;
         // Retrieve alarm manager from the system
@@ -140,7 +155,9 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         // Retrieve alarm manager from the system
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         // Every scheduled intent needs a different ID, else it is just executed once
-        int id = (int) System.currentTimeMillis();
+        int Min = 9;
+        int Max = 99999;
+        int id = Min + (int)(Math.random() * ((Max - Min) + 1));
 
         // Prepare the intent which should be launched at the date
         Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
@@ -153,7 +170,8 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         PendingIntent broadcast = PendingIntent.getBroadcast(getActivity(), id, notificationIntent, 0);
 
         // store PendingIntent for canceling reference
-        databaseManager.addPendingIntentIDTolocalDatastore(id);
+        Log.e("Dinning: ", "add");
+        databaseManager.addPendingIntentIDToLocalDatastore(id);
 
         // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
         alarmManager.set(AlarmManager.RTC_WAKEUP, databaseManager.getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);
@@ -162,12 +180,12 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
 
 
     private void scheduleAllNotification(Map<Integer,Map> tempDataStorage){
+        List<String> notifiedCommon = databaseManager.getNotifiedCommons();
         List<String> favoriteList = databaseManager.getFavoriteList();
         for(Map.Entry<Integer,Map> entry : tempDataStorage.entrySet()){
             int dateInt = entry.getKey();
             Date date = convertIntegerToDate(dateInt);
             Map<String,Map> commonDict = entry.getValue();
-            List<String> notifiedCommon = databaseManager.getNotifiedCommons();
             for(Map.Entry<String,Map> common : commonDict.entrySet()){
                 String commonName = common.getKey();
                 if(notifiedCommon.contains(commonName)){

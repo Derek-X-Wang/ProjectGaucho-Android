@@ -1,5 +1,10 @@
 package com.intbridge.projects.gaucholife;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.parse.ParseException;
@@ -12,6 +17,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -438,11 +444,15 @@ public class PGDatabaseManager {
             listObject = new ParseObject("Setting");
             listObject.put("notificationPendingIntent", pendingIntents);
         }
-        listObject.pinInBackground();
+        try {
+            listObject.pin();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void addPendingIntentIDTolocalDatastore(int id){
-        List<Integer> idList = new ArrayList<>();
+    public void addPendingIntentIDToLocalDatastore(int id){
+        List<Integer> idList = null;
         ParseQuery query = ParseQuery.getQuery("Setting");
         query.fromLocalDatastore();
         ParseObject listObject;
@@ -456,6 +466,7 @@ public class PGDatabaseManager {
             Log.e("addPending: ","ParseException");
             listObject = new ParseObject("Setting");
         }
+        if(idList == null) idList = new ArrayList<>();
         idList.add(id);
         listObject.put("notificationPendingIntent", idList);
         try {
@@ -503,6 +514,7 @@ public class PGDatabaseManager {
             // Setting is null
             // new item haven't schedule notification yet
             Log.e("getNotified: ", "ParseException");
+            setNotifiedCommons(true, true, true, true);
             return  Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
         }
     }
@@ -541,7 +553,11 @@ public class PGDatabaseManager {
             listObject = new ParseObject("Setting");
             listObject.put("notifiedCommons", notifiedCommons);
         }
-        listObject.pinInBackground();
+        try {
+            listObject.pin();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public Calendar getScheduledNotificationTime(Date date, String common, String meal){
@@ -658,6 +674,101 @@ public class PGDatabaseManager {
             }
         }
         return  res;
+    }
+
+    public void scheduleAllNotification(Activity host, Map<Integer,Map> tempDataStorage){
+        List<String> notifiedCommon = getNotifiedCommons();
+        List<String> favoriteList = getFavoriteList();
+        for(Map.Entry<Integer,Map> entry : tempDataStorage.entrySet()){
+            int dateInt = entry.getKey();
+            Date date = convertIntegerToDate(dateInt);
+            Map<String,Map> commonDict = entry.getValue();
+            for(Map.Entry<String,Map> common : commonDict.entrySet()){
+                String commonName = common.getKey();
+                if(notifiedCommon.contains(commonName)){
+                    Map<String,Map> mealDict = common.getValue();
+                    for(Map.Entry<String,Map> meal : mealDict.entrySet()){
+                        String mealName = meal.getKey();
+                        Map<String,List> foodDict = meal.getValue();
+                        breakLoop:
+                        for(Map.Entry<String,List> food : foodDict.entrySet()){
+                            String foodName = food.getKey();
+                            List<String> itemList = food.getValue();
+                            for(String item : itemList){
+                                if(favoriteList.contains(item)){
+                                    createScheduledNotification(host,date,commonName,mealName);
+                                    break breakLoop;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void createScheduledNotification(Activity host, Date date, String common, String meal)
+    {
+        // Get new calendar object and set the date to now
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        // Add defined amount of days to the date
+        //calendar.add(Calendar.HOUR_OF_DAY, days * 24);
+        calendar.add(Calendar.SECOND, 10);
+
+        // Retrieve alarm manager from the system
+        AlarmManager alarmManager = (AlarmManager) host.getSystemService(Context.ALARM_SERVICE);
+        // Every scheduled intent needs a different ID, else it is just executed once
+        int Min = 9;
+        int Max = 99999;
+        int id = Min + (int)(Math.random() * ((Max - Min) + 1));
+
+        // Prepare the intent which should be launched at the date
+        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+        //notificationIntent.addCategory("android.intent.category.DEFAULT");
+        notificationIntent.putExtra("common", common);
+        notificationIntent.putExtra("meal", meal);
+        notificationIntent.putExtra("id",id);
+
+        // Prepare the pending intent
+        PendingIntent broadcast = PendingIntent.getBroadcast(host, id, notificationIntent, 0);
+
+        // store PendingIntent for canceling reference
+        addPendingIntentIDToLocalDatastore(id);
+
+        // Register the alert in the system. You have the option to define if the device has to wake up on the alert or not
+        alarmManager.set(AlarmManager.RTC_WAKEUP, getScheduledNotificationTime(date, common, meal).getTimeInMillis(), broadcast);
+    }
+
+    public void cancelAllScheduledNotification(Activity host){
+        List<Integer> pendingIntents = getPendingIntentArray();
+        if(pendingIntents == null) return;
+        List<Integer> newPendingIntents = new ArrayList<>();
+        for(int p : pendingIntents) {
+            newPendingIntents.add(p);
+        }
+        // Retrieve alarm manager from the system
+        AlarmManager alarmManager = (AlarmManager) host.getSystemService(Context.ALARM_SERVICE);
+        for(Integer pendingIntent : newPendingIntents){
+            Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+            PendingIntent broadcast = PendingIntent.getBroadcast(host, pendingIntent, notificationIntent, 0);
+            alarmManager.cancel(broadcast);
+        }
+        storePendingIntentArray(new ArrayList<Integer>());
+    }
+
+    private Date convertIntegerToDate(int dateInt){
+        String dateString = Integer.toString(dateInt);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        Date date;
+        try {
+            date = formatter.parse(dateString);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+            date = null;
+        }
+        return date;
     }
 
     public void sendUserReport(){
