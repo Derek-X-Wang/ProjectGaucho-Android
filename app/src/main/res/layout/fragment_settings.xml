@@ -1,11 +1,15 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_settings"
-    android:orientation="vertical"
     android:background="#f5f6f6"
     tools:context="com.intbridge.projects.gaucholife.SettingsFragment">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,15 +38,6 @@
             android:layout_alignParentStart="true"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <!--<com.rey.material.widget.Switch-->
-            <!--android:id="@+id/carrilloswitch"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:checked="true" />-->
-
         <Switch
             android:id="@+id/carrilloswitch"
             android:layout_width="wrap_content"
@@ -51,16 +46,6 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:checked="true" />
-
-        <!--<com.gc.materialdesign.views.Switch-->
-            <!--android:id="@+id/carrilloswitch"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:background="#1E88E5"-->
-            <!--materialdesign:check="true" />-->
 
     </RelativeLayout>
 
@@ -94,16 +79,6 @@
             android:layout_alignParentEnd="true"
             android:checked="true" />
 
-        <!--<com.gc.materialdesign.views.Switch-->
-            <!--android:id="@+id/delaguerraswitch"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:background="#1E88E5"-->
-            <!--materialdesign:check="true" />-->
-
     </RelativeLayout>
 
     <View
@@ -135,16 +110,6 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:checked="true" />
-
-        <!--<com.gc.materialdesign.views.Switch-->
-            <!--android:id="@+id/ortegaswitch"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:background="#1E88E5"-->
-            <!--materialdesign:check="true" />-->
 
     </RelativeLayout>
 
@@ -178,16 +143,6 @@
             android:layout_alignParentEnd="true"
             android:checked="true" />
 
-        <!--<com.gc.materialdesign.views.Switch-->
-            <!--android:id="@+id/portolaswitch"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:background="#1E88E5"-->
-            <!--materialdesign:check="true" />-->
-
     </RelativeLayout>
 
     <TextView
@@ -202,4 +157,92 @@
         android:text="Notification will only includes selected dining commons"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="45dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
+        android:textColor="#6e7173"
+        android:layout_gravity="center_horizontal"
+        android:text="Any Comments? Thoughts? Bugs?"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="7dp"/>
+
+    <Button
+        android:id="@+id/facebookbotton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="#3b5997"
+        android:text="   Contact us on Facebook!   "
+        android:textColor="#ffffff"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="45dp"/>
+
+    <TextView
+        android:id="@+id/messagehint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:textColor="#6e7173"
+        android:layout_gravity="center_horizontal"
+        android:text="Would like to send anonymous message to our developers? Questions will be answered on facebook. Click here and Scroll down"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <LinearLayout
+        android:id="@+id/sendmessagegroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:inputType="textMultiLine"
+        android:id="@+id/anonymousmessage"
+        android:layout_gravity="center_horizontal" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="7dp"/>
+
+    <Button
+        android:id="@+id/sendbotton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="#2da6cf"
+        android:text="    Send    "
+        android:textColor="#ffffff"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+
 </LinearLayout>
+
+</ScrollView>

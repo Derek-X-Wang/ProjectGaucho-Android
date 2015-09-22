@@ -105,13 +105,14 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 //        }
         initView();
 
-
-        Log.e("Device is ",Devices.getDeviceName());
-//        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
+        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
 //        currentDate = new Date();
 //        currentDate = pgDatabaseManager.addDays(currentDate,14);
 //        //currentDate = null;
 //        new SyncWebRequestTask().execute(currentDate);
+
+        // send user stat
+        pgDatabaseManager.sendUserReport(this);
 
     }
 

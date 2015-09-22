@@ -365,7 +365,7 @@ public class PGDatabaseManager {
                 }
             }
         } catch (ParseException e) {
-            Log.e("clearAllDining", "ParseException");
+            //Log.e("clearAllDining", "ParseException");
         }
     }
 
@@ -485,18 +485,18 @@ public class PGDatabaseManager {
         query.fromLocalDatastore();
         ParseObject listObject;
         try {
-            Log.e("getPending: ","start");
+            //Log.e("getPending: ","start");
             listObject = query.getFirst();
             if(listObject == null) {
                 // new item haven't schedule notification yet
                 return  null;
             }
-            Log.e("getPending: ", "c");
+            //Log.e("getPending: ", "c");
             return listObject.getList("notificationPendingIntent");
         } catch (ParseException e) {
             // Setting is null
             // new item haven't schedule notification yet
-            Log.e("getPending: ", "ParseException");
+            //Log.e("getPending: ", "ParseException");
             return  null;
         }
     }
@@ -506,18 +506,18 @@ public class PGDatabaseManager {
         query.fromLocalDatastore();
         ParseObject listObject;
         try {
-            Log.e("getNotified: ","start");
+            //Log.e("getNotified: ","start");
             listObject = query.getFirst();
             if(listObject == null || listObject.getList("notifiedCommons") == null) {
                 // new item haven't schedule notification yet
                 return  Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
             }
-            Log.e("getNotified: ", "c");
+            //Log.e("getNotified: ", "c");
             return listObject.getList("notifiedCommons");
         } catch (ParseException e) {
             // Setting is null
             // new item haven't schedule notification yet
-            Log.e("getNotified: ", "ParseException");
+            //Log.e("getNotified: ", "ParseException");
             setNotifiedCommons(true, true, true, true);
             return  Arrays.asList("Carrillo", "De La Guerra", "Ortega", "Portola");
         }
@@ -541,19 +541,19 @@ public class PGDatabaseManager {
         query.fromLocalDatastore();
         ParseObject listObject;
         try {
-            Log.e("setNotified: ","start");
+            //Log.e("setNotified: ","start");
             listObject = query.getFirst();
             if(listObject == null) {
                 // new item haven't schedule notification yet
-                Log.e("setNotified: ","return null");
+                //Log.e("setNotified: ","return null");
                 listObject = new ParseObject("Setting");
             }
-            Log.e("setNotified: ", "c");
+            //Log.e("setNotified: ", "c");
             listObject.put("notifiedCommons", notifiedCommons);
         } catch (ParseException e) {
             // Setting is null
             // new item haven't schedule notification yet
-            Log.e("setNotified: ","ParseException");
+            //Log.e("setNotified: ","ParseException");
             listObject = new ParseObject("Setting");
             listObject.put("notifiedCommons", notifiedCommons);
         }
@@ -784,7 +784,7 @@ public class PGDatabaseManager {
 
     public void sendUserReport(Activity host){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("UserStat");
-        String uuid = getUUID();
+        final String uuid = getUUID();
         query.whereEqualTo("UUID",uuid);
         final boolean isLocation = isLocationEnable(host);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -804,8 +804,8 @@ public class PGDatabaseManager {
 
                 if(parseObject == null){
                     // create a new
-
                     ParseObject newObject = new ParseObject("UserStat");
+                    newObject.put("UUID",uuid);
                     newObject.put("AndroidAPI",currentapiVersion);
                     newObject.put("device",Devices.getDeviceName());
                     newObject.put("countLogin", 1);
@@ -848,7 +848,7 @@ public class PGDatabaseManager {
         UUID uuid = UUID.randomUUID();
         String uuidString;
         try {
-            Log.e("getUUID: ","start");
+            //Log.e("getUUID: ","start");
             listObject = query.getFirst();
             uuidString = listObject.getString("UUID");
             if(uuidString == null){
@@ -860,7 +860,7 @@ public class PGDatabaseManager {
         } catch (ParseException e) {
             // Setting is null
             // new item haven't schedule notification yet
-            Log.e("getUUID: ","ParseException");
+            //Log.e("getUUID: ","ParseException");
             listObject = new ParseObject("Setting");
             uuidString = uuid.toString();
             listObject.put("UUID", uuidString);
@@ -891,5 +891,19 @@ public class PGDatabaseManager {
         }
 
         return true;
+    }
+
+    private String lastMessage = "";
+    public void sendUserReport(String message){
+        if(message.equalsIgnoreCase(lastMessage)){
+
+        }else {
+            lastMessage = message;
+            ParseObject messageObject = new ParseObject("UserReport");
+            messageObject.put("Comment", message);
+            String uuid = getUUID();
+            messageObject.put("UUID", uuid);
+            messageObject.saveEventually();
+        }
     }
 }
