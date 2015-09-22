@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -26,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by Derek on 8/10/2015.
@@ -286,7 +288,7 @@ public class PGDatabaseManager {
             // favoriteList is null, which might be unnecessary for removing
             listObject = new ParseObject("DiningFavorite");
         }
-        listObject.put("myFavorite",favoriteList);
+        listObject.put("myFavorite", favoriteList);
         try {
             listObject.pin();
         } catch (ParseException pin) {
@@ -361,7 +363,7 @@ public class PGDatabaseManager {
                 }
             }
         } catch (ParseException e) {
-            Log.e("clearAllDining","ParseException");
+            Log.e("clearAllDining", "ParseException");
         }
     }
 
@@ -380,7 +382,7 @@ public class PGDatabaseManager {
                 listObject.pinInBackground();
                 return true;
             }
-            Log.e("update: ","c");
+            Log.e("update: ", "c");
             if ((int)listObject.get("notificationTimestamp") <= dateInt) return false;
             else{
                 listObject.put("notificationTimestamp", dateInt);
@@ -580,8 +582,8 @@ public class PGDatabaseManager {
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Dinner":
-                calendar.set(Calendar.HOUR_OF_DAY,16);
-                calendar.set(Calendar.MINUTE,0);
+                calendar.set(Calendar.HOUR_OF_DAY,21);
+                calendar.set(Calendar.MINUTE,33);
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Late Night":
@@ -690,14 +692,21 @@ public class PGDatabaseManager {
                     for(Map.Entry<String,Map> meal : mealDict.entrySet()){
                         String mealName = meal.getKey();
                         Map<String,List> foodDict = meal.getValue();
-                        breakLoop:
-                        for(Map.Entry<String,List> food : foodDict.entrySet()){
-                            String foodName = food.getKey();
-                            List<String> itemList = food.getValue();
-                            for(String item : itemList){
-                                if(favoriteList.contains(item)){
-                                    createScheduledNotification(host,date,commonName,mealName);
-                                    break breakLoop;
+                        // ignore the notification if it is pass already on that day
+                        Date currentTime = new Date();
+                        Calendar targetCalender = getScheduledNotificationTime(currentTime, commonName, mealName);
+                        //targetCalender.add(Calendar.HOUR_OF_DAY,2);
+                        Date targetTime = targetCalender.getTime();
+                        if(currentTime.getTime() < targetTime.getTime()){
+                            breakLoop:
+                            for(Map.Entry<String,List> food : foodDict.entrySet()){
+                                String foodName = food.getKey();
+                                List<String> itemList = food.getValue();
+                                for(String item : itemList){
+                                    if(favoriteList.contains(item)){
+                                        createScheduledNotification(host,date,commonName,mealName);
+                                        break breakLoop;
+                                    }
                                 }
                             }
                         }
@@ -772,6 +781,52 @@ public class PGDatabaseManager {
     }
 
     public void sendUserReport(){
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserStat");
+        String uuid = getUUID();
+        query.whereEqualTo("UUID",uuid);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if(parseObject == null){
+                    // create a new
+                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                    ParseObject newObject = new ParseObject("UserStat");
+                    newObject.put("AndroidAPI",currentapiVersion);
+                    newObject.put("device",Devices.getDeviceName());
 
+                }else{
+                    // update
+                }
+            }
+        });
+
+    }
+
+    private String getUUID(){
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        UUID uuid = UUID.randomUUID();
+        String uuidString;
+        try {
+            Log.e("getUUID: ","start");
+            listObject = query.getFirst();
+            uuidString = listObject.getString("UUID");
+            if(uuidString == null){
+                uuidString = uuid.toString();
+                listObject.put("UUID", uuid.toString());
+                listObject.pinInBackground();
+            }
+
+        } catch (ParseException e) {
+            // Setting is null
+            // new item haven't schedule notification yet
+            Log.e("getUUID: ","ParseException");
+            listObject = new ParseObject("Setting");
+            uuidString = uuid.toString();
+            listObject.put("UUID", uuidString);
+            listObject.pinInBackground();
+        }
+        return uuidString;
     }
 }
