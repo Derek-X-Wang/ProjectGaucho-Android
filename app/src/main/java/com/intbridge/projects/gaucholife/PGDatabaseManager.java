@@ -3,8 +3,10 @@ package com.intbridge.projects.gaucholife;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.util.Log;
 
 import com.parse.GetCallback;
@@ -582,8 +584,8 @@ public class PGDatabaseManager {
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Dinner":
-                calendar.set(Calendar.HOUR_OF_DAY,21);
-                calendar.set(Calendar.MINUTE,33);
+                calendar.set(Calendar.HOUR_OF_DAY,16);
+                calendar.set(Calendar.MINUTE,0);
                 calendar.set(Calendar.SECOND,0);
                 break;
             case "Late Night":
@@ -780,22 +782,59 @@ public class PGDatabaseManager {
         return date;
     }
 
-    public void sendUserReport(){
+    public void sendUserReport(Activity host){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("UserStat");
         String uuid = getUUID();
         query.whereEqualTo("UUID",uuid);
+        final boolean isLocation = isLocationEnable(host);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
+                int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                int countNotification = getFavoriteList().size();
+                boolean isPush = true;
+                if(countNotification == 0) isPush = false;
+
+                int countBlueTooth = 0;
+                boolean isBlueTooth = isBlueToothEnable();
+                if(isBlueTooth) countBlueTooth = 1;
+
+                int countLocation = 0;
+                if(isLocation) countLocation = 1;
+
                 if(parseObject == null){
                     // create a new
-                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+
                     ParseObject newObject = new ParseObject("UserStat");
                     newObject.put("AndroidAPI",currentapiVersion);
                     newObject.put("device",Devices.getDeviceName());
-
+                    newObject.put("countLogin", 1);
+                    newObject.put("isBlueTooth",isBlueTooth);
+                    newObject.put("countBlueTooth", countBlueTooth);
+                    newObject.put("isLocation",isLocation);
+                    newObject.put("countLocation", countLocation);
+                    newObject.put("isPush",isPush);
+                    newObject.put("countPush", countNotification);
+                    newObject.saveEventually();
                 }else{
                     // update
+                    parseObject.put("AndroidAPI", currentapiVersion);
+
+                    int currentLoginCount = parseObject.getInt("countLogin");
+                    parseObject.put("countLogin", currentLoginCount+1);
+
+                    parseObject.put("isBlueTooth",isBlueTooth);
+                    int currentBlueToothCount = parseObject.getInt("countBlueTooth");
+                    parseObject.put("countBlueTooth", currentBlueToothCount + countBlueTooth);
+
+                    int currentLocationCount = parseObject.getInt("countLocation");
+                    parseObject.put("isLocation",isLocation);
+                    parseObject.put("countLocation", currentLocationCount + countLocation);
+
+                    parseObject.put("isPush",isPush);
+                    parseObject.put("countPush", countNotification);
+
+                    parseObject.saveEventually();
                 }
             }
         });
@@ -828,5 +867,29 @@ public class PGDatabaseManager {
             listObject.pinInBackground();
         }
         return uuidString;
+    }
+
+    private boolean isBlueToothEnable(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            return false;
+        } else {
+            if (!mBluetoothAdapter.isEnabled()) {
+                // Bluetooth is not enable :)
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private boolean isLocationEnable(Activity host){
+        LocationManager manager = (LocationManager) host.getSystemService(Context.LOCATION_SERVICE);
+
+        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            return false;
+        }
+
+        return true;
     }
 }
