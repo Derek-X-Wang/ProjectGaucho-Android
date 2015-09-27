@@ -63,6 +63,12 @@ public class PGSplashScreen extends Activity {
                 @Override
                 public void run() {
                     if(FORCE_ENTER) {
+                        dialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener(){
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        });
                         dialog.show();
                     }
                 }
