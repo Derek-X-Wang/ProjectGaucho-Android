@@ -4,6 +4,8 @@ package com.intbridge.projects.gaucholife;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 /**
@@ -104,10 +107,35 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
+        if(isGoogleMapsInstalled())
+        {
+            Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude + "&mode=w"));
+            startActivity(navigation);
+        }
+        else
+        {
+            new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
+                    .setTitleText("Missing Google Map")
+                    .setContentText("Please install Google Maps!")
+                    .setConfirmText("Ok")
+                    .showCancelButton(false)
+                    .show();
+        }
 
-        Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude + "&mode=w"));
-        startActivity(navigation);
         return true;
+    }
+
+    public boolean isGoogleMapsInstalled()
+    {
+        try
+        {
+            ApplicationInfo info = getActivity().getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0 );
+            return true;
+        }
+        catch(PackageManager.NameNotFoundException e)
+        {
+            return false;
+        }
     }
     
     @Override
