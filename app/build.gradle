@@ -8,7 +8,7 @@ android {
         applicationId "com.intbridge.projects.gaucholife"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 10
+        versionCode 12
         versionName "2.1.1"
     }
     buildTypes {
