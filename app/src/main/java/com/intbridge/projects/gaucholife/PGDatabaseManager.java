@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.intbridge.projects.gaucholife.utils.Devices;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -807,7 +808,7 @@ public class PGDatabaseManager {
                     ParseObject newObject = new ParseObject("UserStat");
                     newObject.put("UUID",uuid);
                     newObject.put("AndroidAPI",currentapiVersion);
-                    newObject.put("device",Devices.getDeviceName());
+                    newObject.put("device", Devices.getDeviceName());
                     newObject.put("countLogin", 1);
                     newObject.put("isBlueTooth",isBlueTooth);
                     newObject.put("countBlueTooth", countBlueTooth);

@@ -1,6 +1,8 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.utils;
 
 import android.content.Context;
+
+import com.intbridge.projects.gaucholife.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -15,6 +15,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.SearchView;
 
+import com.intbridge.projects.gaucholife.controllers.DiningFragment;
+import com.intbridge.projects.gaucholife.controllers.MapsFragment;
+import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
+import com.intbridge.projects.gaucholife.utils.SearchAdapter;
+import com.intbridge.projects.gaucholife.utils.SearchSuggestions;
+import com.intbridge.projects.gaucholife.views.IconWithTextView;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,7 +119,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
 //        new SyncWebRequestTask().execute(currentDate);
 
         // send user stat
-        //pgDatabaseManager.sendUserReport(this);
+        pgDatabaseManager.sendUserReport(this);
 
     }
 

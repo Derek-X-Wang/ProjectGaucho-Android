@@ -21,7 +21,7 @@ tools:context=".MapsActivity" >
         android:layout_height="60dp"
         android:orientation="horizontal">
         
-        <com.intbridge.projects.gaucholife.IconWithTextView
+        <com.intbridge.projects.gaucholife.views.IconWithTextView
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -32,7 +32,7 @@ tools:context=".MapsActivity" >
             wang:pgcolor="#ff45c01a"
             />
 
-        <com.intbridge.projects.gaucholife.IconWithTextView
+        <com.intbridge.projects.gaucholife.views.IconWithTextView
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -43,7 +43,7 @@ tools:context=".MapsActivity" >
             wang:pgcolor="#ff45c01a"
             />
 
-        <com.intbridge.projects.gaucholife.IconWithTextView
+        <com.intbridge.projects.gaucholife.views.IconWithTextView
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"

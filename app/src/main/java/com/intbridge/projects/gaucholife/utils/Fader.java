@@ -1,13 +1,16 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.utils;
 
 import android.app.Activity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+
+import com.intbridge.projects.gaucholife.R;
+
 /**
  * Created by Derek on 9/9/2015.
  */
-public class PGFader {
+public class Fader {
     /**
      * handles all subclasses of View : TextView, Button, ImageView etc..
      * given the component's id in their layout file

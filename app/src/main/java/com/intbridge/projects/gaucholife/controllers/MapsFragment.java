@@ -1,4 +1,4 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.controllers;
 
 
 import android.app.ActionBar;
@@ -19,6 +19,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.intbridge.projects.gaucholife.MainActivity;
+import com.intbridge.projects.gaucholife.R;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 

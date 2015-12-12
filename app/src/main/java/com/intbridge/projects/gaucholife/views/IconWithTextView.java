@@ -1,4 +1,4 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -15,6 +15,8 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+
+import com.intbridge.projects.gaucholife.R;
 
 /**
  * Created by Derek on 8/6/2015.
@@ -47,7 +49,7 @@ public class IconWithTextView extends View {
     public IconWithTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        TypedArray a  = context.obtainStyledAttributes(attrs,R.styleable.IconWithTextView);
+        TypedArray a  = context.obtainStyledAttributes(attrs, R.styleable.IconWithTextView);
 
         int n = a.getIndexCount();
 

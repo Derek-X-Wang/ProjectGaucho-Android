@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/fragment_settings"
     android:background="#f5f6f6"
-    tools:context="com.intbridge.projects.gaucholife.SettingsFragment">
+    tools:context="com.intbridge.projects.gaucholife.controllers.SettingsFragment">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"

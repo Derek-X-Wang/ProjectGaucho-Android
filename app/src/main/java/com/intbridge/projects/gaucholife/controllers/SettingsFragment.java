@@ -1,4 +1,4 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.controllers;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -20,6 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.intbridge.projects.gaucholife.MainActivity;
+import com.intbridge.projects.gaucholife.PGDatabaseManager;
+import com.intbridge.projects.gaucholife.R;
 
 import java.util.List;
 

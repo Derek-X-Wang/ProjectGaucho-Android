@@ -1,4 +1,4 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.controllers;
 
 
 import android.app.ActionBar;
@@ -14,6 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.intbridge.projects.gaucholife.MainActivity;
+import com.intbridge.projects.gaucholife.PGDatabaseManager;
+import com.intbridge.projects.gaucholife.R;
+import com.intbridge.projects.gaucholife.views.MultiSelectionIndicator;
 import com.parse.ParseObject;
 
 import java.text.ParseException;

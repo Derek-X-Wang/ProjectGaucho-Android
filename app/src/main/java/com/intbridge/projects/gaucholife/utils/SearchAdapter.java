@@ -1,4 +1,4 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.utils;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+
+import com.intbridge.projects.gaucholife.R;
 
 import java.util.List;
 

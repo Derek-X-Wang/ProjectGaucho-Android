@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.intbridge.projects.gaucholife.utils.Fader;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -34,7 +35,7 @@ public class PGSplashScreen extends Activity {
 
         setDialog();
 
-        PGFader.runAlphaAnimation(this, R.id.imgLogo);
+        Fader.runAlphaAnimation(this, R.id.imgLogo);
         final ImageView logo = (ImageView)findViewById(R.id.imgLogo);
         if(isNetworkConnected()){
             ParseQuery query = ParseQuery.getQuery("ControlPanel");

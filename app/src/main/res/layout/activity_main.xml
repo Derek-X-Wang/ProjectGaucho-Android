@@ -19,7 +19,7 @@
         android:orientation="horizontal"
         android:layout_gravity="bottom">
 
-        <com.intbridge.projects.gaucholife.IconWithTextView
+        <com.intbridge.projects.gaucholife.views.IconWithTextView
             android:id="@+id/tab_maps"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -31,7 +31,7 @@
             wang:pgcolor="#ff45c01a"
             />
 
-        <com.intbridge.projects.gaucholife.IconWithTextView
+        <com.intbridge.projects.gaucholife.views.IconWithTextView
             android:id="@+id/tab_dining"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -43,7 +43,7 @@
             wang:pgcolor="#ff45c01a"
             />
 
-        <com.intbridge.projects.gaucholife.IconWithTextView
+        <com.intbridge.projects.gaucholife.views.IconWithTextView
             android:id="@+id/tab_settings"
             android:layout_width="0dp"
             android:layout_height="fill_parent"

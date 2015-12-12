@@ -1,4 +1,4 @@
-package com.intbridge.projects.gaucholife;
+package com.intbridge.projects.gaucholife.views;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -22,6 +22,8 @@ import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.intbridge.projects.gaucholife.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -663,7 +665,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 //    public abstract class CallbackManager{
 //        public abstract void notifyChange();
 //    }
-    interface CallbackManager{
+    public interface CallbackManager{
         void notifyChange(int position);
     }
 }
