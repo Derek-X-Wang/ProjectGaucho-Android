@@ -24,11 +24,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.intbridge.projects.gaucholife.MainActivity;
 import com.intbridge.projects.gaucholife.R;
+import com.intbridge.projects.gaucholife.utils.LocationHelper;
 import com.intbridge.projects.gaucholife.utils.LocationSuggestion;
 import com.intbridge.projects.gaucholife.utils.SearchSuggestions;
 
@@ -158,8 +160,12 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
             public void onActionMenuItemSelected(MenuItem item) {
 
                 if (item.getItemId() == R.id.action_currentlocation) {
-                    Toast.makeText(getActivity(), "curr pop",
-                            Toast.LENGTH_SHORT).show();
+                    LocationHelper location = new LocationHelper(getActivity());
+                    if (location.getLocationStatus()) {
+                        setMarkerWithAnimation(location.getLatitude(), location.getLongitude());
+                    } else {
+                        location.showSettingsAlert();
+                    }
 
                 } else {
 
@@ -194,15 +200,28 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     }
 
+    private void setMarkerWithAnimation(Double la,Double lo){
+        googleMap.clear();
+        LatLng lalo = new LatLng(la,lo);
+        Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .position(lalo)
+                        .anchor(0.5f,0.5f)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.bluedot))
+        );
+        googleMap.setOnMarkerClickListener(this);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lalo, 13));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(17), 2000, null);
+        marker.showInfoWindow();
+
+    }
+
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        if(isGoogleMapsInstalled())
-        {
+        if(LocationHelper.isGoogleMapsInstalled(getActivity())){
             Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude + "&mode=w"));
             startActivity(navigation);
         }
-        else
-        {
+        else{
             new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
                     .setTitleText("Missing Google Map")
                     .setContentText("Please install Google Maps!")
@@ -214,18 +233,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         return true;
     }
 
-    public boolean isGoogleMapsInstalled()
-    {
-        try
-        {
-            ApplicationInfo info = getActivity().getPackageManager().getApplicationInfo("com.google.android.apps.maps", 0 );
-            return true;
-        }
-        catch(PackageManager.NameNotFoundException e)
-        {
-            return false;
-        }
-    }
+
     
     @Override
     public void onResume() {
