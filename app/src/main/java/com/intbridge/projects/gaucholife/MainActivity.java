@@ -28,13 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MainActivity extends Activity implements SearchView.OnQueryTextListener, SearchView.OnFocusChangeListener, SearchView.OnSuggestionListener, View.OnClickListener{
+public class MainActivity extends Activity implements View.OnClickListener{
 
-    private SearchView search;
-    private SearchSuggestions searchSuggestions;
-    private List<String> items;
-    private SearchAdapter searchAdapter = null;
-    
     private MapsFragment mapsFragemnt;
     private DiningFragment diningFragment;
     private SettingsFragment settingsFragment;
@@ -55,7 +50,7 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setActionBar();
+        //setActionBar();
 
         if (savedInstanceState == null) {
         }else{
@@ -200,12 +195,11 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
     @Override
     public void onClick(View v) {
         resetOtherTabs();
-        ActionBar actionBar = getActionBar();
+        //ActionBar actionBar = getActionBar();
         switch (v.getId()){
             case R.id.tab_maps:
                 currentTab = 0;
                 tabMaps.setIconAlpha(1.0f);
-                if(actionBar != null && !actionBar.isShowing()) actionBar.show();
                 getFragmentManager().beginTransaction()
                         .hide(diningFragment)
                         .commit();
@@ -219,8 +213,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             case R.id.tab_dining:
                 currentTab = 1;
                 tabDining.setIconAlpha(1.0f);
-                if (!search.isIconified()) search.setIconified(true);
-                if(actionBar != null && actionBar.isShowing()) actionBar.hide();
                 getFragmentManager().beginTransaction()
                         .hide(mapsFragemnt)
                         .commit();
@@ -234,8 +226,6 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
             case R.id.tab_settings:
                 currentTab = 2;
                 tabSettings.setIconAlpha(1.0f);
-                if (!search.isIconified()) search.setIconified(true);
-                if(actionBar != null && actionBar.isShowing()) actionBar.hide();
                 getFragmentManager().beginTransaction()
                         .hide(mapsFragemnt)
                         .commit();
@@ -288,102 +278,5 @@ public class MainActivity extends Activity implements SearchView.OnQueryTextList
         }
     }
 
-    /*
-     * The code below will make the location search
-    
-     */
-    // setup action bar
-    private void setActionBar() {
-        ActionBar actionBar = getActionBar();
-        // setup the top view in action bar
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(R.layout.action_bar_top);
-
-        // get a filter for search
-        searchSuggestions = new SearchSuggestions(this, "UCSB");
-
-        search = (SearchView) findViewById(R.id.searchView);
-
-        // setup search display threshold
-        int autoCompleteTextViewID = getResources().getIdentifier("android:id/search_src_text", null, null);
-        AutoCompleteTextView searchAutoCompleteTextView = (AutoCompleteTextView) search.findViewById(autoCompleteTextViewID);
-        searchAutoCompleteTextView.setThreshold(0);
-
-        // setup matrix cursor and adapter
-        loadData(null);
-        // setup listener
-        search.setOnQueryTextListener(this);
-        search.setOnSuggestionListener(this);
-    }
-
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-
-        if (TextUtils.isEmpty(newText))        {
-            loadData(null);
-        }
-        else{
-            loadData(newText);
-        }
-        return true;
-    }
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus)
-    {
-        if (!hasFocus){
-        }
-    }
-
-    @Override
-    public boolean onSuggestionSelect(int position) {
-
-        return false;
-    }
-
-    @Override
-    public boolean onSuggestionClick(int position) {
-
-        String key = searchAdapter.getKey(position);
-        ArrayList<Double> lalo = searchSuggestions.getLaLo(key);
-        mapsFragemnt.setMarkerWithAnimation(key,lalo.get(0),lalo.get(1));
-        // hide the keyboard
-        InputMethodManager imm = (InputMethodManager)getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(search.getWindowToken(), 0);
-
-        return true;
-    }
-
-    // here, search suggestion is handled
-    private void loadData(String query) {
-
-        // Load data from list to cursor
-        String[] columns = new String[]{"_id", "text"};
-        Object[] temp = new Object[]{0, "default"};
-
-        MatrixCursor cursor = new MatrixCursor(columns);
-        if(query==null) {
-            items = searchSuggestions.getTotalStringList();
-        }else {
-            items = searchSuggestions.generateFilteredStringList(query);
-        }
-        for (int i = 0; i < items.size(); i++) {
-            temp[0] = i;
-            temp[1] = items.get(i);
-
-            cursor.addRow(temp);
-        }
-        searchAdapter = new SearchAdapter(this, cursor, items);
-        search.setSuggestionsAdapter(searchAdapter);
-        searchSuggestions.resetFilteredStringList();
-    }
 
 }

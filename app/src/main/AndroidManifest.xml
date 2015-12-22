@@ -37,7 +37,6 @@
         <activity
             android:name=".PGSplashScreen"
             android:label="@string/title_activity_maps"
-            android:theme="@android:style/Theme.NoTitleBar"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
