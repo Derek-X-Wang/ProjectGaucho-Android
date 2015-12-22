@@ -22,8 +22,9 @@ import xmlwise.XmlParseException;
 public class SearchSuggestions {
 
     private Map<String, Object> LocationMap = null;
-    private ArrayList<String> totalStringList = new ArrayList<String>();
-    private ArrayList<String> filteredStringList = new ArrayList<String>();
+    private ArrayList<String> totalStringList = new ArrayList<>();
+    private ArrayList<String> filteredStringList = new ArrayList<>();
+    private ArrayList<LocationSuggestion> totalLocationSuggestion = new ArrayList<>();
 
     // This function loads the plists data to map(java), it has been hard coded to 'ucsb' currently, but will be easy to load other plist by using the param 'school'
     private Map<String, Object> loadPListByXmlwise(Context here,String school){
@@ -57,8 +58,10 @@ public class SearchSuggestions {
             // get a list of string for all location
             for(String key : LocationMap.keySet()) {
                 totalStringList.add(key);
+                totalLocationSuggestion.add(new LocationSuggestion(key));
             }
             Collections.sort(totalStringList);
+            Collections.sort(totalLocationSuggestion);
         }
     }
 
@@ -132,10 +135,26 @@ public class SearchSuggestions {
         }
     }
 
+    public ArrayList<LocationSuggestion> generateFilteredLocationSuggestionList(String newText){
+
+        ArrayList<LocationSuggestion> filteredLocationSuggestionList = new ArrayList<>();
+        for(String key : totalStringList) {
+            if (checkKey(key.toLowerCase(), newText.toLowerCase())) {
+                filteredLocationSuggestionList.add(new LocationSuggestion(key));
+            }
+        }
+        Collections.sort(filteredLocationSuggestionList);
+        return filteredLocationSuggestionList;
+
+    }
+
     public void resetFilteredStringList(){
         filteredStringList = new ArrayList<String>();
     }
 
+    public ArrayList<LocationSuggestion> getTotalLocationSuggestion(){
+        return totalLocationSuggestion;
+    }
     public ArrayList<String> getTotalStringList(){
         return totalStringList;
     }

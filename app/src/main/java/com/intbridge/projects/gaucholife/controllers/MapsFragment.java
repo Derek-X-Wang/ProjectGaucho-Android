@@ -3,17 +3,25 @@ package com.intbridge.projects.gaucholife.controllers;
 
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,9 +29,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.intbridge.projects.gaucholife.MainActivity;
 import com.intbridge.projects.gaucholife.R;
+import com.intbridge.projects.gaucholife.utils.LocationSuggestion;
+import com.intbridge.projects.gaucholife.utils.SearchSuggestions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
-
 
 /**
  * Derek Wang
@@ -32,8 +44,10 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener{
 
     private MainActivity host;
-    MapView mMapView;
+    private MapFragment mMapView;
     private GoogleMap googleMap;
+    private FloatingSearchView searchView;
+    private SearchSuggestions searchSuggestions;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,43 +60,116 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         ActionBar actionBar = host.getActionBar();
         if(actionBar != null && !actionBar.isShowing()) actionBar.show();
 
-        mMapView = (MapView) v.findViewById(R.id.mapView);
-        mMapView.onCreate(savedInstanceState);
-
-        mMapView.onResume();// needed to get the map to display immediately
-
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mMapView = (MapFragment) getFragmentManager().findFragmentById(R.id.mapView);
+//        mMapView.onCreate(savedInstanceState);
+//
+//        mMapView.onResume();// needed to get the map to display immediately
+//
+//        try {
+//            MapsInitializer.initialize(getActivity().getApplicationContext());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         googleMap = mMapView.getMap();
+
+        searchView = (FloatingSearchView)v.findViewById(R.id.floating_search_view);
+        searchSuggestions = new SearchSuggestions(getActivity(), "UCSB");
         
         setUpMap();
-        
-        
-//        // latitude and longitude
-//        double latitude = 17.385044;
-//        double longitude = 78.486671;
-//
-//        // create marker
-//        MarkerOptions marker = new MarkerOptions().position(
-//                new LatLng(latitude, longitude)).title("Hello Maps");
-//
-//        // Changing marker icon
-//        marker.icon(BitmapDescriptorFactory
-//                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-//
-//        // adding marker
-//        googleMap.addMarker(marker);
-//        CameraPosition cameraPosition = new CameraPosition.Builder()
-//                .target(new LatLng(17.385044, 78.486671)).zoom(12).build();
-//        googleMap.animateCamera(CameraUpdateFactory
-//                .newCameraPosition(cameraPosition));
+        setUpFloatingSearchView();
 
-        // Perform any camera updates here
         return v;
+    }
+
+    private void setUpFloatingSearchView() {
+        searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    searchView.clearSuggestions();
+                } else {
+
+                    searchView.showProgress();
+
+                    List<LocationSuggestion> results = searchSuggestions.generateFilteredLocationSuggestionList(newQuery);
+                    searchView.swapSuggestions(results);
+
+                    searchView.hideProgress();
+
+                }
+
+                Log.d("MapF", "onSearchTextChanged()");
+            }
+        });
+
+        searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+
+                LocationSuggestion locationSuggestion = (LocationSuggestion) searchSuggestion;
+                String key = locationSuggestion.getLocationName();
+                ArrayList<Double> lalo = searchSuggestions.getLaLo(key);
+                setMarkerWithAnimation(key, lalo.get(0), lalo.get(1));
+                // hide the keyboard
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+
+                Log.d("MapF", "onSuggestionClicked()");
+
+            }
+
+            @Override
+            public void onSearchAction() {
+
+                Log.d("MapF", "onSearchAction()");
+            }
+        });
+
+        searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+            @Override
+            public void onFocus() {
+
+                //show suggestions when search bar gains focus (typically history suggestions)
+                searchView.swapSuggestions(searchSuggestions.getTotalLocationSuggestion());
+
+                Log.d("MapF", "onFocus()");
+            }
+
+            @Override
+            public void onFocusCleared() {
+                searchView.clearSuggestions();
+                Log.d("MapF", "onFocusCleared()");
+            }
+        });
+
+        searchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+            @Override
+            public void onHomeClicked() {
+                searchView.clearSuggestions();
+                Log.d("MapF", "onHomeClicked()");
+            }
+        });
+
+        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+
+                if (item.getItemId() == R.id.action_currentlocation) {
+                    Toast.makeText(getActivity(), "curr pop",
+                            Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    //just print action
+                    Toast.makeText(getActivity(), "other pop",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
 
     // here, I move the camera to UCSB TODO: move the camera based on user location ( which campus )

@@ -13,5 +13,6 @@
     <string name="title_activity_flip">FlipActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="action_currentlocation">mycurrentlocation</string>
 
 </resources>

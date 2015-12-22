@@ -11,4 +11,8 @@
         <item name="android:background">#ffffff</item>
     </style>
 
+    <style name="FloatingSearchView">
+        <item name="floatingSearch_menuItemIconColor">#2b2b2b</item>
+    </style>
+
 </resources>

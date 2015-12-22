@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.intbridge.projects.gaucholife"
@@ -22,16 +22,17 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.google.android.gms:play-services:6.1.71'
-    compile 'se.emilsjolander:stickylistheaders:2.7.0'
-    compile files('libs/xmlwise-1_2.jar')
-    compile files('libs/jsoup-1.8.3.jar')
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'
+    compile files('libs/xmlwise-1_2.jar')
+    compile files('libs/jsoup-1.8.3.jar')
     compile files('libs/Parse-1.10.1.jar')
     compile files('libs/ParseCrashReporting-1.10.1.jar')
     compile files('libs/bolts-android-1.2.1.jar')
     compile files('libs/PPNS-1.10.1.jar')
+    compile 'se.emilsjolander:stickylistheaders:2.7.0'
     compile 'cn.pedant.sweetalert:library:1.3'
+    compile 'com.github.arimorty:floatingsearchview:1.1.2'
 }
