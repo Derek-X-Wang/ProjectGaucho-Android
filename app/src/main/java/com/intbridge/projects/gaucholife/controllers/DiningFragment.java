@@ -108,10 +108,6 @@ public class DiningFragment extends Fragment{
         
         hint = (TextView)v.findViewById(R.id.fragemt_dining_hint);
 
-        // prevent action bar to show when the program is reopen from background and the view is re-init
-        ActionBar actionBar = host.getActionBar();
-        if(actionBar != null && actionBar.isShowing()) actionBar.hide();
-
         initMultiSelectionIndicators(v);
 
         initStickyListView(v);

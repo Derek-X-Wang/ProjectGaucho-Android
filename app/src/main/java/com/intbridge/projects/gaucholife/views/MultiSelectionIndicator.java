@@ -457,64 +457,6 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
         }
     }
 
-//    public void setOnTabReselectedListener(PagerSlidingTabStrip.OnTabReselectedListener tabReselectedListener) {
-//        this.mTabReselectedListener = tabReselectedListener;
-//    }
-//
-//    public void setOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
-//        this.mDelegatePageListener = listener;
-//    }
-
-//    private class PageListener implements ViewPager.OnPageChangeListener {
-//
-//        @Override
-//        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            mCurrentPosition = position;
-//            mCurrentPositionOffset = positionOffset;
-//            int offset = mTabCount > 0 ? (int) (positionOffset * mTabsContainer.getChildAt(position).getWidth()) : 0;
-//            scrollToChild(position, offset);
-//            invalidate();
-//            if (mDelegatePageListener != null) {
-//                mDelegatePageListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
-//            }
-//        }
-//
-//        @Override
-//        public void onPageScrollStateChanged(int state) {
-//            if (state == ViewPager.SCROLL_STATE_IDLE) {
-//                scrollToChild(mPager.getCurrentItem(), 0);
-//            }
-//            //Full tabTextAlpha for current item
-//            View currentTab = mTabsContainer.getChildAt(mPager.getCurrentItem());
-//            select(currentTab);
-//            //Half transparent for prev item
-//            if (mPager.getCurrentItem() - 1 >= 0) {
-//                View prevTab = mTabsContainer.getChildAt(mPager.getCurrentItem() - 1);
-//                unSelect(prevTab);
-//            }
-//
-//            //Half transparent for next item
-//            if (mPager.getCurrentItem() + 1 <= mPager.getAdapter().getCount() - 1) {
-//                View nextTab = mTabsContainer.getChildAt(mPager.getCurrentItem() + 1);
-//                unSelect(nextTab);
-//            }
-//
-//            if (mDelegatePageListener != null) {
-//                mDelegatePageListener.onPageScrollStateChanged(state);
-//            }
-//        }
-//
-//        @Override
-//        public void onPageSelected(int position) {
-//            updateSelection(position);
-//            if (mDelegatePageListener != null) {
-//                mDelegatePageListener.onPageSelected(position);
-//            }
-//        }
-//
-//
-//   
-//    }
 
     public void updateSelection(int position) {
         for (int i = 0; i < mTabCount; ++i) {
@@ -547,45 +489,6 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
 
     }
 
-//    private class PagerAdapterObserver extends DataSetObserver {
-//
-//        private boolean attached = false;
-//
-//        @Override
-//        public void onChanged() {
-//            notifyDataSetChanged();
-//        }
-//
-//        public void setAttached(boolean attached) {
-//            this.attached = attached;
-//        }
-//
-//        public boolean isAttached() {
-//            return attached;
-//        }
-//    }
-//
-//    @Override
-//    protected void onAttachedToWindow() {
-//        super.onAttachedToWindow();
-//        if (mPager != null) {
-//            if (!mAdapterObserver.isAttached()) {
-//                mPager.getAdapter().registerDataSetObserver(mAdapterObserver);
-//                mAdapterObserver.setAttached(true);
-//            }
-//        }
-//    }
-//
-//    @Override
-//    protected void onDetachedFromWindow() {
-//        super.onDetachedFromWindow();
-//        if (mPager != null) {
-//            if (mAdapterObserver.isAttached()) {
-//                mPager.getAdapter().unregisterDataSetObserver(mAdapterObserver);
-//                mAdapterObserver.setAttached(false);
-//            }
-//        }
-//    }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
@@ -661,10 +564,7 @@ public class MultiSelectionIndicator extends HorizontalScrollView {
     public void setCallbackManager(CallbackManager c){
         this.callbackManager = c;
     }
-
-//    public abstract class CallbackManager{
-//        public abstract void notifyChange();
-//    }
+    
     public interface CallbackManager{
         void notifyChange(int position);
     }

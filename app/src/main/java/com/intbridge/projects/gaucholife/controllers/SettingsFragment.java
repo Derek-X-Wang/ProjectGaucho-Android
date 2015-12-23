@@ -57,9 +57,6 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // prevent action bar to show when the program is reopen from background and the view is re-init
-        ActionBar actionBar = getActivity().getActionBar();
-        if(actionBar != null && actionBar.isShowing()) actionBar.hide();
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_settings, container, false);
