@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.SearchView;
 
+import com.intbridge.projects.gaucholife.controllers.CouponsFragment;
 import com.intbridge.projects.gaucholife.controllers.DiningFragment;
 import com.intbridge.projects.gaucholife.controllers.MapsFragment;
 import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
@@ -30,11 +31,13 @@ import java.util.Map;
 
 public class MainActivity extends Activity implements View.OnClickListener{
 
+    private CouponsFragment couponsFragment;
     private MapsFragment mapsFragemnt;
     private DiningFragment diningFragment;
     private SettingsFragment settingsFragment;
 
     private int currentTab = 0;
+    IconWithTextView tabCoupons;
     IconWithTextView tabMaps;
     IconWithTextView tabDining;
     IconWithTextView tabSettings;
@@ -58,6 +61,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             cleanLocal = savedInstanceState.getBoolean("CLEANLOCAL");
             currentTab = savedInstanceState.getInt("CURRENTTAB");
         }
+        couponsFragment = new CouponsFragment();
         mapsFragemnt = new MapsFragment();
         diningFragment = new DiningFragment();
         settingsFragment = new SettingsFragment();
@@ -113,8 +117,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 ////        currentDate = null;
 //        new SyncWebRequestTask().execute(currentDate);
 
-        // send user stat
-        pgDatabaseManager.sendUserReport(this);
+        // send user stat TODO: uncomment when release
+//        pgDatabaseManager.sendUserReport(this);
 
     }
 
@@ -145,51 +149,62 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private void initView(){
 
+        tabCoupons = (IconWithTextView)findViewById(R.id.tab_coupons);
         tabMaps = (IconWithTextView)findViewById(R.id.tab_maps);
         tabDining = (IconWithTextView)findViewById(R.id.tab_dining);
         tabSettings = (IconWithTextView)findViewById(R.id.tab_settings);
-        
+
+        tabCoupons.setOnClickListener(this);
         tabMaps.setOnClickListener(this);
         tabDining.setOnClickListener(this);
         tabSettings.setOnClickListener(this);
 
         resetOtherTabs();
-        switch (currentTab){
+        switch (currentTab) {
             case 0:
                 tabMaps.setIconAlpha(1.0f);
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
-                        .hide(diningFragment)
-                        .commit();
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
-                        .hide(settingsFragment)
-                        .commit();
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
+                initFragments();
+                getFragmentManager().beginTransaction()
+                        .show(mapsFragemnt)
                         .commit();
                 break;
             case 1:
                 tabDining.setIconAlpha(1.0f);
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
-                        .hide(mapsFragemnt)
-                        .commit();
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
-                        .hide(settingsFragment)
-                        .commit();
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
+                initFragments();
+                getFragmentManager().beginTransaction()
+                        .show(diningFragment)
                         .commit();
                 break;
             case 2:
                 tabSettings.setIconAlpha(1.0f);
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
-                        .hide(diningFragment)
+                initFragments();
+                getFragmentManager().beginTransaction()
+                        .show(settingsFragment)
                         .commit();
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
-                        .hide(mapsFragemnt)
-                        .commit();
-                getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
+                break;
+            case 3:
+                tabCoupons.setIconAlpha(1.0f);
+                initFragments();
+                getFragmentManager().beginTransaction()
+                        .show(couponsFragment)
                         .commit();
                 break;
         }
-        
+    }
+
+    private void initFragments(){
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, couponsFragment)
+                .hide(couponsFragment)
+                .commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
+                .hide(diningFragment)
+                .commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
+                .hide(mapsFragemnt)
+                .commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
+                .hide(settingsFragment)
+                .commit();
     }
 
     @Override
@@ -200,12 +215,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             case R.id.tab_maps:
                 currentTab = 0;
                 tabMaps.setIconAlpha(1.0f);
-                getFragmentManager().beginTransaction()
-                        .hide(diningFragment)
-                        .commit();
-                getFragmentManager().beginTransaction()
-                        .hide(settingsFragment)
-                        .commit();
+                hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(mapsFragemnt)
                         .commit();
@@ -213,12 +223,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             case R.id.tab_dining:
                 currentTab = 1;
                 tabDining.setIconAlpha(1.0f);
-                getFragmentManager().beginTransaction()
-                        .hide(mapsFragemnt)
-                        .commit();
-                getFragmentManager().beginTransaction()
-                        .hide(settingsFragment)
-                        .commit();
+                hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(diningFragment)
                         .commit();
@@ -226,26 +231,46 @@ public class MainActivity extends Activity implements View.OnClickListener{
             case R.id.tab_settings:
                 currentTab = 2;
                 tabSettings.setIconAlpha(1.0f);
-                getFragmentManager().beginTransaction()
-                        .hide(mapsFragemnt)
-                        .commit();
-                getFragmentManager().beginTransaction()
-                        .hide(diningFragment)
-                        .commit();
+                hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
+                        .commit();
+                break;
+            case R.id.tab_coupons:
+                currentTab = 3;
+                tabCoupons.setIconAlpha(1.0f);
+                hideAllFragments();
+                getFragmentManager().beginTransaction()
+                        .show(couponsFragment)
                         .commit();
                 break;
         }
     }
 
+    private void hideAllFragments() {
+        getFragmentManager().beginTransaction()
+                .hide(couponsFragment)
+                .commit();
+        getFragmentManager().beginTransaction()
+                .hide(mapsFragemnt)
+                .commit();
+        getFragmentManager().beginTransaction()
+                .hide(diningFragment)
+                .commit();
+        getFragmentManager().beginTransaction()
+                .hide(settingsFragment)
+                .commit();
+    }
+
     private void resetOtherTabs(){
+        tabCoupons.setIconAlpha(0);
         tabMaps.setIconAlpha(0);
         tabDining.setIconAlpha(0);
         tabSettings.setIconAlpha(0);
     }
 
 
+    // used for update parse.com data
     private class SyncWebRequestTask extends AsyncTask<Date, Integer, Map<String, Map>> {
         PGDatabaseManager databaseManager;
 

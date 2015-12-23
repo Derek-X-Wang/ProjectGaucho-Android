@@ -7,18 +7,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.intbridge.projects.gaucholife.R;
+
 /**
  * Created by Derek on 11/7/2015.
  */
-public class ShakeFragment extends Fragment {
+public class CouponsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View v = inflater.inflate(R.layout.fragment_coupons, container, false);
+        return v;
     }
 }

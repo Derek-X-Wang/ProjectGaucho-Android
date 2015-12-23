@@ -55,6 +55,18 @@
             wang:pgcolor="#ff45c01a"
             />
 
+        <com.intbridge.projects.gaucholife.views.IconWithTextView
+            android:id="@+id/tab_coupons"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            wang:pgicon="@drawable/coupontmp"
+            android:padding="9dp"
+            wang:text="Coupons"
+            wang:text_size="12sp"
+            wang:pgcolor="#ff45c01a"
+            />
+
     </LinearLayout>
 
     
