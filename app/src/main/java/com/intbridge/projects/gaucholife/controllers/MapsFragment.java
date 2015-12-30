@@ -59,8 +59,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 false);
 
         host = (MainActivity)getActivity();
-        ActionBar actionBar = host.getActionBar();
-        if(actionBar != null && !actionBar.isShowing()) actionBar.show();
+        //ActionBar actionBar = host.getActionBar();
+        //if(actionBar != null && !actionBar.isShowing()) actionBar.show();
 
         mMapView = (MapFragment) getFragmentManager().findFragmentById(R.id.mapView);
 //        mMapView.onCreate(savedInstanceState);

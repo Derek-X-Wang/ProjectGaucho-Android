@@ -21,6 +21,7 @@ import com.intbridge.projects.gaucholife.controllers.MapsFragment;
 import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
 import com.intbridge.projects.gaucholife.utils.SearchAdapter;
 import com.intbridge.projects.gaucholife.utils.SearchSuggestions;
+import com.intbridge.projects.gaucholife.utils.UserStatManager;
 import com.intbridge.projects.gaucholife.views.IconWithTextView;
 
 import java.util.ArrayList;
@@ -52,8 +53,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //setActionBar();
 
         if (savedInstanceState == null) {
         }else{
@@ -111,14 +110,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //        }
         initView();
 
-        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
+//        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
 //        currentDate = new Date();
 //        currentDate = pgDatabaseManager.addDays(currentDate,14);
 ////        currentDate = null;
 //        new SyncWebRequestTask().execute(currentDate);
 
         // send user stat TODO: uncomment when release
-//        pgDatabaseManager.sendUserReport(this);
+        //UserStatManager.sendUserStatus(this);
 
     }
 

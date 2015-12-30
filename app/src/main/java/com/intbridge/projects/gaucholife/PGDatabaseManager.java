@@ -10,7 +10,9 @@ import android.location.LocationManager;
 import android.util.Log;
 
 import com.intbridge.projects.gaucholife.utils.Devices;
+import com.parse.FunctionCallback;
 import com.parse.GetCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ import java.util.UUID;
  * Created by Derek on 8/10/2015.
  */
 public class PGDatabaseManager {
+
     public boolean checkDataSourse(){
         ParseObject controlPanel = (ParseObject)getControlPanelFromParse();
         // if no panel, run default -> use html
@@ -211,7 +215,7 @@ public class PGDatabaseManager {
         }
     }
 
-    public List<String> getFavoriteList(){
+    public static List<String> getFavoriteList(){
         List<String> favoriteList = null;
         ParseQuery query = ParseQuery.getQuery("DiningFavorite");
         query.fromLocalDatastore();
@@ -783,66 +787,9 @@ public class PGDatabaseManager {
         return date;
     }
 
-    public void sendUserReport(Activity host){
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserStat");
-        final String uuid = getUUID();
-        query.whereEqualTo("UUID",uuid);
-        final boolean isLocation = isLocationEnable(host);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-                int countNotification = getFavoriteList().size();
-                boolean isPush = true;
-                if(countNotification == 0) isPush = false;
 
-                int countBlueTooth = 0;
-                boolean isBlueTooth = isBlueToothEnable();
-                if(isBlueTooth) countBlueTooth = 1;
 
-                int countLocation = 0;
-                if(isLocation) countLocation = 1;
-
-                if(parseObject == null){
-                    // create a new
-                    ParseObject newObject = new ParseObject("UserStat");
-                    newObject.put("UUID",uuid);
-                    newObject.put("AndroidAPI",currentapiVersion);
-                    newObject.put("device", Devices.getDeviceName());
-                    newObject.put("countLogin", 1);
-                    newObject.put("isBlueTooth",isBlueTooth);
-                    newObject.put("countBlueTooth", countBlueTooth);
-                    newObject.put("isLocation",isLocation);
-                    newObject.put("countLocation", countLocation);
-                    newObject.put("isPush",isPush);
-                    newObject.put("countPush", countNotification);
-                    newObject.saveEventually();
-                }else{
-                    // update
-                    parseObject.put("AndroidAPI", currentapiVersion);
-
-                    int currentLoginCount = parseObject.getInt("countLogin");
-                    parseObject.put("countLogin", currentLoginCount+1);
-
-                    parseObject.put("isBlueTooth",isBlueTooth);
-                    int currentBlueToothCount = parseObject.getInt("countBlueTooth");
-                    parseObject.put("countBlueTooth", currentBlueToothCount + countBlueTooth);
-
-                    int currentLocationCount = parseObject.getInt("countLocation");
-                    parseObject.put("isLocation",isLocation);
-                    parseObject.put("countLocation", currentLocationCount + countLocation);
-
-                    parseObject.put("isPush",isPush);
-                    parseObject.put("countPush", countNotification);
-
-                    parseObject.saveEventually();
-                }
-            }
-        });
-
-    }
-
-    private String getUUID(){
+    public static String getUUID(){
         ParseQuery query = ParseQuery.getQuery("Setting");
         query.fromLocalDatastore();
         ParseObject listObject;
@@ -870,35 +817,13 @@ public class PGDatabaseManager {
         return uuidString;
     }
 
-    private boolean isBlueToothEnable(){
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-            return false;
-        } else {
-            if (!mBluetoothAdapter.isEnabled()) {
-                // Bluetooth is not enable :)
-                return false;
-            }
-            return true;
-        }
-    }
 
-    private boolean isLocationEnable(Activity host){
-        LocationManager manager = (LocationManager) host.getSystemService(Context.LOCATION_SERVICE);
-
-        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-            return false;
-        }
-
-        return true;
-    }
 
     private String lastMessage = "";
     public void sendUserReport(String message){
-        if(message.equalsIgnoreCase(lastMessage)){
+        if (message.equalsIgnoreCase(lastMessage)){
 
-        }else {
+        } else {
             lastMessage = message;
             ParseObject messageObject = new ParseObject("UserReport");
             messageObject.put("Comment", message);
@@ -907,4 +832,5 @@ public class PGDatabaseManager {
             messageObject.saveEventually();
         }
     }
+
 }

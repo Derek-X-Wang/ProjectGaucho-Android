@@ -96,7 +96,7 @@ public class DiningFragment extends Fragment{
         tempDataStorage = new LinkedHashMap<>();
         currentDate = new Date();
         //currentDate = databaseManager.addDays(currentDate,3);
-        favoriteList = databaseManager.getFavoriteList();
+        favoriteList = PGDatabaseManager.getFavoriteList();
         loadDayLimit = LOADDAYRANGE;
         //Log.e("onCreate: ", "11111111");
     }
@@ -173,7 +173,7 @@ public class DiningFragment extends Fragment{
                                     databaseManager.removeFoodToLocalFavoriteList(text);
                                     heart.setImageResource(R.drawable.emptyfavoriteheart);
                                     // can be improve by favoriteList.remove(), but it may ruin the concept
-                                    favoriteList = databaseManager.getFavoriteList();
+                                    favoriteList = PGDatabaseManager.getFavoriteList();
                                     // reset push
                                     new NotificationUpdateTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
                                 }
@@ -202,7 +202,7 @@ public class DiningFragment extends Fragment{
                                     databaseManager.addFoodToLocalFavoriteList(text);
                                     heart.setImageResource(R.drawable.favoriteheart);
                                     // can be improve by favoriteList.add(), but it may ruin the programming concept
-                                    favoriteList = databaseManager.getFavoriteList();
+                                    favoriteList = PGDatabaseManager.getFavoriteList();
                                     // reset push
                                     new NotificationUpdateTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
                                 }
