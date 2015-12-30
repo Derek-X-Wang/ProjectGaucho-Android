@@ -21,8 +21,7 @@
             android:textSize="21dp"
             android:textColor="#ffffff"
             android:textStyle="bold"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/textView6" />
+            android:layout_centerHorizontal="true"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +29,7 @@
             android:paddingBottom="10dp"
             android:paddingRight="10dp"
             android:text="15"
-            android:textSize="20dp"
+            android:textSize="18dp"
             android:textColor="#ffffff"
             android:textStyle="bold"
             android:layout_alignParentRight="true"
@@ -126,16 +125,32 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 />
-            <EditText
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
-                android:text="tesssssssst"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:paddingStart="10dp"
+                android:paddingLeft="10dp"
+                android:text="Waiting for data from server"
                 android:textSize="20dp"
-                android:singleLine="true"
-                android:layout_alignParentBottom="true"/>
+                android:singleLine="true"/>
         </LinearLayout>
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/couponAddress"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingStart="10dp"
+            android:paddingLeft="10dp"
+            android:text="Redeem"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#ffffff"
+            android:background="@color/red_btn_bg_color"
+            android:gravity="center"/>
 
     </LinearLayout>
 

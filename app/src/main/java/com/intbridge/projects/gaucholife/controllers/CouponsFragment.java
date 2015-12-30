@@ -40,7 +40,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     private View couponLayout;
 
     private View couponView;
-    private TextView storeTitle;
+    private TextView storeTitleText;
+    private TextView addressText;
 
     private String lastCouponID = "";
     @Override
@@ -61,7 +62,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         couponLayout = v.findViewById(R.id.couponResultLayout);
 
         couponView = couponLayout.findViewById(R.id.couponView);
-        storeTitle = (TextView)couponLayout.findViewById(R.id.couponViewTitle);
+        storeTitleText = (TextView)couponLayout.findViewById(R.id.couponViewTitle);
+        addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
 
         updateUI();
 
@@ -76,9 +78,12 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         }
         ParseObject firstCoupon = coupons.get(0);
         ParseGeoPoint geoPoint = firstCoupon.getParseGeoPoint("site");
+        
         //couponView.setBackground();
-        storeTitle.setText(firstCoupon.getString("title"));
+        storeTitleText.setText(firstCoupon.getString("title"));
+        
         setUpMap(firstCoupon.getString("title"),geoPoint.getLatitude(),geoPoint.getLongitude());
+        
     }
 
     private void setUpMap(String key,Double la,Double lo) {
