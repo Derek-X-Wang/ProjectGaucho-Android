@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/couponMainLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -39,6 +40,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/couponWelcomeLayout"
         android:orientation="vertical"
         android:visibility="gone">
         <TextView
@@ -88,10 +90,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/couponResultLayout"
         android:orientation="vertical">
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/couponView"
             android:background="@drawable/storephotoplacehoder">
             <!--<ImageView-->
                 <!--android:layout_width="match_parent"-->
@@ -100,6 +104,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/couponViewTitle"
                 android:paddingTop="10dp"
                 android:paddingBottom="20dp"
                 android:paddingLeft="30dp"
@@ -112,20 +117,23 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:orientation="vertical">
             <fragment
                 class="com.google.android.gms.maps.MapFragment"
                 android:id="@+id/couponMapView"
                 android:layout_width="match_parent"
-                android:layout_height="120dp" />
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 android:text="tesssssssst"
-                android:textSize="25dp"
-                android:singleLine="true"/>
+                android:textSize="20dp"
+                android:singleLine="true"
+                android:layout_alignParentBottom="true"/>
         </LinearLayout>
 
 

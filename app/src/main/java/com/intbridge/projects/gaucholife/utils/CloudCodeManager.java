@@ -6,6 +6,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,14 +26,30 @@ public class CloudCodeManager {
         HashMap<String, Object> params = new HashMap<>();
         params.put("amount", amount);
         params.put("unique", isUnique);
-        params.put("dayofweek", DateUtils.convertDateToDayOfWeek(new Date()) );
+        params.put("dayofweek", DateUtils.convertDateToDayOfWeek( new Date() ) );
         params.put("userstatid", PGDatabaseManager.getUUID());
-        params.put("lastcouponid", lastCouponID);
+        if (!lastCouponID.isEmpty()) params.put("lastcouponid", lastCouponID);
         try {
             return ParseCloud.callFunction("pickRandomCoupon", params);
         } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
+            //e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    // mainly used for unit testing, stub for UUID
+    public static List<ParseObject> pickRandomCoupons(int amount, boolean isUnique, String userID, String lastCouponID){
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("amount", amount);
+        params.put("unique", isUnique);
+        params.put("dayofweek", DateUtils.convertDateToDayOfWeek( new Date() ) );
+        params.put("userstatid", userID);
+        if (!lastCouponID.isEmpty()) params.put("lastcouponid", lastCouponID);
+        try {
+            return ParseCloud.callFunction("pickRandomCoupon", params);
+        } catch (ParseException e) {
+            //e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

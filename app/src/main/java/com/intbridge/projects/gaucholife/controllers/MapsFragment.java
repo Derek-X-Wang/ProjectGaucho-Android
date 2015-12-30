@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.intbridge.projects.gaucholife.MainActivity;
 import com.intbridge.projects.gaucholife.R;
+import com.intbridge.projects.gaucholife.utils.ClientStatManager;
 import com.intbridge.projects.gaucholife.utils.LocationHelper;
 import com.intbridge.projects.gaucholife.utils.LocationSuggestion;
 import com.intbridge.projects.gaucholife.utils.SearchSuggestions;
@@ -43,7 +44,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  * Derek Wang
  * 08/07/2015 *
  */
-public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener{
+public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener{
 
     private MainActivity host;
     private MapFragment mMapView;
@@ -162,7 +163,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 if (item.getItemId() == R.id.action_currentlocation) {
                     LocationHelper location = new LocationHelper(getActivity());
                     if (location.getLocationStatus()) {
-                        setMarkerWithAnimation(location.getLatitude(), location.getLongitude());
+                        setBlueDotWithAnimation(location.getLatitude(), location.getLongitude());
                     } else {
                         location.showSettingsAlert();
                     }
@@ -194,13 +195,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         .title(key)
         );
         googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnInfoWindowClickListener(this);
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lalo, 13));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(17), 2000, null);
         marker.showInfoWindow();
 
     }
 
-    private void setMarkerWithAnimation(Double la,Double lo){
+    private void setBlueDotWithAnimation(Double la,Double lo){
         googleMap.clear();
         LatLng lalo = new LatLng(la,lo);
         Marker marker = googleMap.addMarker(new MarkerOptions()
@@ -217,24 +219,15 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        if(LocationHelper.isGoogleMapsInstalled(getActivity())){
-            Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude + "&mode=w"));
-            startActivity(navigation);
-        }
-        else{
-            new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
-                    .setTitleText("Missing Google Map")
-                    .setContentText("Please install Google Maps!")
-                    .setConfirmText("Ok")
-                    .showCancelButton(false)
-                    .show();
-        }
-
+        ClientStatManager.startGoogleMapApp(getActivity(),marker);
         return true;
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        ClientStatManager.startGoogleMapApp(getActivity(),marker);
+    }
 
-    
     @Override
     public void onResume() {
         super.onResume();

@@ -1,32 +1,21 @@
 package com.intbridge.projects.gaucholife;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
-import android.database.MatrixCursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
-import android.widget.SearchView;
 
 import com.intbridge.projects.gaucholife.controllers.CouponsFragment;
 import com.intbridge.projects.gaucholife.controllers.DiningFragment;
 import com.intbridge.projects.gaucholife.controllers.MapsFragment;
 import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
-import com.intbridge.projects.gaucholife.utils.SearchAdapter;
-import com.intbridge.projects.gaucholife.utils.SearchSuggestions;
-import com.intbridge.projects.gaucholife.utils.UserStatManager;
+import com.intbridge.projects.gaucholife.utils.ClientStatManager;
 import com.intbridge.projects.gaucholife.views.IconWithTextView;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 
@@ -117,7 +106,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //        new SyncWebRequestTask().execute(currentDate);
 
         // send user stat TODO: uncomment when release
-        //UserStatManager.sendUserStatus(this);
+        //ClientStatManager.sendUserStatus(this);
 
     }
 

@@ -3,19 +3,24 @@ package com.intbridge.projects.gaucholife.utils;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.location.LocationManager;
+import android.net.Uri;
 
+import com.google.android.gms.maps.model.Marker;
 import com.intbridge.projects.gaucholife.PGDatabaseManager;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 /**
  * Handle User Stat Event
  * Created by Derek on 12/29/2015.
  */
-public class UserStatManager {
+public class ClientStatManager {
 
     public static void sendUserStatus(Activity host){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("UserStat");
@@ -76,7 +81,7 @@ public class UserStatManager {
 
     }
 
-    private static boolean isBlueToothEnable(){
+    public static boolean isBlueToothEnable(){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device does not support Bluetooth
@@ -90,12 +95,29 @@ public class UserStatManager {
         }
     }
 
-    private static boolean isLocationEnable(Activity host){
+    public static boolean isLocationEnable(Activity host){
         LocationManager manager = (LocationManager) host.getSystemService(Context.LOCATION_SERVICE);
 
         if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
             return false;
         }
         return true;
+    }
+
+    public static boolean startGoogleMapApp(Activity host, Marker marker){
+        if (LocationHelper.isGoogleMapsInstalled( host ) ) {
+            Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude + "&mode=w"));
+            host.startActivity(navigation);
+            return true;
+        } else {
+            new SweetAlertDialog(host, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("Missing Google Map")
+                    .setContentText("Please install Google Maps!")
+                    .setConfirmText("Ok")
+                    .showCancelButton(false)
+                    .show();
+
+            return false;
+        }
     }
 }

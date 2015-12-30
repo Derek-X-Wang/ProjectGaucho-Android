@@ -153,8 +153,10 @@ public class SearchSuggestions {
     }
 
     public ArrayList<LocationSuggestion> getTotalLocationSuggestion(){
+        //Collections.sort(totalLocationSuggestion);
         return totalLocationSuggestion;
     }
+
     public ArrayList<String> getTotalStringList(){
         return totalStringList;
     }
