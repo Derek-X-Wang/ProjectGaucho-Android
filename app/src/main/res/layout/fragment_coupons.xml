@@ -93,31 +93,51 @@
         android:orientation="vertical">
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="220dp"
             android:id="@+id/couponView"
             android:background="@drawable/storephotoplacehoder">
             <!--<ImageView-->
                 <!--android:layout_width="match_parent"-->
                 <!--android:layout_height="wrap_content"-->
                 <!--android:src="@drawable/storephotoplacehoder"/>-->
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/couponViewTitle"
-                android:paddingTop="10dp"
-                android:paddingBottom="20dp"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
-                android:text="Waiting for data from server"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:layout_gravity="left|bottom" />
+                android:orientation="vertical"
+                android:layout_gravity="left|bottom">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/couponViewTitle"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="30dp"
+                    android:text="Waiting for data from server"
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/couponViewDetail"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="30dp"
+                    android:paddingRight="30dp"
+                    android:text="Waiting for data from server"
+                    android:textSize="18dp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical">
+
             <fragment
                 class="com.google.android.gms.maps.MapFragment"
                 android:id="@+id/couponMapView"
@@ -125,32 +145,42 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 />
-            <TextView
+
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp"
+                android:background="#ffffff">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/couponAddress"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
+                    android:paddingStart="10dp"
+                    android:paddingLeft="10dp"
+                    android:text="Waiting for data from server"
+                    android:textSize="20dp"
+                    android:singleLine="true"/>
+
+            </HorizontalScrollView>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 android:paddingStart="10dp"
                 android:paddingLeft="10dp"
-                android:text="Waiting for data from server"
+                android:text="Redeem"
                 android:textSize="20dp"
-                android:singleLine="true"/>
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:background="@color/red_btn_bg_color"
+                android:gravity="center"/>
         </LinearLayout>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/couponAddress"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingStart="10dp"
-            android:paddingLeft="10dp"
-            android:text="Redeem"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            android:background="@color/red_btn_bg_color"
-            android:gravity="center"/>
+
 
     </LinearLayout>
 
