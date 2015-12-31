@@ -2,6 +2,10 @@ package com.intbridge.projects.gaucholife.controllers;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -57,11 +61,12 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     private Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            Log.e("Coupon UI: ", "h2");
+            //Log.e("Coupon UI: ", "h2");
+            Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
             if (android.os.Build.VERSION.SDK_INT >= 16)
-                couponView.setBackground(new BitmapDrawable(getResources(), bitmap));
+                couponView.setBackground(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
             else
-                couponView.setBackgroundDrawable(new BitmapDrawable(getResources(), bitmap));
+                couponView.setBackgroundDrawable(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
         }
 
         @Override
@@ -104,16 +109,16 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     private void updateUI() {
         CloudCodeManager.pickRandomCoupon("");
         List<ParseObject> coupons = CloudCodeManager.pickRandomCoupon("");
-        for (ParseObject coupon : coupons) {
-            Log.e("coupon array has ", coupon.getString("title"));
-        }
+//        for (ParseObject coupon : coupons) {
+//            Log.e("coupon array has ", coupon.getString("title"));
+//        }
         ParseObject firstCoupon = coupons.get(0);
         ParseGeoPoint geoPoint = firstCoupon.getParseGeoPoint("site");
         ParseFile couponImageFile = firstCoupon.getParseFile("image");
         Uri uri = Uri.parse(couponImageFile.getUrl());
-        Log.e("Coupon UI: ","h1");
+        //Log.e("Coupon UI: ","h1");
         Picasso.with(getActivity()).load(uri).into(target);
-        Log.e("Coupon UI: ", "h3");
+        //Log.e("Coupon UI: ", "h3");
 //        try {
 //            Bitmap couponBitmap = Picasso.with(getActivity()).load(uri).get();
 //            if (android.os.Build.VERSION.SDK_INT >= 16)
@@ -134,7 +139,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 
     private void setUpMap(String key,Double la,Double lo) {
         googleMap.getUiSettings().setZoomControlsEnabled(false);
-        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+        //googleMap.getUiSettings().setScrollGesturesEnabled(false);
         LatLng lalo = new LatLng(la,lo);
         Marker marker = googleMap.addMarker(new MarkerOptions()
                         .position(lalo)
@@ -145,6 +150,17 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lalo, 13));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(17), 2000, null);
         marker.showInfoWindow();
+    }
+
+    private Bitmap maskBitmap(Bitmap bitmap) {
+        LinearGradient shader = new LinearGradient(bitmap.getWidth()/2, bitmap.getHeight(),bitmap.getWidth()/2, 0, 0xFFFFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP);
+        Paint p = new Paint();
+        p.setDither(true);
+        p.setShader(shader);
+        Canvas c = new Canvas(bitmap);
+        c.drawRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), p);
+
+        return bitmap;
     }
 
     @Override
