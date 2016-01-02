@@ -18,6 +18,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
+ *
  * Created by Derek on 6/6/2015.
  */
 public class LocationHelper {

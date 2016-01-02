@@ -5,6 +5,7 @@ import android.app.Application;
 import com.parse.Parse;
 
 /**
+ *
  * Created by Derek on 8/25/2015.
  */
 public class PGApplication extends Application {

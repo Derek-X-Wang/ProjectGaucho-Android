@@ -19,6 +19,7 @@ import com.parse.ParseQuery;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
+ *
  * Created by Derek on 9/9/2015.
  */
 public class PGSplashScreen extends Activity {
