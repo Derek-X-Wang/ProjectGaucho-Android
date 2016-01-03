@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -112,24 +113,14 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 //        for (ParseObject coupon : coupons) {
 //            Log.e("coupon array has ", coupon.getString("title"));
 //        }
+//        FrameLayout coupnFrame = (FrameLayout)couponView;
+//        ViewGroup.LayoutParams params = coupnFrame.getLayoutParams();
+//        params.height = 400;
         ParseObject firstCoupon = coupons.get(0);
         ParseGeoPoint geoPoint = firstCoupon.getParseGeoPoint("site");
         ParseFile couponImageFile = firstCoupon.getParseFile("image");
         Uri uri = Uri.parse(couponImageFile.getUrl());
-        //Log.e("Coupon UI: ","h1");
         Picasso.with(getActivity()).load(uri).into(target);
-        //Log.e("Coupon UI: ", "h3");
-//        try {
-//            Bitmap couponBitmap = Picasso.with(getActivity()).load(uri).get();
-//            if (android.os.Build.VERSION.SDK_INT >= 16)
-//                couponView.setBackground(new BitmapDrawable(getResources(),couponBitmap));
-//            else
-//                couponView.setBackgroundDrawable(new BitmapDrawable(getResources(),couponBitmap));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Log.e("Coupon UI: ","Picasso cannot load image");
-//        }
-        //couponView.setBackground();
         storeTitleText.setText(firstCoupon.getString("title"));
         couponDetail.setText(firstCoupon.getString("description"));
         addressText.setText(firstCoupon.getString("store"));
