@@ -17,7 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.github.tbouron.shakedetector.library.ShakeDetector;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -102,6 +104,17 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
         addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
 
+        ShakeDetector.create(getActivity(), new ShakeDetector.OnShakeListener() {
+            @Override
+            public void OnShake() {
+                if (host.getCurrentTab() == 3) {
+                    welcomeLayout.setVisibility(View.GONE);
+                    couponLayout.setVisibility(View.VISIBLE);
+                    Toast.makeText(getActivity(), "Device shaken!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         updateUI();
 
         return v;
@@ -165,4 +178,21 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         ClientStatManager.startGoogleMapApp(getActivity(), marker);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ShakeDetector.start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        ShakeDetector.stop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ShakeDetector.destroy();
+    }
 }

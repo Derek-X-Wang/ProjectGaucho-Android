@@ -110,6 +110,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     }
 
+    public int getCurrentTab(){
+        return currentTab;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
