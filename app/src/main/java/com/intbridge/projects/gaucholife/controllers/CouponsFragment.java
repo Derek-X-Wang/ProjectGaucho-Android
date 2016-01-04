@@ -2,6 +2,7 @@ package com.intbridge.projects.gaucholife.controllers;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
@@ -47,6 +48,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Coupons Fragment
@@ -134,8 +137,26 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                         welcomeLayout.setVisibility(View.GONE);
                         couponLayout.setVisibility(View.VISIBLE);
                     }
-                    //Toast.makeText(getActivity(), "Device shaken!", Toast.LENGTH_SHORT).show();
-                    new UpdateCouponTask().execute(lastCouponID);
+                    int currentCouponAmount = Integer.parseInt(remainingCoupon.getText().toString());
+                    if (currentCouponAmount > 0) {
+                        new UpdateCouponTask().execute(lastCouponID);
+                    } else {
+                        Log.e("Shake: ", currentCouponAmount+" no more coupon");
+                        new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                                .setTitleText("No Coupon Available!")
+                                .setContentText("Please wait for another day.")
+                                .setConfirmText("Okay")
+                                .showCancelButton(false)
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sDialog) {
+                                        // reuse previous dialog instance
+                                        sDialog.dismiss();
+
+                                    }
+                                }).show();
+                    }
+
                 }
             }
         });
@@ -256,6 +277,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
             addressText.setText(firstCoupon.getString("store"));
             setUpMap(firstCoupon.getString("title"), geoPoint.getLatitude(), geoPoint.getLongitude());
             lastCouponID = firstCoupon.getObjectId();
+            int currentCouponAmount = Integer.parseInt(remainingCoupon.getText().toString());
+            remainingCoupon.setText((currentCouponAmount-1)+"");
             progressDialog.dismiss();
             ShakeDetector.start();
         }
