@@ -834,6 +834,34 @@ public class PGDatabaseManager {
         }
     }
 
+    public static String getUserID(){
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject listObject;
+        UUID uuid = UUID.randomUUID();
+        String uuidString;
+        try {
+            //Log.e("getUUID: ","start");
+            listObject = query.getFirst();
+            uuidString = listObject.getString("UUID");
+            if(uuidString == null){
+                uuidString = uuid.toString();
+                listObject.put("UUID", uuid.toString());
+                listObject.pinInBackground();
+            }
+
+        } catch (ParseException e) {
+            // Setting is null
+            // new item haven't schedule notification yet
+            //Log.e("getUUID: ","ParseException");
+            listObject = new ParseObject("Setting");
+            uuidString = uuid.toString();
+            listObject.put("UUID", uuidString);
+            listObject.pinInBackground();
+        }
+        return uuidString;
+    }
+
     public static boolean isRestoreCouponAmount(){
         Date recordDate = null;
         Date currentDate = new Date();

@@ -121,7 +121,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         redeemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Device shaken!", Toast.LENGTH_SHORT).show();
+                CloudCodeManager.redeemCoupon(lastCouponID);
+                Toast.makeText(getActivity(), "Redeem!", Toast.LENGTH_SHORT).show();
             }
         });
 
