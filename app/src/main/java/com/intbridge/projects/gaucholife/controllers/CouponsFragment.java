@@ -1,6 +1,7 @@
 package com.intbridge.projects.gaucholife.controllers;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
@@ -9,12 +10,15 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.intbridge.projects.gaucholife.MainActivity;
+import com.intbridge.projects.gaucholife.PGDatabaseManager;
 import com.intbridge.projects.gaucholife.R;
 import com.intbridge.projects.gaucholife.utils.ClientStatManager;
 import com.intbridge.projects.gaucholife.utils.CloudCodeManager;
@@ -39,7 +44,9 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Coupons Fragment
@@ -59,6 +66,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     private TextView storeTitleText;
     private TextView couponDetail;
     private TextView addressText;
+    private TextView remainingCoupon;
+    private Button redeemButton;
 
     private String lastCouponID = "";
     private Target target = new Target() {
@@ -104,31 +113,41 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
         addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
 
+        remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
+        if (PGDatabaseManager.isRestoreCouponAmount()) {
+            remainingCoupon.setText("15");
+        }
+        redeemButton = (Button)v.findViewById(R.id.redeemButton);
+        redeemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Device shaken!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         ShakeDetector.create(getActivity(), new ShakeDetector.OnShakeListener() {
             @Override
             public void OnShake() {
                 if (host.getCurrentTab() == 3) {
-                    welcomeLayout.setVisibility(View.GONE);
-                    couponLayout.setVisibility(View.VISIBLE);
-                    Toast.makeText(getActivity(), "Device shaken!", Toast.LENGTH_SHORT).show();
+                    if (welcomeLayout.getVisibility() == View.VISIBLE) {
+                        welcomeLayout.setVisibility(View.GONE);
+                        couponLayout.setVisibility(View.VISIBLE);
+                    }
+                    //Toast.makeText(getActivity(), "Device shaken!", Toast.LENGTH_SHORT).show();
+                    new UpdateCouponTask().execute(lastCouponID);
                 }
             }
         });
 
-        updateUI();
 
         return v;
     }
 
     private void updateUI() {
-        CloudCodeManager.pickRandomCoupon("");
         List<ParseObject> coupons = CloudCodeManager.pickRandomCoupon("");
 //        for (ParseObject coupon : coupons) {
 //            Log.e("coupon array has ", coupon.getString("title"));
 //        }
-//        FrameLayout coupnFrame = (FrameLayout)couponView;
-//        ViewGroup.LayoutParams params = coupnFrame.getLayoutParams();
-//        params.height = 400;
         ParseObject firstCoupon = coupons.get(0);
         ParseGeoPoint geoPoint = firstCoupon.getParseGeoPoint("site");
         ParseFile couponImageFile = firstCoupon.getParseFile("image");
@@ -194,5 +213,50 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     public void onDestroy() {
         super.onDestroy();
         ShakeDetector.destroy();
+    }
+
+    private class UpdateCouponTask extends AsyncTask<String, Integer, List<ParseObject>> {
+        ProgressDialog progressDialog;
+        @Override
+        protected void onPreExecute() {
+            ShakeDetector.stop();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
+
+            googleMap.clear();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                couponView.setBackground(getResources().getDrawable(R.drawable.storephotoplacehoder, getActivity().getTheme()));
+            } else if (android.os.Build.VERSION.SDK_INT >= 16) {
+                couponView.setBackground(getResources().getDrawable(R.drawable.storephotoplacehoder));
+            } else {
+                couponView.setBackgroundDrawable(getResources().getDrawable(R.drawable.storephotoplacehoder));
+            }
+        }
+
+        @Override
+        protected List<ParseObject> doInBackground(String... params) {
+            // params comes from the execute() call: use params[0] for the first.
+
+            return CloudCodeManager.pickRandomCoupon(params[0]);
+
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(List<ParseObject> coupons) {
+            ParseObject firstCoupon = coupons.get(0);
+            ParseGeoPoint geoPoint = firstCoupon.getParseGeoPoint("site");
+            ParseFile couponImageFile = firstCoupon.getParseFile("image");
+            Uri uri = Uri.parse(couponImageFile.getUrl());
+            Picasso.with(getActivity()).load(uri).into(target);
+            storeTitleText.setText(firstCoupon.getString("title"));
+            couponDetail.setText(firstCoupon.getString("description"));
+            addressText.setText(firstCoupon.getString("store"));
+            setUpMap(firstCoupon.getString("title"), geoPoint.getLatitude(), geoPoint.getLongitude());
+            lastCouponID = firstCoupon.getObjectId();
+            progressDialog.dismiss();
+            ShakeDetector.start();
+        }
     }
 }

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     android:id="@+id/couponMainLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#9698a9"
+    android:background="@drawable/bk2"
     tools:context="com.intbridge.projects.gaucholife.controllers.CouponsFragment">
 
     <RelativeLayout
@@ -17,12 +19,13 @@
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="GauchoLife Shake"
-            android:textSize="21dp"
+            android:text="GauchoLife Coupon"
+            android:textSize="20dp"
             android:textColor="#ffffff"
             android:textStyle="bold"
             android:layout_centerHorizontal="true"/>
         <TextView
+            android:id="@+id/remainingCoupon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
@@ -36,23 +39,12 @@
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/couponWelcomeLayout"
-        android:orientation="vertical"
         android:visibility="visible">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="30dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="Tips"
-            android:textSize="20dp"
-            android:textColor="#ffffff"
-            android:layout_gravity="center_horizontal"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,37 +52,50 @@
             android:paddingBottom="10dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
-            android:text="You will have up to 15 coupons from nearby restaurants"
+            android:text="You have up to 15 coupons from nearby restaurants"
             android:textSize="20dp"
             android:textColor="#ffffff"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/shakeicon"
-            android:padding="20dp"/>
+            android:orientation="vertical"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/linearLayout">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/shakeicon"
+                android:padding="20dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="Shake me to help you decide"
-            android:textSize="32dp"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            android:gravity="left"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="90dp"
+                android:text="Shake me to help you decide"
+                android:textSize="32dp"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:gravity="start"/>
+        </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/couponResultLayout"
         android:orientation="vertical"
+        android:background="#ffffff"
         android:visibility="gone">
 
         <LinearLayout
@@ -119,7 +124,7 @@
                         android:paddingBottom="2dp"
                         android:paddingLeft="20dp"
                         android:paddingRight="30dp"
-                        android:text="Waiting for data from server"
+                        android:text=""
                         android:textSize="20dp"
                         android:textStyle="bold"/>
 
@@ -131,7 +136,7 @@
                         android:paddingBottom="10dp"
                         android:paddingLeft="30dp"
                         android:paddingRight="30dp"
-                        android:text="Waiting for data from server"
+                        android:text=""
                         android:textSize="18dp"
                         android:textStyle="bold"/>
                 </LinearLayout>
@@ -161,15 +166,16 @@
                 android:paddingBottom="7dp"
                 android:paddingStart="10dp"
                 android:paddingLeft="10dp"
-                android:text="Waiting for data from server"
+                android:text=""
                 android:textSize="20dp"
                 android:singleLine="true"/>
 
         </HorizontalScrollView>
 
-        <Button
+        <info.hoang8f.widget.FButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/redeemButton"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:paddingStart="10dp"
@@ -178,10 +184,14 @@
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="#ffffff"
-            android:background="@color/red_btn_bg_color"
+            fbutton:buttonColor = "@color/red_btn_bg_color"
+            fbutton:shadowColor="#a94633"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="0dp"
             android:gravity="center"/>
 
-
+        <!--android:background="@color/red_btn_bg_color"-->
 
 
     </LinearLayout>

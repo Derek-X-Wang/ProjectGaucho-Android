@@ -834,4 +834,40 @@ public class PGDatabaseManager {
         }
     }
 
+    public static boolean isRestoreCouponAmount(){
+        Date recordDate = null;
+        Date currentDate = new Date();
+        ParseQuery query = ParseQuery.getQuery("Setting");
+        query.fromLocalDatastore();
+        ParseObject object;
+        try {
+            object = query.getFirst();
+            recordDate = object.getDate("CouponDate");
+            if(recordDate == null){
+                object.put("CouponDate", currentDate);
+                object.pinInBackground();
+                return true;
+            }
+
+        } catch (ParseException e) {
+            // Setting is null
+            object = new ParseObject("Setting");
+            object.put("CouponDate", currentDate);
+            object.pinInBackground();
+            return true;
+        }
+        return !isSameDay(recordDate, currentDate);
+
+    }
+
+    public static boolean isSameDay(Date date1, Date date2) {
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(date1);
+        cal2.setTime(date2);
+        boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+        return sameDay;
+    }
+
 }

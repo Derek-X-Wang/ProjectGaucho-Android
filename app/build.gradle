@@ -36,4 +36,5 @@ dependencies {
     compile 'com.github.arimorty:floatingsearchview:1.1.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.tbouron.shakedetector:library:1.0.0@aar'
+    compile 'info.hoang8f:fbutton:1.0.5'
 }
