@@ -3,7 +3,9 @@ package com.intbridge.projects.gaucholife.controllers;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
@@ -74,6 +76,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     private Button redeemButton;
 
     private String lastCouponID = "";
+    private ParseObject currentCoupon;
+    ProgressDialog progressDialog;
     private Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -83,11 +87,32 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                 couponView.setBackground(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
             else
                 couponView.setBackgroundDrawable(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
+            welcomeLayout.setVisibility(View.GONE);
+            couponLayout.setVisibility(View.VISIBLE);
+            progressDialog.dismiss();
+            ShakeDetector.start();
+            ParseGeoPoint geoPoint = currentCoupon.getParseGeoPoint("site");
+            setUpMap(currentCoupon.getString("title"), geoPoint.getLatitude(), geoPoint.getLongitude());
         }
 
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {
             Log.e("Coupon UI: ", "Picasso cannot load image");
+            progressDialog.dismiss();
+            ShakeDetector.start();
+            new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("Couldn't Load Coupon!")
+                    .setContentText("Please try again.")
+                    .setConfirmText("Okay")
+                    .showCancelButton(false)
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sDialog) {
+                            // reuse previous dialog instance
+                            sDialog.dismiss();
+
+                        }
+                    }).show();
         }
 
         @Override
@@ -117,9 +142,17 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
         addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
 
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Loading...");
+
         remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
+        SharedPreferences sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
         if (PGDatabaseManager.isRestoreCouponAmount()) {
-            remainingCoupon.setText("15");
+            //remainingCoupon.setText("15");
+            Log.d("restore coupons:", "yes");
+        } else {
+            Log.d("restore coupons:", "no");
+
         }
         redeemButton = (Button)v.findViewById(R.id.redeemButton);
         redeemButton.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +167,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
             @Override
             public void OnShake() {
                 if (host.getCurrentTab() == 3) {
+                    ShakeDetector.stop();
                     if (welcomeLayout.getVisibility() == View.VISIBLE) {
                         welcomeLayout.setVisibility(View.GONE);
                         couponLayout.setVisibility(View.VISIBLE);
@@ -153,6 +187,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                                     public void onClick(SweetAlertDialog sDialog) {
                                         // reuse previous dialog instance
                                         sDialog.dismiss();
+                                        ShakeDetector.start();
 
                                     }
                                 }).show();
@@ -172,23 +207,6 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
             fm = getChildFragmentManager();
         }
         return (MapFragment) fm.findFragmentById(R.id.couponMapView);
-    }
-
-    private void updateUI() {
-        List<ParseObject> coupons = CloudCodeManager.pickRandomCoupon("");
-//        for (ParseObject coupon : coupons) {
-//            Log.e("coupon array has ", coupon.getString("title"));
-//        }
-        ParseObject firstCoupon = coupons.get(0);
-        ParseGeoPoint geoPoint = firstCoupon.getParseGeoPoint("site");
-        ParseFile couponImageFile = firstCoupon.getParseFile("image");
-        Uri uri = Uri.parse(couponImageFile.getUrl());
-        Picasso.with(getActivity()).load(uri).into(target);
-        storeTitleText.setText(firstCoupon.getString("title"));
-        couponDetail.setText(firstCoupon.getString("description"));
-        addressText.setText(firstCoupon.getString("store"));
-        setUpMap(firstCoupon.getString("title"), geoPoint.getLatitude(), geoPoint.getLongitude());
-        
     }
 
     private void setUpMap(String key,Double la,Double lo) {
@@ -247,13 +265,11 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     }
 
     private class UpdateCouponTask extends AsyncTask<String, Integer, List<ParseObject>> {
-        ProgressDialog progressDialog;
         @Override
         protected void onPreExecute() {
-            ShakeDetector.stop();
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("Loading...");
             progressDialog.show();
+            couponLayout.setVisibility(View.GONE);
+            welcomeLayout.setVisibility(View.VISIBLE);
 
             googleMap.clear();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -268,28 +284,22 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         @Override
         protected List<ParseObject> doInBackground(String... params) {
             // params comes from the execute() call: use params[0] for the first.
-
             return CloudCodeManager.pickRandomCoupon(params[0]);
-
         }
 
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(List<ParseObject> coupons) {
-            ParseObject firstCoupon = coupons.get(0);
-            ParseGeoPoint geoPoint = firstCoupon.getParseGeoPoint("site");
-            ParseFile couponImageFile = firstCoupon.getParseFile("image");
+            currentCoupon = coupons.get(0);
+            ParseFile couponImageFile = currentCoupon.getParseFile("image");
             Uri uri = Uri.parse(couponImageFile.getUrl());
             Picasso.with(getActivity()).load(uri).into(target);
-            storeTitleText.setText(firstCoupon.getString("title"));
-            couponDetail.setText(firstCoupon.getString("description"));
-            addressText.setText(firstCoupon.getString("store"));
-            setUpMap(firstCoupon.getString("title"), geoPoint.getLatitude(), geoPoint.getLongitude());
-            lastCouponID = firstCoupon.getObjectId();
+            storeTitleText.setText(currentCoupon.getString("title"));
+            couponDetail.setText(currentCoupon.getString("description"));
+            addressText.setText(currentCoupon.getString("store"));
+            lastCouponID = currentCoupon.getObjectId();
             int currentCouponAmount = Integer.parseInt(remainingCoupon.getText().toString());
-            remainingCoupon.setText((currentCouponAmount-1)+"");
-            progressDialog.dismiss();
-            ShakeDetector.start();
+            remainingCoupon.setText((currentCouponAmount - 1) + "");
         }
     }
 }
