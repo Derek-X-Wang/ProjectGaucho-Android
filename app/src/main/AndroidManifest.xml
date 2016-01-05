@@ -24,7 +24,7 @@
         android:name=".PGApplication"
         android:allowBackup="true"
         tools:replace="android:icon"
-        android:icon="@drawable/pg_launcher"
+        android:icon="@drawable/pg_launcher2"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <meta-data
