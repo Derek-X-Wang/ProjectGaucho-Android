@@ -1,6 +1,7 @@
 package com.intbridge.projects.gaucholife.controllers;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -104,7 +105,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         View v = inflater.inflate(R.layout.fragment_coupons, container, false);
 
         host = (MainActivity)getActivity();
-        mMapView = (MapFragment) getFragmentManager().findFragmentById(R.id.couponMapView);
+        mMapView = getMapFragment();
         googleMap = mMapView.getMap();
 
         mainLayout = v.findViewById(R.id.couponMainLayout);
@@ -160,9 +161,17 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                 }
             }
         });
-
-
         return v;
+    }
+
+    private MapFragment getMapFragment() {
+        FragmentManager fm = null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            fm = getFragmentManager();
+        } else {
+            fm = getChildFragmentManager();
+        }
+        return (MapFragment) fm.findFragmentById(R.id.couponMapView);
     }
 
     private void updateUI() {
@@ -184,7 +193,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 
     private void setUpMap(String key,Double la,Double lo) {
         googleMap.getUiSettings().setZoomControlsEnabled(false);
-        //googleMap.getUiSettings().setScrollGesturesEnabled(false);
+        googleMap.getUiSettings().setScrollGesturesEnabled(false);
         LatLng lalo = new LatLng(la,lo);
         Marker marker = googleMap.addMarker(new MarkerOptions()
                         .position(lalo)

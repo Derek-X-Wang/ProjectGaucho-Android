@@ -3,11 +3,13 @@ package com.intbridge.projects.gaucholife.controllers;
 
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -63,7 +65,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         //ActionBar actionBar = host.getActionBar();
         //if(actionBar != null && !actionBar.isShowing()) actionBar.show();
 
-        mMapView = (MapFragment) getFragmentManager().findFragmentById(R.id.mapView);
+        mMapView = getMapFragment();
 //        mMapView.onCreate(savedInstanceState);
 //
 //        mMapView.onResume();// needed to get the map to display immediately
@@ -83,6 +85,16 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         setUpFloatingSearchView();
 
         return v;
+    }
+
+    private MapFragment getMapFragment() {
+        FragmentManager fm = null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            fm = getFragmentManager();
+        } else {
+            fm = getChildFragmentManager();
+        }
+        return (MapFragment) fm.findFragmentById(R.id.mapView);
     }
 
     private void setUpFloatingSearchView() {

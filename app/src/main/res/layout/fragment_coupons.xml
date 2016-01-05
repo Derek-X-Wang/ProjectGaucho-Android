@@ -52,7 +52,7 @@
             android:paddingBottom="10dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
-            android:text="You have up to 15 coupons from nearby restaurants"
+            android:text="You have up to 15 coupons from nearby restaurants per day"
             android:textSize="20dp"
             android:textColor="#ffffff"
             android:gravity="center"
