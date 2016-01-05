@@ -240,28 +240,28 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         ClientStatManager.startGoogleMapApp(getActivity(),marker);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mMapView.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mMapView.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mMapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mMapView.onLowMemory();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        mMapView.onResume();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        mMapView.onPause();
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        mMapView.onDestroy();
+//    }
+//
+//    @Override
+//    public void onLowMemory() {
+//        super.onLowMemory();
+//        mMapView.onLowMemory();
+//    }
 
 }

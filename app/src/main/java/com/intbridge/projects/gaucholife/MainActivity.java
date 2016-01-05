@@ -154,31 +154,31 @@ public class MainActivity extends Activity implements View.OnClickListener{
         resetOtherTabs();
         switch (currentTab) {
             case 0:
+                tabCoupons.setIconAlpha(1.0f);
+                initFragments();
+                getFragmentManager().beginTransaction()
+                        .show(couponsFragment)
+                        .commit();
+                break;
+            case 1:
                 tabMaps.setIconAlpha(1.0f);
                 initFragments();
                 getFragmentManager().beginTransaction()
                         .show(mapsFragemnt)
                         .commit();
                 break;
-            case 1:
+            case 2:
                 tabDining.setIconAlpha(1.0f);
                 initFragments();
                 getFragmentManager().beginTransaction()
                         .show(diningFragment)
                         .commit();
                 break;
-            case 2:
+            case 3:
                 tabSettings.setIconAlpha(1.0f);
                 initFragments();
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
-                        .commit();
-                break;
-            case 3:
-                tabCoupons.setIconAlpha(1.0f);
-                initFragments();
-                getFragmentManager().beginTransaction()
-                        .show(couponsFragment)
                         .commit();
                 break;
         }
@@ -204,8 +204,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
         resetOtherTabs();
         //ActionBar actionBar = getActionBar();
         switch (v.getId()){
-            case R.id.tab_maps:
+            case R.id.tab_coupons:
                 currentTab = 0;
+                tabCoupons.setIconAlpha(1.0f);
+                hideAllFragments();
+                getFragmentManager().beginTransaction()
+                        .show(couponsFragment)
+                        .commit();
+                break;
+            case R.id.tab_maps:
+                currentTab = 1;
                 tabMaps.setIconAlpha(1.0f);
                 hideAllFragments();
                 getFragmentManager().beginTransaction()
@@ -213,7 +221,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         .commit();
                 break;
             case R.id.tab_dining:
-                currentTab = 1;
+                currentTab = 2;
                 tabDining.setIconAlpha(1.0f);
                 hideAllFragments();
                 getFragmentManager().beginTransaction()
@@ -221,19 +229,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         .commit();
                 break;
             case R.id.tab_settings:
-                currentTab = 2;
+                currentTab = 3;
                 tabSettings.setIconAlpha(1.0f);
                 hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
-                        .commit();
-                break;
-            case R.id.tab_coupons:
-                currentTab = 3;
-                tabCoupons.setIconAlpha(1.0f);
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(couponsFragment)
                         .commit();
                 break;
         }

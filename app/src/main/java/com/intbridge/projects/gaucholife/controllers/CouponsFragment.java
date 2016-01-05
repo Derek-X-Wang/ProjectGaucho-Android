@@ -175,7 +175,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         ShakeDetector.create(getActivity(), new ShakeDetector.OnShakeListener() {
             @Override
             public void OnShake() {
-                if (host.getCurrentTab() == 3) {
+                if (host.getCurrentTab() == 0) {
                     ShakeDetector.stop();
                     if (welcomeLayout.getVisibility() == View.VISIBLE) {
                         welcomeLayout.setVisibility(View.GONE);

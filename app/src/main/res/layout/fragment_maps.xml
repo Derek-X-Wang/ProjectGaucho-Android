@@ -14,8 +14,8 @@
 
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/floating_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
         app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
         app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
