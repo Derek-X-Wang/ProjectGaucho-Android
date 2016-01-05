@@ -77,7 +77,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 
     private String lastCouponID = "";
     private ParseObject currentCoupon;
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
     private Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -120,6 +120,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 
         }
     };
+    private SharedPreferences sharedSettings;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,13 +147,21 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         progressDialog.setMessage("Loading...");
 
         remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
-        SharedPreferences sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
+        sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
         if (PGDatabaseManager.isRestoreCouponAmount()) {
-            //remainingCoupon.setText("15");
             Log.d("restore coupons:", "yes");
+            remainingCoupon.setText("15");
         } else {
             Log.d("restore coupons:", "no");
-
+            int couponCount = sharedSettings.getInt("RemainCoupon",-1);
+            if (couponCount == -1) {
+                Log.d("restore coupons:", "-1");
+                SharedPreferences.Editor editor = sharedSettings.edit();
+                editor.putInt("RemainCoupon", 15);
+                editor.commit();
+                couponCount = 15;
+            }
+            remainingCoupon.setText(couponCount+"");
         }
         redeemButton = (Button)v.findViewById(R.id.redeemButton);
         redeemButton.setOnClickListener(new View.OnClickListener() {
@@ -255,6 +264,10 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     @Override
     public void onStop() {
         super.onStop();
+        int currentCouponAmount = Integer.parseInt(remainingCoupon.getText().toString());
+        SharedPreferences.Editor editor = sharedSettings.edit();
+        editor.putInt("RemainCoupon", currentCouponAmount);
+        editor.commit();
         ShakeDetector.stop();
     }
 
