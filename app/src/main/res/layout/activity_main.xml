@@ -28,7 +28,7 @@
             android:padding="9dp"
             wang:text="Coupons"
             wang:text_size="12sp"
-            wang:pgcolor="#ff45c01a"
+            wang:pgcolor="#2a75a9"
             />
 
         <com.intbridge.projects.gaucholife.views.IconWithTextView
@@ -40,7 +40,7 @@
             android:padding="9dp"
             wang:text="Maps"
             wang:text_size="12sp"
-            wang:pgcolor="#ff45c01a"
+            wang:pgcolor="#2a75a9"
             />
 
         <com.intbridge.projects.gaucholife.views.IconWithTextView
@@ -52,7 +52,7 @@
             android:padding="9dp"
             wang:text="Dining"
             wang:text_size="12sp"
-            wang:pgcolor="#ff45c01a"
+            wang:pgcolor="#2a75a9"
             />
 
         <com.intbridge.projects.gaucholife.views.IconWithTextView
@@ -64,7 +64,7 @@
             android:padding="9dp"
             wang:text="Setting"
             wang:text_size="12sp"
-            wang:pgcolor="#ff45c01a"
+            wang:pgcolor="#2a75a9"
             />
 
     </LinearLayout>

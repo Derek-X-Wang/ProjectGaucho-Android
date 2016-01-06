@@ -19,6 +19,7 @@ import android.view.View;
 import com.intbridge.projects.gaucholife.R;
 
 /**
+ *
  * Created by Derek on 8/6/2015.
  */
 public class IconWithTextView extends View {

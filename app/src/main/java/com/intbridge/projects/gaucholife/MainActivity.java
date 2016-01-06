@@ -152,31 +152,28 @@ public class MainActivity extends Activity implements View.OnClickListener{
         tabSettings.setOnClickListener(this);
 
         resetOtherTabs();
+        initFragments();
         switch (currentTab) {
             case 0:
                 tabCoupons.setIconAlpha(1.0f);
-                initFragments();
                 getFragmentManager().beginTransaction()
                         .show(couponsFragment)
                         .commit();
                 break;
             case 1:
                 tabMaps.setIconAlpha(1.0f);
-                initFragments();
                 getFragmentManager().beginTransaction()
                         .show(mapsFragemnt)
                         .commit();
                 break;
             case 2:
                 tabDining.setIconAlpha(1.0f);
-                initFragments();
                 getFragmentManager().beginTransaction()
                         .show(diningFragment)
                         .commit();
                 break;
             case 3:
                 tabSettings.setIconAlpha(1.0f);
-                initFragments();
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
                         .commit();
@@ -185,17 +182,23 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     private void initFragments(){
+        // order matter, if we want the walkaround works, for two onShow fragment
+        // the one that added later will show
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
+                .hide(mapsFragemnt)
+                .commit();
         getFragmentManager().beginTransaction().add(R.id.fragment_content, couponsFragment)
                 .hide(couponsFragment)
                 .commit();
         getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
                 .hide(diningFragment)
                 .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
-                .hide(mapsFragemnt)
-                .commit();
         getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
                 .hide(settingsFragment)
+                .commit();
+        //walkaround for map floating search bar no menu item
+        getFragmentManager().beginTransaction()
+                .show(mapsFragemnt)
                 .commit();
     }
 

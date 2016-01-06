@@ -149,10 +149,10 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
         sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
         if (PGDatabaseManager.isRestoreCouponAmount()) {
-            Log.d("restore coupons:", "yes");
+            //Log.d("restore coupons:", "yes");
             remainingCoupon.setText("15");
         } else {
-            Log.d("restore coupons:", "no");
+            //Log.d("restore coupons:", "no");
             int couponCount = sharedSettings.getInt("RemainCoupon",-1);
             if (couponCount == -1) {
                 Log.d("restore coupons:", "-1");
@@ -303,6 +303,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(List<ParseObject> coupons) {
+            if (coupons.size() == 0) return;
             currentCoupon = coupons.get(0);
             ParseFile couponImageFile = currentCoupon.getParseFile("image");
             Uri uri = Uri.parse(couponImageFile.getUrl());
