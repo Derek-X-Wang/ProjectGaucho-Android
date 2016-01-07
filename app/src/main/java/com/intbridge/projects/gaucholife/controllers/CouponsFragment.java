@@ -18,13 +18,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,49 +83,12 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     private String lastCouponID = "";
     private ParseObject currentCoupon;
     private SweetAlertDialog progressDialog;
-    private Target target = new Target() {
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            //Log.e("Coupon UI: ", "h2");
-            Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-            if (android.os.Build.VERSION.SDK_INT >= 16)
-                couponView.setBackground(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
-            else
-                couponView.setBackgroundDrawable(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
-            welcomeLayout.setVisibility(View.GONE);
-            couponLayout.setVisibility(View.VISIBLE);
-            progressDialog.dismiss();
-            ShakeDetector.start();
-            ParseGeoPoint geoPoint = currentCoupon.getParseGeoPoint("site");
-            setUpMap(currentCoupon.getString("title"), geoPoint.getLatitude(), geoPoint.getLongitude());
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-            //Log.e("Coupon UI: ", "Picasso cannot load image");
-            progressDialog.dismiss();
-            ShakeDetector.start();
-            new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE)
-                    .setTitleText("Couldn't Load Coupon!")
-                    .setContentText("Please try again.")
-                    .setConfirmText("Okay")
-                    .showCancelButton(false)
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(SweetAlertDialog sDialog) {
-                            // reuse previous dialog instance
-                            sDialog.dismiss();
-
-                        }
-                    }).show();
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
-    };
     private SharedPreferences sharedSettings;
+    private ImageView shakeIV;
+    private Handler shakeDelayHandler;
+    private Runnable shakeImageTimerThread;
+    private Target targetCouponImage;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -137,6 +104,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         setupRedeemButton();
         createShakeDetector();
 
+        shakeDelayHandler.postDelayed(shakeImageTimerThread, 3500);
         return v;
     }
 
@@ -238,10 +206,63 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         welcomeLayout = v.findViewById(R.id.couponWelcomeLayout);
         couponLayout = v.findViewById(R.id.couponResultLayout);
 
+        shakeIV = (ImageView)v.findViewById(R.id.imageview_shake);
+        shakeDelayHandler = new Handler();
+        shakeImageTimerThread = new Runnable() {
+            @Override
+            public void run() {
+                Animation shake = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+                shakeIV.startAnimation(shake);
+                shakeDelayHandler.postDelayed(this, 4500);
+            }
+        };
+
         couponView = couponLayout.findViewById(R.id.couponView);
         storeTitleText = (TextView)couponLayout.findViewById(R.id.couponViewTitle);
         couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
         addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
+        targetCouponImage = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                //Log.e("Coupon UI: ", "h2");
+                Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                if (android.os.Build.VERSION.SDK_INT >= 16)
+                    couponView.setBackground(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
+                else
+                    couponView.setBackgroundDrawable(new BitmapDrawable(getResources(), maskBitmap(mutableBitmap)));
+                welcomeLayout.setVisibility(View.GONE);
+                couponLayout.setVisibility(View.VISIBLE);
+                progressDialog.dismiss();
+                ShakeDetector.start();
+                ParseGeoPoint geoPoint = currentCoupon.getParseGeoPoint("site");
+                setUpMap(currentCoupon.getString("title"), geoPoint.getLatitude(), geoPoint.getLongitude());
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                //Log.e("Coupon UI: ", "Picasso cannot load image");
+                progressDialog.dismiss();
+                ShakeDetector.start();
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE)
+                        .setTitleText("Couldn't Load Coupon!")
+                        .setContentText("Please try again.")
+                        .setConfirmText("Okay")
+                        .showCancelButton(false)
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                // reuse previous dialog instance
+                                sDialog.dismiss();
+
+                            }
+                        }).show();
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
 
         progressDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
         progressDialog.setTitleText("Loading...");
@@ -350,7 +371,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
             currentCoupon = coupons.get(0);
             ParseFile couponImageFile = currentCoupon.getParseFile("image");
             Uri uri = Uri.parse(couponImageFile.getUrl());
-            Picasso.with(getActivity()).load(uri).into(target);
+            Picasso.with(getActivity()).load(uri).into(targetCouponImage);
             storeTitleText.setText(currentCoupon.getString("title"));
             couponDetail.setText(currentCoupon.getString("description"));
             addressText.setText(currentCoupon.getString("store"));
