@@ -106,7 +106,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //        new SyncWebRequestTask().execute(currentDate);
 
         // send user stat TODO: uncomment when release
-        //ClientStatManager.sendUserStatus(this);
+        ClientStatManager.sendUserStatus(this);
 
     }
 

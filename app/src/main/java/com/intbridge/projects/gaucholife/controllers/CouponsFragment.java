@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
@@ -77,7 +78,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 
     private String lastCouponID = "";
     private ParseObject currentCoupon;
-    private ProgressDialog progressDialog;
+    private SweetAlertDialog progressDialog;
     private Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -121,6 +122,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         }
     };
     private SharedPreferences sharedSettings;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,8 +145,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
         addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
 
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Loading...");
+        progressDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+        progressDialog.setTitleText("Loading...");
 
         remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
         sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -167,8 +169,33 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         redeemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CloudCodeManager.redeemCoupon(lastCouponID);
-                Toast.makeText(getActivity(), "Redeem!", Toast.LENGTH_SHORT).show();
+                ShakeDetector.stop();
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Redeem this offer?")
+                        .setContentText("Please let the merchant confirm redemption. Otherwise, you will lose this offer.")
+                        .setConfirmText("Redeem")
+                        .setCancelText("Cancel")
+                        .showCancelButton(true)
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                // reuse previous dialog instance
+                                sDialog.dismiss();
+                                CloudCodeManager.redeemCoupon(lastCouponID);
+                                couponLayout.setVisibility(View.GONE);
+                                welcomeLayout.setVisibility(View.VISIBLE);
+                                ShakeDetector.start();
+                                Toast.makeText(getActivity(), "Redeemed!", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                                ShakeDetector.start();
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -185,7 +212,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                     if (currentCouponAmount > 0) {
                         new UpdateCouponTask().execute(lastCouponID);
                     } else {
-                        Log.e("Shake: ", currentCouponAmount+" no more coupon");
+                        //Log.e("Shake: ", currentCouponAmount+" no more coupon");
                         new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
                                 .setTitleText("No Coupon Available!")
                                 .setContentText("Please wait for another day.")
