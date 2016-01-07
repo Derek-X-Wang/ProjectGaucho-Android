@@ -69,6 +69,7 @@
             android:layout_alignParentStart="true"
             android:id="@+id/linearLayout">
             <ImageView
+                android:id="@+id/shakeicon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/shakeicon"

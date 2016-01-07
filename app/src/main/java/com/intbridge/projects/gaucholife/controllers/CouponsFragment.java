@@ -98,7 +98,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {
-            Log.e("Coupon UI: ", "Picasso cannot load image");
+            //Log.e("Coupon UI: ", "Picasso cannot load image");
             progressDialog.dismiss();
             ShakeDetector.start();
             new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE)
@@ -132,73 +132,15 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_coupons, container, false);
 
-        host = (MainActivity)getActivity();
-        mMapView = getMapFragment();
-        googleMap = mMapView.getMap();
+        initClassVariable(v);
+        updateCouponAmount();
+        setupRedeemButton();
+        createShakeDetector();
 
-        mainLayout = v.findViewById(R.id.couponMainLayout);
-        welcomeLayout = v.findViewById(R.id.couponWelcomeLayout);
-        couponLayout = v.findViewById(R.id.couponResultLayout);
+        return v;
+    }
 
-        couponView = couponLayout.findViewById(R.id.couponView);
-        storeTitleText = (TextView)couponLayout.findViewById(R.id.couponViewTitle);
-        couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
-        addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
-
-        progressDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
-        progressDialog.setTitleText("Loading...");
-
-        remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
-        sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
-        if (PGDatabaseManager.isRestoreCouponAmount()) {
-            //Log.d("restore coupons:", "yes");
-            remainingCoupon.setText("15");
-        } else {
-            //Log.d("restore coupons:", "no");
-            int couponCount = sharedSettings.getInt("RemainCoupon",-1);
-            if (couponCount == -1) {
-                Log.d("restore coupons:", "-1");
-                SharedPreferences.Editor editor = sharedSettings.edit();
-                editor.putInt("RemainCoupon", 15);
-                editor.commit();
-                couponCount = 15;
-            }
-            remainingCoupon.setText(couponCount+"");
-        }
-        redeemButton = (Button)v.findViewById(R.id.redeemButton);
-        redeemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShakeDetector.stop();
-                new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("Redeem this offer?")
-                        .setContentText("Please let the merchant confirm redemption. Otherwise, you will lose this offer.")
-                        .setConfirmText("Redeem")
-                        .setCancelText("Cancel")
-                        .showCancelButton(true)
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sDialog) {
-                                // reuse previous dialog instance
-                                sDialog.dismiss();
-                                CloudCodeManager.redeemCoupon(lastCouponID);
-                                couponLayout.setVisibility(View.GONE);
-                                welcomeLayout.setVisibility(View.VISIBLE);
-                                ShakeDetector.start();
-                                Toast.makeText(getActivity(), "Redeemed!", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                sweetAlertDialog.dismiss();
-                                ShakeDetector.start();
-                            }
-                        })
-                        .show();
-            }
-        });
-
+    private void createShakeDetector() {
         ShakeDetector.create(getActivity(), new ShakeDetector.OnShakeListener() {
             @Override
             public void OnShake() {
@@ -232,7 +174,81 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                 }
             }
         });
-        return v;
+    }
+
+    private void setupRedeemButton() {
+        redeemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShakeDetector.stop();
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Redeem this offer?")
+                        .setContentText("Please let the merchant confirm redemption. Otherwise, you will lose this offer.")
+                        .setConfirmText("Redeem")
+                        .setCancelText("Cancel")
+                        .showCancelButton(true)
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                // reuse previous dialog instance
+                                sDialog.dismiss();
+                                CloudCodeManager.redeemCoupon(lastCouponID);
+                                couponLayout.setVisibility(View.GONE);
+                                welcomeLayout.setVisibility(View.VISIBLE);
+                                ShakeDetector.start();
+                                Toast.makeText(getActivity(), "Redeemed!", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                                ShakeDetector.start();
+                            }
+                        })
+                        .show();
+            }
+        });
+    }
+
+    private void updateCouponAmount() {
+        if (PGDatabaseManager.isRestoreCouponAmount()) {
+            //Log.d("restore coupons:", "yes");
+            remainingCoupon.setText("15");
+        } else {
+            //Log.d("restore coupons:", "no");
+            int couponCount = sharedSettings.getInt("RemainCoupon",-1);
+            if (couponCount == -1) {
+                Log.d("restore coupons:", "-1");
+                SharedPreferences.Editor editor = sharedSettings.edit();
+                editor.putInt("RemainCoupon", 15);
+                editor.commit();
+                couponCount = 15;
+            }
+            remainingCoupon.setText(couponCount+"");
+        }
+    }
+
+    private void initClassVariable(View v) {
+        host = (MainActivity)getActivity();
+        mMapView = getMapFragment();
+        googleMap = mMapView.getMap();
+
+        mainLayout = v.findViewById(R.id.couponMainLayout);
+        welcomeLayout = v.findViewById(R.id.couponWelcomeLayout);
+        couponLayout = v.findViewById(R.id.couponResultLayout);
+
+        couponView = couponLayout.findViewById(R.id.couponView);
+        storeTitleText = (TextView)couponLayout.findViewById(R.id.couponViewTitle);
+        couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
+        addressText = (TextView)couponLayout.findViewById(R.id.couponAddress);
+
+        progressDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+        progressDialog.setTitleText("Loading...");
+
+        remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
+        sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
+        redeemButton = (Button)v.findViewById(R.id.redeemButton);
     }
 
     private MapFragment getMapFragment() {
