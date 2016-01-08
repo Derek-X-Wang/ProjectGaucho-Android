@@ -103,8 +103,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         updateCouponAmount();
         setupRedeemButton();
         createShakeDetector();
-
-        shakeDelayHandler.postDelayed(shakeImageTimerThread, 3500);
+        //Log.e("CouponFragment", "onCreateView");
         return v;
     }
 
@@ -322,6 +321,8 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     @Override
     public void onResume() {
         super.onResume();
+        //Log.e("CouponFragment", "onResume");
+        shakeDelayHandler.postDelayed(shakeImageTimerThread, 3500);
         ShakeDetector.start();
     }
 
@@ -332,12 +333,15 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         SharedPreferences.Editor editor = sharedSettings.edit();
         editor.putInt("RemainCoupon", currentCouponAmount);
         editor.commit();
+        //Log.e("CouponFragment", "onStop");
+        shakeDelayHandler.removeCallbacks(shakeImageTimerThread);
         ShakeDetector.stop();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        //Log.e("CouponFragment", "onDestroy");
         ShakeDetector.destroy();
     }
 
