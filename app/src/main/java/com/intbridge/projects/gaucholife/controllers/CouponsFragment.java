@@ -319,11 +319,17 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        //Log.e("CouponFragment", "onStart");
+        shakeDelayHandler.postDelayed(shakeImageTimerThread, 3500);
+        ShakeDetector.start();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         //Log.e("CouponFragment", "onResume");
-        shakeDelayHandler.postDelayed(shakeImageTimerThread, 3500);
-        ShakeDetector.start();
     }
 
     @Override
