@@ -44,6 +44,7 @@ import com.intbridge.projects.gaucholife.PGDatabaseManager;
 import com.intbridge.projects.gaucholife.R;
 import com.intbridge.projects.gaucholife.utils.ClientStatManager;
 import com.intbridge.projects.gaucholife.utils.CloudCodeManager;
+import com.intbridge.projects.gaucholife.utils.LocationHelper;
 import com.parse.Parse;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -159,7 +160,14 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                             public void onClick(SweetAlertDialog sDialog) {
                                 // reuse previous dialog instance
                                 sDialog.dismiss();
-                                CloudCodeManager.redeemCoupon(lastCouponID);
+                                LocationHelper location = new LocationHelper(getActivity());
+                                ParseGeoPoint currentLocation = location.getLocationStatus() ? new ParseGeoPoint(location.getLatitude(), location.getLongitude()) : new ParseGeoPoint(0, 0);
+                                Log.e("CouponFragment", "start location check");
+                                Log.e("CouponFragment", "distant to coupon location " + currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")));
+                                if (currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")) < 0.1) {
+                                    Log.e("CouponFragment", "satisfied location check");
+                                    CloudCodeManager.redeemCoupon(lastCouponID);
+                                }
                                 couponLayout.setVisibility(View.GONE);
                                 welcomeLayout.setVisibility(View.VISIBLE);
                                 ShakeDetector.start();
@@ -216,6 +224,10 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
             }
         };
 
+        progressDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+        progressDialog.setTitleText("Loading...");
+        progressDialog.setCancelable(false);
+
         couponView = couponLayout.findViewById(R.id.couponView);
         storeTitleText = (TextView)couponLayout.findViewById(R.id.couponViewTitle);
         couponDetail = (TextView)couponLayout.findViewById(R.id.couponViewDetail);
@@ -262,9 +274,6 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
 
             }
         };
-
-        progressDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
-        progressDialog.setTitleText("Loading...");
 
         remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
         sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -321,7 +330,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     @Override
     public void onStart() {
         super.onStart();
-        //Log.e("CouponFragment", "onStart");
+        Log.e("CouponFragment", "onStart");
         shakeDelayHandler.postDelayed(shakeImageTimerThread, 3500);
         ShakeDetector.start();
     }
@@ -329,7 +338,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     @Override
     public void onResume() {
         super.onResume();
-        //Log.e("CouponFragment", "onResume");
+        Log.e("CouponFragment", "onResume");
     }
 
     @Override
@@ -339,7 +348,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         SharedPreferences.Editor editor = sharedSettings.edit();
         editor.putInt("RemainCoupon", currentCouponAmount);
         editor.commit();
-        //Log.e("CouponFragment", "onStop");
+        Log.e("CouponFragment", "onStop");
         shakeDelayHandler.removeCallbacks(shakeImageTimerThread);
         ShakeDetector.stop();
     }
@@ -347,7 +356,7 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Log.e("CouponFragment", "onDestroy");
+        Log.e("CouponFragment", "onDestroy");
         ShakeDetector.destroy();
     }
 

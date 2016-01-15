@@ -5,6 +5,7 @@ import com.parse.FunctionCallback;
 import com.parse.GetCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -62,10 +63,8 @@ public class CloudCodeManager {
                     ParseCloud.callFunction("redeemCoupon", params);
                 } catch (ParseException pe) {
                     //e.printStackTrace();
-
                 }
             }
         });
-
     }
 }
