@@ -164,6 +164,12 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
                                 ParseGeoPoint currentLocation = location.getLocationStatus() ? new ParseGeoPoint(location.getLatitude(), location.getLongitude()) : new ParseGeoPoint(0, 0);
                                 Log.e("CouponFragment", "start location check");
                                 Log.e("CouponFragment", "distant to coupon location " + currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")));
+//                                new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
+//                                        .setTitleText("Debug")
+//                                        .setContentText("Distant b/w you and coupon site is "+currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")))
+//                                        .setConfirmText("Okay")
+//                                        .showCancelButton(false)
+//                                        .show();
                                 if (currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")) < 0.1) {
                                     Log.e("CouponFragment", "satisfied location check");
                                     CloudCodeManager.redeemCoupon(lastCouponID);
