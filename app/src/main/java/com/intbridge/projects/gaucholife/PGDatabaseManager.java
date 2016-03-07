@@ -862,7 +862,7 @@ public class PGDatabaseManager {
         return uuidString;
     }
 
-    public static boolean isRestoreCouponAmount(){
+    public static boolean isRestoreCouponAmount() {
         Date recordDate = null;
         Date currentDate = new Date();
         ParseQuery query = ParseQuery.getQuery("Setting");

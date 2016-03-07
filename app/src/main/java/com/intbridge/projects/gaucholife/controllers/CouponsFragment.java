@@ -104,110 +104,14 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         updateCouponAmount();
         setupRedeemButton();
         createShakeDetector();
-        //Log.e("CouponFragment", "onCreateView");
+        Log.e("CouponFragment", "onCreateView");
         return v;
     }
 
-    private void createShakeDetector() {
-        ShakeDetector.create(getActivity(), new ShakeDetector.OnShakeListener() {
-            @Override
-            public void OnShake() {
-                if (host.getCurrentTab() == 0) {
-                    ShakeDetector.stop();
-                    if (welcomeLayout.getVisibility() == View.VISIBLE) {
-                        welcomeLayout.setVisibility(View.GONE);
-                        couponLayout.setVisibility(View.VISIBLE);
-                    }
-                    int currentCouponAmount = Integer.parseInt(remainingCoupon.getText().toString());
-                    if (currentCouponAmount > 0) {
-                        new UpdateCouponTask().execute(lastCouponID);
-                    } else {
-                        //Log.e("Shake: ", currentCouponAmount+" no more coupon");
-                        new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
-                                .setTitleText("No Coupon Available!")
-                                .setContentText("Please wait for another day.")
-                                .setConfirmText("Okay")
-                                .showCancelButton(false)
-                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                    @Override
-                                    public void onClick(SweetAlertDialog sDialog) {
-                                        // reuse previous dialog instance
-                                        sDialog.dismiss();
-                                        ShakeDetector.start();
-
-                                    }
-                                }).show();
-                    }
-
-                }
-            }
-        });
-    }
-
-    private void setupRedeemButton() {
-        redeemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShakeDetector.stop();
-                new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("Redeem this offer?")
-                        .setContentText("Please let the merchant confirm redemption. Otherwise, you will lose this offer.")
-                        .setConfirmText("Redeem")
-                        .setCancelText("Cancel")
-                        .showCancelButton(true)
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sDialog) {
-                                // reuse previous dialog instance
-                                sDialog.dismiss();
-                                LocationHelper location = new LocationHelper(getActivity());
-                                ParseGeoPoint currentLocation = location.getLocationStatus() ? new ParseGeoPoint(location.getLatitude(), location.getLongitude()) : new ParseGeoPoint(0, 0);
-                                Log.e("CouponFragment", "start location check");
-                                Log.e("CouponFragment", "distant to coupon location " + currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")));
-//                                new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
-//                                        .setTitleText("Debug")
-//                                        .setContentText("Distant b/w you and coupon site is "+currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")))
-//                                        .setConfirmText("Okay")
-//                                        .showCancelButton(false)
-//                                        .show();
-                                if (currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")) < 0.1) {
-                                    Log.e("CouponFragment", "satisfied location check");
-                                    CloudCodeManager.redeemCoupon(lastCouponID);
-                                }
-                                couponLayout.setVisibility(View.GONE);
-                                welcomeLayout.setVisibility(View.VISIBLE);
-                                ShakeDetector.start();
-                                Toast.makeText(getActivity(), "Redeemed!", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                sweetAlertDialog.dismiss();
-                                ShakeDetector.start();
-                            }
-                        })
-                        .show();
-            }
-        });
-    }
-
-    private void updateCouponAmount() {
-        if (PGDatabaseManager.isRestoreCouponAmount()) {
-            //Log.d("restore coupons:", "yes");
-            remainingCoupon.setText("15");
-        } else {
-            //Log.d("restore coupons:", "no");
-            int couponCount = sharedSettings.getInt("RemainCoupon",-1);
-            if (couponCount == -1) {
-                Log.d("restore coupons:", "-1");
-                SharedPreferences.Editor editor = sharedSettings.edit();
-                editor.putInt("RemainCoupon", 15);
-                editor.commit();
-                couponCount = 15;
-            }
-            remainingCoupon.setText(couponCount+"");
-        }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.e("CouponFragment", "onDestroyView");
     }
 
     private void initClassVariable(View v) {
@@ -284,6 +188,108 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
         remainingCoupon = (TextView)v.findViewById(R.id.remainingCoupon);
         sharedSettings = getActivity().getPreferences(Context.MODE_PRIVATE);
         redeemButton = (Button)v.findViewById(R.id.redeemButton);
+    }
+
+    private void updateCouponAmount() {
+        if (PGDatabaseManager.isRestoreCouponAmount()) {
+            Log.e("restore coupons:", "yes");
+            remainingCoupon.setText("15");
+        } else {
+            Log.e("restore coupons:", "no");
+            int couponCount = sharedSettings.getInt("RemainCoupon",-1);
+            if (couponCount == -1) {
+                Log.d("restore coupons:", "-1");
+                SharedPreferences.Editor editor = sharedSettings.edit();
+                editor.putInt("RemainCoupon", 15);
+                editor.commit();
+                couponCount = 15;
+            }
+            remainingCoupon.setText(couponCount+"");
+        }
+    }
+
+    private void setupRedeemButton() {
+        redeemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShakeDetector.stop();
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Redeem this offer?")
+                        .setContentText("Please let the merchant confirm redemption. Otherwise, you will lose this offer.")
+                        .setConfirmText("Redeem")
+                        .setCancelText("Cancel")
+                        .showCancelButton(true)
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                // reuse previous dialog instance
+                                sDialog.dismiss();
+                                LocationHelper location = new LocationHelper(getActivity());
+                                ParseGeoPoint currentLocation = location.getLocationStatus() ? new ParseGeoPoint(location.getLatitude(), location.getLongitude()) : new ParseGeoPoint(0, 0);
+                                Log.e("CouponFragment", "start location check");
+                                Log.e("CouponFragment", "distant to coupon location " + currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")));
+                                new SweetAlertDialog(getActivity(), SweetAlertDialog.SUCCESS_TYPE)
+                                        .setTitleText("Debug")
+                                        .setContentText("Distant b/w you and coupon site is "+currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")))
+                                        .setConfirmText("Okay")
+                                        .showCancelButton(false)
+                                        .show();
+                                if (currentLocation.distanceInKilometersTo(currentCoupon.getParseGeoPoint("site")) < 0.1) {
+                                    Log.e("CouponFragment", "satisfied location check");
+                                    //CloudCodeManager.redeemCoupon(lastCouponID);
+                                }
+                                couponLayout.setVisibility(View.GONE);
+                                welcomeLayout.setVisibility(View.VISIBLE);
+                                ShakeDetector.start();
+                                Toast.makeText(getActivity(), "Redeemed!", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                                ShakeDetector.start();
+                            }
+                        })
+                        .show();
+            }
+        });
+    }
+
+    private void createShakeDetector() {
+        ShakeDetector.create(getActivity(), new ShakeDetector.OnShakeListener() {
+            @Override
+            public void OnShake() {
+                if (host.getCurrentTab() == 0) {
+                    ShakeDetector.stop();
+                    if (welcomeLayout.getVisibility() == View.VISIBLE) {
+                        welcomeLayout.setVisibility(View.GONE);
+                        couponLayout.setVisibility(View.VISIBLE);
+                    }
+                    int currentCouponAmount = Integer.parseInt(remainingCoupon.getText().toString());
+                    if (currentCouponAmount > 0) {
+                        new UpdateCouponTask().execute(lastCouponID);
+                    } else {
+                        //Log.e("Shake: ", currentCouponAmount+" no more coupon");
+                        new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                                .setTitleText("No Coupon Available!")
+                                .setContentText("Please wait for another day.")
+                                .setConfirmText("Okay")
+                                .showCancelButton(false)
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sDialog) {
+                                        // reuse previous dialog instance
+                                        sDialog.dismiss();
+                                        ShakeDetector.start();
+
+                                    }
+                                }).show();
+                    }
+
+                }
+            }
+        });
     }
 
     private MapFragment getMapFragment() {
