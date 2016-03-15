@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.intbridge.projects.gaucholife.controllers.BusFragment">
+
+
 
     <fragment
         class="com.google.android.gms.maps.MapFragment"
         android:id="@+id/map_bus"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#2a75a9"
+            android:alpha="0.6">
+            <com.intbridge.projects.gaucholife.views.MultiSelectionIndicator
+                android:id="@+id/msi_bus_route"
+                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_height="42dp"/>
+
+        </LinearLayout>
+
+    </fragment>
 
 </FrameLayout>

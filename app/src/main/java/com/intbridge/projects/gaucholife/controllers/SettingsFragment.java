@@ -71,54 +71,10 @@ public class SettingsFragment extends Fragment implements Switch.OnCheckedChange
         ortegaSwitch.setOnCheckedChangeListener(this);
         portolaSwitch.setOnCheckedChangeListener(this);
 
-        Button fbBotton = (Button)v.findViewById(R.id.facebookbotton);
-        fbBotton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent fbIntent = SettingsFragment.getOpenFacebookIntent(getActivity());
-                startActivity(fbIntent);
-            }
-        });
-
-        TextView messageText = (TextView)v.findViewById(R.id.messagehint);
-        Button sendBotton = (Button)v.findViewById(R.id.sendbotton);
-        final LinearLayout messageGroup = (LinearLayout)v.findViewById(R.id.sendmessagegroup);
-        final EditText userMessage = (EditText)v.findViewById(R.id.anonymousmessage);
-
-        messageText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                messageGroup.setVisibility(View.VISIBLE);
-            }
-        });
-        sendBotton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Editable raw = userMessage.getText();
-                String message = "";
-                if(raw != null) message = userMessage.getText().toString();
-                userMessage.setText("");
-                databaseManager.sendUserReport(message);
-                Toast.makeText(host, "Success", Toast.LENGTH_LONG).show();
-
-                InputMethodManager imm = (InputMethodManager) host.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-
-                messageGroup.setVisibility(View.GONE);
-            }
-        });
         return v;
     }
 
-    public static Intent getOpenFacebookIntent(Context context) {
 
-        try {
-            context.getPackageManager().getPackageInfo("com.facebook.katana", 0);
-            return new Intent(Intent.ACTION_VIEW, Uri.parse("fb://page/475816682600877"));
-        } catch (Exception e) {
-            return new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/gaucholife"));
-        }
-    }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

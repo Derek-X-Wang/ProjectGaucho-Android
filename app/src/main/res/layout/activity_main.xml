@@ -3,7 +3,7 @@
     xmlns:wang="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_frame_background"
+    android:background="#ffffff"
     tools:context="com.intbridge.projects.gaucholife.MainActivity" >
 
     <LinearLayout
@@ -13,65 +13,7 @@
         <FrameLayout
             android:id="@+id/fragment_content"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <LinearLayout
-            android:background="@drawable/tab_bg_line"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
-            android:layout_gravity="bottom">
-
-            <com.intbridge.projects.gaucholife.views.IconWithTextView
-                android:id="@+id/tab_coupons"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                wang:pgicon="@drawable/coupontmp"
-                android:padding="9dp"
-                wang:text="Coupons"
-                wang:text_size="12sp"
-                wang:pgcolor="#2a75a9"
-                />
-
-            <com.intbridge.projects.gaucholife.views.IconWithTextView
-                android:id="@+id/tab_maps"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                wang:pgicon="@drawable/maps"
-                android:padding="9dp"
-                wang:text="Maps"
-                wang:text_size="12sp"
-                wang:pgcolor="#2a75a9"
-                />
-
-            <com.intbridge.projects.gaucholife.views.IconWithTextView
-                android:id="@+id/tab_dining"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                wang:pgicon="@drawable/dining"
-                android:padding="9dp"
-                wang:text="Dining"
-                wang:text_size="12sp"
-                wang:pgcolor="#2a75a9"
-                />
-
-            <com.intbridge.projects.gaucholife.views.IconWithTextView
-                android:id="@+id/tab_settings"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                wang:pgicon="@drawable/cog"
-                android:padding="9dp"
-                wang:text="Setting"
-                wang:text_size="12sp"
-                wang:pgcolor="#2a75a9"
-                />
-
-        </LinearLayout>
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
     <fragment
@@ -79,7 +21,7 @@
         android:name="com.intbridge.projects.gaucholife.controllers.MenuLeftFragment"
         android:layout_width="200dp"
         android:layout_height="match_parent"
-        android:layout_gravity="left"
+        android:layout_gravity="start"
         android:tag="LEFT"/>
     
 

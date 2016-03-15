@@ -1,6 +1,7 @@
 package com.intbridge.projects.gaucholife;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.intbridge.projects.gaucholife.controllers.BusFragment;
 import com.intbridge.projects.gaucholife.controllers.CouponsFragment;
 import com.intbridge.projects.gaucholife.controllers.DiningFragment;
 import com.intbridge.projects.gaucholife.controllers.MapsFragment;
@@ -22,18 +24,15 @@ import java.util.Map;
 import com.nineoldandroids.view.ViewHelper;
 
 
-public class MainActivity extends Activity implements View.OnClickListener{
+public class MainActivity extends Activity{
 
     private CouponsFragment couponsFragment;
     private MapsFragment mapsFragemnt;
     private DiningFragment diningFragment;
+    private BusFragment busFragment;
     private SettingsFragment settingsFragment;
 
-    private int currentTab = 0;
-    private IconWithTextView tabCoupons;
-    private IconWithTextView tabMaps;
-    private IconWithTextView tabDining;
-    private IconWithTextView tabSettings;
+    private int currentTab = R.id.tab_coupons;
 
     private DrawerLayout drawerLayout;
 
@@ -41,7 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private boolean cleanLocal = false;
 
     Date currentDate;
-    int dateLoaded = 1;
+    int dateLoaded = 14;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +56,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
         couponsFragment = new CouponsFragment();
         mapsFragemnt = new MapsFragment();
         diningFragment = new DiningFragment();
+        busFragment = new BusFragment();
         settingsFragment = new SettingsFragment();
-//        mapsFragemnt.setRetainInstance(true);
-//        diningFragment.setRetainInstance(true);
-//        settingsFragment.setRetainInstance(true);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             dataSource = extras.getBoolean("DATASOURCE");
@@ -106,7 +104,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
 //        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
 //        currentDate = new Date();
-//        currentDate = pgDatabaseManager.addDays(currentDate,14);
+//        currentDate = pgDatabaseManager.addDays(currentDate,0);
 ////        currentDate = null;
 //        new SyncWebRequestTask().execute(currentDate);
 
@@ -146,39 +144,29 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private void initView(){
 
-        tabCoupons = (IconWithTextView)findViewById(R.id.tab_coupons);
-        tabMaps = (IconWithTextView)findViewById(R.id.tab_maps);
-        tabDining = (IconWithTextView)findViewById(R.id.tab_dining);
-        tabSettings = (IconWithTextView)findViewById(R.id.tab_settings);
-
-        tabCoupons.setOnClickListener(this);
-        tabMaps.setOnClickListener(this);
-        tabDining.setOnClickListener(this);
-        tabSettings.setOnClickListener(this);
-
-        resetOtherTabs();
         initFragments();
         switch (currentTab) {
-            case 0:
-                tabCoupons.setIconAlpha(1.0f);
+            case R.id.tab_coupons:
                 getFragmentManager().beginTransaction()
                         .show(couponsFragment)
                         .commit();
                 break;
-            case 1:
-                tabMaps.setIconAlpha(1.0f);
+            case R.id.tab_maps:
                 getFragmentManager().beginTransaction()
                         .show(mapsFragemnt)
                         .commit();
                 break;
-            case 2:
-                tabDining.setIconAlpha(1.0f);
+            case R.id.tab_dining:
                 getFragmentManager().beginTransaction()
                         .show(diningFragment)
                         .commit();
                 break;
-            case 3:
-                tabSettings.setIconAlpha(1.0f);
+            case R.id.tab_bus:
+                getFragmentManager().beginTransaction()
+                        .show(busFragment)
+                        .commit();
+                break;
+            case R.id.tab_settings:
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
                         .commit();
@@ -190,44 +178,49 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private void initDrawer() {
         drawerLayout = (DrawerLayout)findViewById(R.id.activity_main);
-        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                View mContent = drawerLayout.getChildAt(0);
-                View mMenu = drawerView;
-                float scale = 1 - slideOffset;
-                float rightScale = 0.8f + scale * 0.2f;
-
-                float leftScale = 1 - 0.3f * scale;
-
-                ViewHelper.setScaleX(mMenu, leftScale);
-                ViewHelper.setScaleY(mMenu, leftScale);
-                ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
-                ViewHelper.setTranslationX(mContent,
-                        mMenu.getMeasuredWidth() * (1 - scale));
-                ViewHelper.setPivotX(mContent, 0);
-                ViewHelper.setPivotY(mContent,
-                        mContent.getMeasuredHeight() / 2);
-                mContent.invalidate();
-                ViewHelper.setScaleX(mContent, rightScale);
-                ViewHelper.setScaleY(mContent, rightScale);
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        });
+        View menuLeft = findViewById(R.id.main_menu_left);
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.7);
+        DrawerLayout.LayoutParams params = (android.support.v4.widget.DrawerLayout.LayoutParams) menuLeft.getLayoutParams();
+        params.width = width;
+//        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+//            @Override
+//            public void onDrawerSlide(View drawerView, float slideOffset) {
+//                View mContent = drawerLayout.getChildAt(0);
+//                View mMenu = drawerView;
+//                float scale = 1 - slideOffset;
+//                float rightScale = 0.8f + scale * 0.2f;
+//
+//                float leftScale = 1 - 0.3f * scale;
+//
+//                ViewHelper.setScaleX(mMenu, leftScale);
+//                ViewHelper.setScaleY(mMenu, leftScale);
+//                ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
+//                ViewHelper.setTranslationX(mContent,
+//                        mMenu.getMeasuredWidth() * (1 - scale));
+//                ViewHelper.setPivotX(mContent, 0);
+//                ViewHelper.setPivotY(mContent,
+//                        mContent.getMeasuredHeight() / 2);
+//                mContent.invalidate();
+//                ViewHelper.setScaleX(mContent, rightScale);
+//                ViewHelper.setScaleY(mContent, rightScale);
+//            }
+//
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//
+//            }
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//
+//            }
+//
+//            @Override
+//            public void onDrawerStateChanged(int newState) {
+//
+//            }
+//        });
+        
     }
 
     private void initFragments(){
@@ -242,6 +235,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
         getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
                 .hide(diningFragment)
                 .commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, busFragment)
+                .hide(busFragment)
+                .commit();
         getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
                 .hide(settingsFragment)
                 .commit();
@@ -251,44 +247,45 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 .commit();
     }
 
-    @Override
-    public void onClick(View v) {
-        resetOtherTabs();
-        //ActionBar actionBar = getActionBar();
-        switch (v.getId()){
+    public void onContentFragmentChange(int id) {
+        switch (id){
             case R.id.tab_coupons:
-                currentTab = 0;
-                tabCoupons.setIconAlpha(1.0f);
+                currentTab = R.id.tab_coupons;
                 hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(couponsFragment)
                         .commit();
                 break;
             case R.id.tab_maps:
-                currentTab = 1;
-                tabMaps.setIconAlpha(1.0f);
+                currentTab = R.id.tab_maps;
                 hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(mapsFragemnt)
                         .commit();
                 break;
             case R.id.tab_dining:
-                currentTab = 2;
-                tabDining.setIconAlpha(1.0f);
+                currentTab = R.id.tab_dining;
                 hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(diningFragment)
                         .commit();
                 break;
+            case R.id.tab_bus:
+                currentTab = R.id.tab_bus;
+                hideAllFragments();
+                getFragmentManager().beginTransaction()
+                        .show(busFragment)
+                        .commit();
+                break;
             case R.id.tab_settings:
-                currentTab = 3;
-                tabSettings.setIconAlpha(1.0f);
+                currentTab = R.id.tab_settings;
                 hideAllFragments();
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
                         .commit();
                 break;
         }
+        drawerLayout.closeDrawers();
     }
 
     private void hideAllFragments() {
@@ -302,15 +299,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 .hide(diningFragment)
                 .commit();
         getFragmentManager().beginTransaction()
+                .hide(busFragment)
+                .commit();
+        getFragmentManager().beginTransaction()
                 .hide(settingsFragment)
                 .commit();
-    }
-
-    private void resetOtherTabs(){
-        tabCoupons.setIconAlpha(0);
-        tabMaps.setIconAlpha(0);
-        tabDining.setIconAlpha(0);
-        tabSettings.setIconAlpha(0);
     }
 
 

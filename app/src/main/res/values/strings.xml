@@ -14,5 +14,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_currentlocation">mycurrentlocation</string>
+    <string name="tab_text_feedback">Feedback \u0026 Help</string>
 
 </resources>

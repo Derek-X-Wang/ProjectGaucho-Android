@@ -138,6 +138,7 @@
                         android:paddingLeft="30dp"
                         android:paddingRight="30dp"
                         android:text=""
+                        android:textColor="#414141"
                         android:textSize="18dp"
                         android:textStyle="bold"/>
                 </LinearLayout>
@@ -173,24 +174,45 @@
 
         </HorizontalScrollView>
 
-        <info.hoang8f.widget.FButton
-            android:layout_width="match_parent"
+        <com.andexert.library.RippleView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/redeemButton"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingStart="10dp"
-            android:paddingLeft="10dp"
-            android:text="Redeem"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            fbutton:buttonColor = "@color/red_btn_bg_color"
-            fbutton:shadowColor="#a94633"
-            fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="5dp"
-            fbutton:cornerRadius="0dp"
-            android:gravity="center"/>
+            app:rv_color="#a94633">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/redeemButton"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingStart="10dp"
+                android:paddingLeft="10dp"
+                android:text="Redeem"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:gravity="center"
+                android:background="@color/red_btn_bg_color"
+                />
+        </com.andexert.library.RippleView>
+
+        <!--<info.hoang8f.widget.FButton-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/redeemButton"-->
+            <!--android:paddingTop="4dp"-->
+            <!--android:paddingBottom="4dp"-->
+            <!--android:paddingStart="10dp"-->
+            <!--android:paddingLeft="10dp"-->
+            <!--android:text="Redeem"-->
+            <!--android:textSize="20dp"-->
+            <!--android:textStyle="bold"-->
+            <!--android:textColor="#ffffff"-->
+            <!--fbutton:buttonColor = "@color/red_btn_bg_color"-->
+            <!--fbutton:shadowColor="#a94633"-->
+            <!--fbutton:shadowEnabled="true"-->
+            <!--fbutton:shadowHeight="5dp"-->
+            <!--fbutton:cornerRadius="0dp"-->
+            <!--android:gravity="center"/>-->
 
         <!--android:background="@color/red_btn_bg_color"-->
 
