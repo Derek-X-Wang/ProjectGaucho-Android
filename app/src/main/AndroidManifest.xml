@@ -9,6 +9,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <permission android:protectionLevel="signature"
+        android:name="com.intbridge.projects.gaucholife.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.intbridge.projects.gaucholife.permission.C2D_MESSAGE" />
     <!--
  The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but are recommended.
@@ -33,6 +41,12 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBv-FPmRvUyEQBs9JhpoJs-hWyRZuBlswY" />
+        <meta-data
+            android:name="com.parse.APPLICATION_ID"
+            android:value="wnZKHTwacIEEBLC7XlzrVDOoKvnEbnNkDZD0liCN" />
+        <meta-data
+            android:name="com.parse.CLIENT_KEY"
+            android:value="Ai5HkwN7nJVKWT4R3MoiYhlb9Hik7SOPiK8i5LaR" />
 
         <activity
             android:name=".PGSplashScreen"
@@ -56,28 +70,26 @@
             </intent-filter>
         </receiver>
 
-        <!--<activity-->
-            <!--android:name=".MapsActivity"-->
-            <!--android:label="@string/title_activity_maps"-->
-            <!--android:screenOrientation="portrait"-->
-            <!--android:uiOptions="splitActionBarWhenNarrow" >-->
-            <!--<meta-data-->
-                <!--android:name="android.app.default_searchable"-->
-                <!--android:value="com.intbridge.projects.gaucholife" />-->
-            <!--<meta-data-->
-                <!--android:name="android.app.searchable"-->
-                <!--android:resource="@xml/searchable" />-->
+        <service android:name="com.parse.PushService" />
+        <receiver android:name="com.parse.ParsePushBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.parse.push.intent.RECEIVE" />
+                <action android:name="com.parse.push.intent.DELETE" />
+                <action android:name="com.parse.push.intent.OPEN" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.intbridge.projects.gaucholife" />
+            </intent-filter>
+        </receiver>
+        <meta-data android:name="com.parse.push.notification_icon"
+            android:resource="@drawable/pg_launcher2"/>
 
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.SEARCH" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <!--<activity-->
-            <!--android:name=".FlipActivity"-->
-            <!--android:label="@string/title_activity_flip"-->
-            <!--android:screenOrientation="portrait" >-->
-        <!--</activity>-->
     </application>
 
 </manifest>
