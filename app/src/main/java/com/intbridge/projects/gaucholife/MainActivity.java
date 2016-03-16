@@ -13,7 +13,9 @@ import android.view.View;
 import com.intbridge.projects.gaucholife.controllers.BusFragment;
 import com.intbridge.projects.gaucholife.controllers.CouponsFragment;
 import com.intbridge.projects.gaucholife.controllers.DiningFragment;
+import com.intbridge.projects.gaucholife.controllers.FeedbackFragment;
 import com.intbridge.projects.gaucholife.controllers.MapsFragment;
+import com.intbridge.projects.gaucholife.controllers.NotificationFragment;
 import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
 import com.intbridge.projects.gaucholife.utils.ClientStatManager;
 import com.intbridge.projects.gaucholife.views.IconWithTextView;
@@ -31,6 +33,8 @@ public class MainActivity extends Activity{
     private DiningFragment diningFragment;
     private BusFragment busFragment;
     private SettingsFragment settingsFragment;
+    private NotificationFragment notificationFragment;
+    private FeedbackFragment feedbackFragment;
 
     private int currentTab = R.id.tab_coupons;
 
@@ -38,9 +42,6 @@ public class MainActivity extends Activity{
 
     private boolean dataSource = true;
     private boolean cleanLocal = false;
-
-    Date currentDate;
-    int dateLoaded = 14;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,8 @@ public class MainActivity extends Activity{
         diningFragment = new DiningFragment();
         busFragment = new BusFragment();
         settingsFragment = new SettingsFragment();
+        notificationFragment = new NotificationFragment();
+        feedbackFragment = new FeedbackFragment();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -68,45 +71,12 @@ public class MainActivity extends Activity{
         bundle.putBoolean("DATASOURCE",dataSource);
         bundle.putBoolean("CLEANLOCAL", cleanLocal);
         diningFragment.setArguments(bundle);
-        //TODO: 我只能说无语了。。。已经试了将近12个小时，还是没解决，何弃疗了。。问题在于activity重建时会自动attach Fragments。之后我init时fragment的view又建了一次，所以call了两次
-//        if (savedInstanceState != null){
-////            getFragmentManager().beginTransaction()
-////                    .detach(mapsFragemnt)
-////                    .commit();
-////            getFragmentManager().beginTransaction()
-////                    .detach(diningFragment)
-////                    .commit();
-////            getFragmentManager().beginTransaction()
-////                    .detach(settingsFragment)
-////                    .commit();
-////
-////            mapsFragemnt = new MapsFragment();
-////            diningFragment = new DiningFragment();
-////            settingsFragment = new SettingsFragment();
-////
-////            diningFragment.setArguments(bundle);
-//
-//            Log.e("attachornotM ",mapsFragemnt.isDetached()+ "");
-//            Log.e("attachornotD ",diningFragment.isDetached()+"");
-//            Log.e("attachornotS ", settingsFragment.isDetached()+"");
-//            Log.e("addornotM ",mapsFragemnt.isAdded()+"");
-//            Log.e("addornotD ",diningFragment.isAdded()+"");
-//            Log.e("addornotS ", settingsFragment.isAdded() + "");
-//            Log.e("hideornotM ",mapsFragemnt.isHidden()+"");
-//            Log.e("hideornotD ",diningFragment.isHidden()+"");
-//            Log.e("hideornotS ",settingsFragment.isHidden()+"");
-//            //reInitView();
-//            initView();
-//        }else{
-//            initView();
-//        }
+
         initView();
 
+        // Uncomment the code below to run the dinning common crawlers and upload data to Parse.com
 //        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
-//        currentDate = new Date();
-//        currentDate = pgDatabaseManager.addDays(currentDate,0);
-////        currentDate = null;
-//        new SyncWebRequestTask().execute(currentDate);
+//        new SyncWebRequestTask().execute(pgDatabaseManager.addDays(new Date(),0));
 
         // send user stat TODO: uncomment when release
         //ClientStatManager.sendUserStatus(this);
@@ -169,6 +139,16 @@ public class MainActivity extends Activity{
             case R.id.tab_settings:
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
+                        .commit();
+                break;
+            case R.id.tab_notification:
+                getFragmentManager().beginTransaction()
+                        .show(notificationFragment)
+                        .commit();
+                break;
+            case R.id.tab_feedback:
+                getFragmentManager().beginTransaction()
+                        .show(feedbackFragment)
                         .commit();
                 break;
         }
@@ -241,6 +221,12 @@ public class MainActivity extends Activity{
         getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
                 .hide(settingsFragment)
                 .commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, notificationFragment)
+                .hide(notificationFragment)
+                .commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, feedbackFragment)
+                .hide(feedbackFragment)
+                .commit();
         //walkaround for map floating search bar no menu item
         getFragmentManager().beginTransaction()
                 .show(mapsFragemnt)
@@ -284,6 +270,20 @@ public class MainActivity extends Activity{
                         .show(settingsFragment)
                         .commit();
                 break;
+            case R.id.tab_notification:
+                currentTab = R.id.tab_notification;
+                hideAllFragments();
+                getFragmentManager().beginTransaction()
+                        .show(notificationFragment)
+                        .commit();
+                break;
+            case R.id.tab_feedback:
+                currentTab = R.id.tab_feedback;
+                hideAllFragments();
+                getFragmentManager().beginTransaction()
+                        .show(feedbackFragment)
+                        .commit();
+                break;
         }
         drawerLayout.closeDrawers();
     }
@@ -304,10 +304,17 @@ public class MainActivity extends Activity{
         getFragmentManager().beginTransaction()
                 .hide(settingsFragment)
                 .commit();
+        getFragmentManager().beginTransaction()
+                .hide(notificationFragment)
+                .commit();
+        getFragmentManager().beginTransaction()
+                .hide(feedbackFragment)
+                .commit();
     }
 
-
-    // used for update parse.com data
+    protected Date currentDate;
+    protected int dateLoaded = 14;
+    // used for update parse.com data, backup for planB
     private class SyncWebRequestTask extends AsyncTask<Date, Integer, Map<String, Map>> {
         PGDatabaseManager databaseManager;
 
@@ -322,8 +329,8 @@ public class MainActivity extends Activity{
         protected Map<String, Map> doInBackground(Date... params) {
             // params comes from the execute() call: use params[0] for the first.
             currentDate = params[0];
-            Map<String, Map> result = databaseManager.getUCSBCommonsDataFromHTML(currentDate);
-            int dateInt = databaseManager.convertDateToInteger(currentDate);
+            Map<String, Map> result = databaseManager.getUCSBCommonsDataFromHTML(params[0]);
+            int dateInt = databaseManager.convertDateToInteger(params[0]);
             databaseManager.getParseObjectFromHTML(dateInt, result);
             return result;
         }

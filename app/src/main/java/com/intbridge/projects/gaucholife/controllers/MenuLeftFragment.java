@@ -22,6 +22,8 @@ public class MenuLeftFragment extends Fragment implements View.OnClickListener {
     View tabDining;
     View tabBus;
     View tabSetting;
+    View tabNotification;
+    View tabFeedback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,12 +43,16 @@ public class MenuLeftFragment extends Fragment implements View.OnClickListener {
         tabDining = v.findViewById(R.id.tab_dining);
         tabBus = v.findViewById(R.id.tab_bus);
         tabSetting = v.findViewById(R.id.tab_settings);
+        tabNotification = v.findViewById(R.id.tab_notification);
+        tabFeedback = v.findViewById(R.id.tab_feedback);
 
         tabCoupon.setOnClickListener(this);
         tabMaps.setOnClickListener(this);
         tabDining.setOnClickListener(this);
         tabBus.setOnClickListener(this);
         tabSetting.setOnClickListener(this);
+        tabNotification.setOnClickListener(this);
+        tabFeedback.setOnClickListener(this);
 
         setCurrentTabColor(host.getCurrentTab());
     }
@@ -76,6 +82,12 @@ public class MenuLeftFragment extends Fragment implements View.OnClickListener {
             case R.id.tab_settings:
                 tabSetting.setBackgroundColor(currentTabColor);
                 break;
+            case R.id.tab_notification:
+                tabNotification.setBackgroundColor(currentTabColor);
+                break;
+            case R.id.tab_feedback:
+                tabFeedback.setBackgroundColor(currentTabColor);
+                break;
         }
     }
 
@@ -85,5 +97,7 @@ public class MenuLeftFragment extends Fragment implements View.OnClickListener {
         tabDining.setBackgroundColor(Color.WHITE);
         tabBus.setBackgroundColor(Color.WHITE);
         tabSetting.setBackgroundColor(Color.WHITE);
+        tabNotification.setBackgroundColor(Color.WHITE);
+        tabFeedback.setBackgroundColor(Color.WHITE);
     }
 }
