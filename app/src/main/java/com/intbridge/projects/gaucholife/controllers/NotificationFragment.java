@@ -34,22 +34,24 @@ import java.util.Map;
  */
 public class NotificationFragment extends Fragment {
 
+    PGSQLiteHelper helper;
+    List<Map<String,String>> notificationList;
+    NotificationAdapter mAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.fragment_notification, container, false);
-
+        helper = new PGSQLiteHelper(getActivity());
         initSwipeList(v);
         return v;
     }
 
     private void initSwipeList(View v) {
         SwipeMenuListView mListView = (SwipeMenuListView) v.findViewById(R.id.notification_list);
-        List<Map<String,String>> notificationList;
-        PGSQLiteHelper helper = new PGSQLiteHelper(getActivity());
         notificationList = helper.getAllNotification();
-        NotificationAdapter mAdapter = new NotificationAdapter(notificationList);
+        mAdapter = new NotificationAdapter(notificationList);
         mListView.setAdapter(mAdapter);
 
         // step 1. create a MenuCreator
@@ -80,7 +82,11 @@ public class NotificationFragment extends Fragment {
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
                     case 0:
-                        // delete
+                        // delete from database
+                        Map<String,String> dict = notificationList.get(position);
+                        helper.deleteNotification(dict.get(PGSQLiteHelper.KEY_TIME), dict.get(PGSQLiteHelper.KEY_DESCRIPTION));
+                        // delete from listview
+                        mAdapter.delete(position);
                         break;
                 }
                 return false;
@@ -101,6 +107,12 @@ public class NotificationFragment extends Fragment {
         public NotificationAdapter(List<Map<String,String>> list) {
             dataList = list;
         }
+
+        public void delete(int position) {
+            dataList.remove(position);
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getCount() {
             return dataList.size();

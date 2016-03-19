@@ -65,11 +65,19 @@ public class PGSQLiteHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_TIME, date);
-        values.put(KEY_DESCRIPTION,description);
+        values.put(KEY_DESCRIPTION, description);
         // Inserting Row
         db.insert(TABLE_INFO, null, values);
 
         db.close(); // Closing database connection
+    }
+
+    public void deleteNotification(String time, String message) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_INFO,
+                KEY_TIME + "=? AND " + KEY_DESCRIPTION + "=?",
+                new String[] {time, message});
+        db.close();
     }
 
     public List<Map<String,String>> getAllNotification() {

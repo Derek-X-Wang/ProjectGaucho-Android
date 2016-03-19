@@ -47,28 +47,28 @@
                 app:rv_color="@color/material_blue_grey_80">
 
                 <RelativeLayout
-                android:id="@+id/tab_notification"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                    android:id="@+id/tab_notification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
 
-                <ImageView
-                    android:id="@+id/image_zero"
-                    android:layout_width="@dimen/menu_left_tab_icon"
-                    android:layout_height="@dimen/menu_left_tab_icon"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/ic_error_outline_grey_500_36dp" />
+                    <ImageView
+                        android:id="@+id/image_zero"
+                        android:layout_width="@dimen/menu_left_tab_icon"
+                        android:layout_height="@dimen/menu_left_tab_icon"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:src="@drawable/ic_error_outline_grey_500_36dp" />
 
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@id/image_zero"
-                    android:text="Notification"
-                    android:textSize="@dimen/menu_left_tab_text" />
-            </RelativeLayout>
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@id/image_zero"
+                        android:text="Notification"
+                        android:textSize="@dimen/menu_left_tab_text" />
+                </RelativeLayout>
 
             </com.andexert.library.RippleView>
 
