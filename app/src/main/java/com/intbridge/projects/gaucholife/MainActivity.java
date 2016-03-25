@@ -2,6 +2,9 @@ package com.intbridge.projects.gaucholife;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +31,8 @@ import com.nineoldandroids.view.ViewHelper;
 
 public class MainActivity extends Activity{
 
+    public static final String DATA_SOURCE = "DATASOURCE";
+    public static final String CLEAN_LOCAL = "CLEANLOCAL";
     private CouponsFragment couponsFragment;
     private MapsFragment mapsFragemnt;
     private DiningFragment diningFragment;
@@ -48,10 +53,7 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-        }else{
-            dataSource = savedInstanceState.getBoolean("DATASOURCE");
-            cleanLocal = savedInstanceState.getBoolean("CLEANLOCAL");
+        if (savedInstanceState != null) {
             currentTab = savedInstanceState.getInt("CURRENTTAB");
         }
         couponsFragment = new CouponsFragment();
@@ -62,21 +64,11 @@ public class MainActivity extends Activity{
         notificationFragment = new NotificationFragment();
         feedbackFragment = new FeedbackFragment();
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            dataSource = extras.getBoolean("DATASOURCE");
-            cleanLocal = extras.getBoolean("CLEANLOCAL");
-        }
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("DATASOURCE",dataSource);
-        bundle.putBoolean("CLEANLOCAL", cleanLocal);
-        diningFragment.setArguments(bundle);
-
         initView();
 
         // Uncomment the code below to run the dinning common crawlers and upload data to Parse.com
-//        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
-//        new SyncWebRequestTask().execute(pgDatabaseManager.addDays(new Date(),0));
+        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
+        new SyncWebRequestTask().execute(pgDatabaseManager.addDays(new Date(),0));
 
         // send user stat TODO: uncomment when release
         //ClientStatManager.sendUserStatus(this);
@@ -87,6 +79,19 @@ public class MainActivity extends Activity{
         return currentTab;
     }
 
+    private void replaceFragment (Fragment fragment){
+        String backStateName = fragment.getClass().getName();
+
+        FragmentManager manager = getFragmentManager();
+        boolean fragmentPopped = manager.popBackStackImmediate (backStateName, 0);
+
+        if (!fragmentPopped){ //fragment not in back stack, create it.
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.replace(R.id.fragment_content, fragment);
+            ft.addToBackStack(backStateName);
+            ft.commit();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,10 +107,7 @@ public class MainActivity extends Activity{
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("CURRENTTAB",currentTab);
-        outState.putBoolean("DATASOURCE",dataSource);
-        outState.putBoolean("CLEANLOCAL", cleanLocal);
-        outState.putBoolean("ONRESUME", true);
+        outState.putInt("CURRENTTAB", currentTab);
     }
 
     public Map<Integer, Map> getTempDataStorage() {
@@ -162,55 +164,16 @@ public class MainActivity extends Activity{
         int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.7);
         DrawerLayout.LayoutParams params = (android.support.v4.widget.DrawerLayout.LayoutParams) menuLeft.getLayoutParams();
         params.width = width;
-//        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-//            @Override
-//            public void onDrawerSlide(View drawerView, float slideOffset) {
-//                View mContent = drawerLayout.getChildAt(0);
-//                View mMenu = drawerView;
-//                float scale = 1 - slideOffset;
-//                float rightScale = 0.8f + scale * 0.2f;
-//
-//                float leftScale = 1 - 0.3f * scale;
-//
-//                ViewHelper.setScaleX(mMenu, leftScale);
-//                ViewHelper.setScaleY(mMenu, leftScale);
-//                ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
-//                ViewHelper.setTranslationX(mContent,
-//                        mMenu.getMeasuredWidth() * (1 - scale));
-//                ViewHelper.setPivotX(mContent, 0);
-//                ViewHelper.setPivotY(mContent,
-//                        mContent.getMeasuredHeight() / 2);
-//                mContent.invalidate();
-//                ViewHelper.setScaleX(mContent, rightScale);
-//                ViewHelper.setScaleY(mContent, rightScale);
-//            }
-//
-//            @Override
-//            public void onDrawerOpened(View drawerView) {
-//
-//            }
-//
-//            @Override
-//            public void onDrawerClosed(View drawerView) {
-//
-//            }
-//
-//            @Override
-//            public void onDrawerStateChanged(int newState) {
-//
-//            }
-//        });
-        
     }
 
     private void initFragments(){
         // order matter, if we want the walkaround works, for two onShow fragment
         // the one that added later will show
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
-                .hide(mapsFragemnt)
-                .commit();
         getFragmentManager().beginTransaction().add(R.id.fragment_content, couponsFragment)
                 .hide(couponsFragment)
+                .commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
+                .hide(mapsFragemnt)
                 .commit();
         getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
                 .hide(diningFragment)

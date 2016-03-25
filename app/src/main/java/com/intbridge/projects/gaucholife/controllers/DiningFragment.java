@@ -4,6 +4,7 @@ package com.intbridge.projects.gaucholife.controllers;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -66,25 +67,15 @@ public class DiningFragment extends Fragment{
 
     private Date currentDate;
 
-    private int loadLoopIndicator = 0;
-
     private final int LOADDAYRANGE = 9;
     private int loadDayLimit = LOADDAYRANGE;
 
 
-    private boolean dataSource;
+    private SharedPreferences sharedSettings;
 
 
     public DiningFragment() {
         // Required empty public constructor
-    }
-
-    public static DiningFragment newInstance(String title)
-    {
-        Bundle bundle = new Bundle();
-        DiningFragment fragment = new DiningFragment();
-        fragment.setArguments(bundle);
-        return fragment;
     }
 
     @Override
@@ -95,7 +86,6 @@ public class DiningFragment extends Fragment{
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
         currentDate = new Date();
-        //currentDate = databaseManager.addDays(currentDate,3);
         favoriteList = PGDatabaseManager.getFavoriteList();
         loadDayLimit = LOADDAYRANGE;
         //Log.e("onCreate: ", "11111111");
@@ -112,13 +102,10 @@ public class DiningFragment extends Fragment{
 
         initStickyListView(v);
 
-        Bundle args = getArguments();
-        dataSource = args.getBoolean("DATASOURCE");
-        boolean cleanLocal = args.getBoolean("CLEANLOCAL");
-        loadDayLimit = LOADDAYRANGE;
-        if(cleanLocal){
+        sharedSettings = host.getPreferences(Context.MODE_PRIVATE);
+        if(sharedSettings.getBoolean(MainActivity.CLEAN_LOCAL,false)){
             databaseManager.clearAllDiningDataFromParseLocalDatastore();
-            if(dataSource){
+            if(sharedSettings.getBoolean(MainActivity.DATA_SOURCE,false)){
                 // load from html
                 new WebRequestTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             }else{
@@ -131,7 +118,6 @@ public class DiningFragment extends Fragment{
 
         return v;
     }
-
 
     public Map<Integer, Map> getTempDataStorage() {
         return tempDataStorage;
@@ -421,7 +407,7 @@ public class DiningFragment extends Fragment{
             //Log.e("main: ", dateInt + "loadlimit " + loadDayLimit);
             if(loadDayLimit > 0){
                 //Log.e("Dinning: ", "loadDayLimit is " + loadDayLimit);
-                if(dataSource){
+                if(sharedSettings.getBoolean(MainActivity.DATA_SOURCE,false)){
                     // load from html
                     //Log.e("Dinning: ", "before web");
                     new WebRequestTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);

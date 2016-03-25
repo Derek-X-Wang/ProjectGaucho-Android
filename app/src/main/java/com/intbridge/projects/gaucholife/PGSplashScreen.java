@@ -3,6 +3,7 @@ package com.intbridge.projects.gaucholife;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -27,8 +28,7 @@ public class PGSplashScreen extends Activity {
     private static int SPLASH_TIME_OUT = 6000;
     private SweetAlertDialog dialog;
     private boolean FORCE_ENTER = true;
-    private boolean dataSource = false;
-    private boolean cleanLocal = false;
+    private SharedPreferences sharedSettings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,24 +37,34 @@ public class PGSplashScreen extends Activity {
         setDialog();
 
         Fader.runAlphaAnimation(this, R.id.imgLogo);
+        fetchRemoteSettings();
+
+    }
+
+    private void fetchRemoteSettings() {
+        SharedPreferences.Editor editor = sharedSettings.edit();
+        editor.putBoolean(MainActivity.DATA_SOURCE, false);
+        editor.putBoolean(MainActivity.CLEAN_LOCAL, false);
+        editor.apply();
         final ImageView logo = (ImageView)findViewById(R.id.imgLogo);
         if(isNetworkConnected()){
             ParseQuery query = ParseQuery.getQuery("ControlPanel");
             query.getFirstInBackground(new GetCallback<ParseObject>() {
                 public void done(ParseObject object, ParseException e) {
-
                     if (object == null) {
-                        Log.d("RBSE", "The getFirst request failed.");
+                        Log.d("PGSplashScreen", "The getFirst request failed.");
                     } else {
                         FORCE_ENTER = false;
                         if(dialog.isShowing()){
                             dialog.dismiss();
                         }
                         // get the panel
+                        SharedPreferences.Editor editor = sharedSettings.edit();
+                        editor.putBoolean(MainActivity.DATA_SOURCE, object.getBoolean("DataSource"));
+                        editor.putBoolean(MainActivity.CLEAN_LOCAL, object.getBoolean("CleanLocal"));
+                        editor.apply();
                         logo.clearAnimation();
                         Intent i = new Intent(PGSplashScreen.this, MainActivity.class);
-                        i.putExtra("DATASOURCE", object.getBoolean("DataSource"));
-                        i.putExtra("CLEANLOCAL", object.getBoolean("CleanLocal"));
                         startActivity(i);
                         finish();
                     }
@@ -78,11 +88,10 @@ public class PGSplashScreen extends Activity {
         }else{
             dialog.show();
         }
-
     }
 
     public void setDialog() {
-        this.dialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Bad Internet Connection!")
+        dialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Bad Internet Connection!")
                 .setContentText("Without internet, some of the features may not function correctly!")
                 .setConfirmText("Okay, enter anyway")
                 .setCancelText("Cancel")
@@ -93,8 +102,6 @@ public class PGSplashScreen extends Activity {
                         // reuse previous dialog instance
                         sDialog.dismiss();
                         Intent i = new Intent(PGSplashScreen.this, MainActivity.class);
-                        i.putExtra("DATASOURCE", false);
-                        i.putExtra("CLEANLOCAL", false);
                         startActivity(i);
                         finish();
                     }

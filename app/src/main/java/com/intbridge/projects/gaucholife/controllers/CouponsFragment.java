@@ -84,7 +84,9 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
     private String lastCouponID = "";
     private ParseObject currentCoupon;
     private SweetAlertDialog progressDialog;
+
     private SharedPreferences sharedSettings;
+
     private ImageView shakeIV;
     private Handler shakeDelayHandler;
     private Runnable shakeImageTimerThread;
