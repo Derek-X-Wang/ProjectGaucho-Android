@@ -6,15 +6,11 @@
     android:background="#ffffff"
     tools:context="com.intbridge.projects.gaucholife.MainActivity" >
 
-    <LinearLayout
+
+    <FrameLayout
+        android:id="@+id/fragment_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <FrameLayout
-            android:id="@+id/fragment_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+        android:layout_height="match_parent"/>
 
     <fragment
         android:id="@+id/main_menu_left"

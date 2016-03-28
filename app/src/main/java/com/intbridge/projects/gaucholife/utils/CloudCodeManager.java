@@ -21,6 +21,17 @@ import java.util.Objects;
  */
 public class CloudCodeManager {
 
+    public static ParseObject getCoupon(String couponID) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Coupon");
+        ParseObject object = null;
+        try {
+            object = query.get(couponID);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return object;
+    }
+
     public static List<ParseObject> pickRandomCoupon(String lastCouponID){
         return pickRandomCoupons(1, false, lastCouponID);
     }

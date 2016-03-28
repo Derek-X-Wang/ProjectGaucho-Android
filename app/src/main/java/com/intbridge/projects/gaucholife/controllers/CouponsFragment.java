@@ -66,6 +66,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  */
 public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener{
 
+    public static final String REOPEN_COUPONS = "REOPENCOUPONS";
     private MainActivity host;
     private MapFragment mMapView;
     private GoogleMap googleMap;
@@ -413,4 +414,34 @@ public class CouponsFragment extends Fragment implements GoogleMap.OnMarkerClick
             remainingCoupon.setText((currentCouponAmount - 1) + "");
         }
     }
+
+//    private class GetCouponTask extends AsyncTask<String, Integer, ParseObject> {
+//        @Override
+//        protected void onPreExecute() {
+//            progressDialog.show();
+//            couponLayout.setVisibility(View.GONE);
+//            welcomeLayout.setVisibility(View.VISIBLE);
+//
+//            googleMap.clear();
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                couponView.setBackground(getResources().getDrawable(R.drawable.storephotoplacehoder, getActivity().getTheme()));
+//            } else if (android.os.Build.VERSION.SDK_INT >= 16) {
+//                couponView.setBackground(getResources().getDrawable(R.drawable.storephotoplacehoder));
+//            } else {
+//                couponView.setBackgroundDrawable(getResources().getDrawable(R.drawable.storephotoplacehoder));
+//            }
+//        }
+//
+//        @Override
+//        protected ParseObject doInBackground(String... params) {
+//            // params comes from the execute() call: use params[0] for the first.
+//            return CloudCodeManager.getCoupon(params[0]);
+//        }
+//
+//        // onPostExecute displays the results of the AsyncTask.
+//        @Override
+//        protected void onPostExecute(ParseObject coupon) {
+//
+//        }
+//    }
 }

@@ -50,6 +50,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  */
 public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener{
 
+    public static final String REOPEN_MAPS = "REOPENMAPS";
     private MainActivity host;
     private MapFragment mMapView;
     private GoogleMap googleMap;

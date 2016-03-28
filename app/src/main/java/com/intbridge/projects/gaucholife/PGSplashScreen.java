@@ -11,6 +11,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.intbridge.projects.gaucholife.controllers.CouponsFragment;
+import com.intbridge.projects.gaucholife.controllers.DiningFragment;
+import com.intbridge.projects.gaucholife.controllers.MapsFragment;
 import com.intbridge.projects.gaucholife.utils.Fader;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -42,10 +45,7 @@ public class PGSplashScreen extends Activity {
     }
 
     private void fetchRemoteSettings() {
-        SharedPreferences.Editor editor = sharedSettings.edit();
-        editor.putBoolean(MainActivity.DATA_SOURCE, false);
-        editor.putBoolean(MainActivity.CLEAN_LOCAL, false);
-        editor.apply();
+        initPreferences();
         final ImageView logo = (ImageView)findViewById(R.id.imgLogo);
         if(isNetworkConnected()){
             ParseQuery query = ParseQuery.getQuery("ControlPanel");
@@ -88,6 +88,17 @@ public class PGSplashScreen extends Activity {
         }else{
             dialog.show();
         }
+    }
+
+    private void initPreferences() {
+        sharedSettings = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedSettings.edit();
+        editor.putBoolean(MainActivity.DATA_SOURCE, false);
+        editor.putBoolean(MainActivity.CLEAN_LOCAL, false);
+        editor.putBoolean(DiningFragment.REOPEN_DINING, false);
+        editor.putBoolean(CouponsFragment.REOPEN_COUPONS, false);
+        editor.putBoolean(MapsFragment.REOPEN_MAPS, false);
+        editor.apply();
     }
 
     public void setDialog() {

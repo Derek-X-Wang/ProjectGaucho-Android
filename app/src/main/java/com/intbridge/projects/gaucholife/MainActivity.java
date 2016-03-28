@@ -67,8 +67,8 @@ public class MainActivity extends Activity{
         initView();
 
         // Uncomment the code below to run the dinning common crawlers and upload data to Parse.com
-        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
-        new SyncWebRequestTask().execute(pgDatabaseManager.addDays(new Date(),0));
+//        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
+//        new SyncWebRequestTask().execute(pgDatabaseManager.addDays(new Date(),0));
 
         // send user stat TODO: uncomment when release
         //ClientStatManager.sendUserStatus(this);
@@ -77,20 +77,6 @@ public class MainActivity extends Activity{
 
     public int getCurrentTab(){
         return currentTab;
-    }
-
-    private void replaceFragment (Fragment fragment){
-        String backStateName = fragment.getClass().getName();
-
-        FragmentManager manager = getFragmentManager();
-        boolean fragmentPopped = manager.popBackStackImmediate (backStateName, 0);
-
-        if (!fragmentPopped){ //fragment not in back stack, create it.
-            FragmentTransaction ft = manager.beginTransaction();
-            ft.replace(R.id.fragment_content, fragment);
-            ft.addToBackStack(backStateName);
-            ft.commit();
-        }
     }
 
     @Override
@@ -115,46 +101,8 @@ public class MainActivity extends Activity{
     }
 
     private void initView(){
-
         initFragments();
-        switch (currentTab) {
-            case R.id.tab_coupons:
-                getFragmentManager().beginTransaction()
-                        .show(couponsFragment)
-                        .commit();
-                break;
-            case R.id.tab_maps:
-                getFragmentManager().beginTransaction()
-                        .show(mapsFragemnt)
-                        .commit();
-                break;
-            case R.id.tab_dining:
-                getFragmentManager().beginTransaction()
-                        .show(diningFragment)
-                        .commit();
-                break;
-            case R.id.tab_bus:
-                getFragmentManager().beginTransaction()
-                        .show(busFragment)
-                        .commit();
-                break;
-            case R.id.tab_settings:
-                getFragmentManager().beginTransaction()
-                        .show(settingsFragment)
-                        .commit();
-                break;
-            case R.id.tab_notification:
-                getFragmentManager().beginTransaction()
-                        .show(notificationFragment)
-                        .commit();
-                break;
-            case R.id.tab_feedback:
-                getFragmentManager().beginTransaction()
-                        .show(feedbackFragment)
-                        .commit();
-                break;
-        }
-
+        //attachFragment(getFragment(currentTab));
         initDrawer();
     }
 
@@ -169,109 +117,72 @@ public class MainActivity extends Activity{
     private void initFragments(){
         // order matter, if we want the walkaround works, for two onShow fragment
         // the one that added later will show
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, couponsFragment)
-                .hide(couponsFragment)
-                .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
-                .hide(mapsFragemnt)
-                .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
-                .hide(diningFragment)
-                .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, busFragment)
-                .hide(busFragment)
-                .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, settingsFragment)
-                .hide(settingsFragment)
-                .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, notificationFragment)
-                .hide(notificationFragment)
-                .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, feedbackFragment)
-                .hide(feedbackFragment)
-                .commit();
-        //walkaround for map floating search bar no menu item
         getFragmentManager().beginTransaction()
-                .show(mapsFragemnt)
+                .add(R.id.fragment_content, getFragment(currentTab))
+                .commit();
+//        initFragment(couponsFragment);
+//        initFragment(mapsFragemnt);
+//        initFragment(diningFragment);
+//        initFragment(busFragment);
+//        initFragment(settingsFragment);
+//        initFragment(notificationFragment);
+//        initFragment(feedbackFragment);
+//        //walkaround for map floating search bar no menu item
+//        getFragmentManager().beginTransaction()
+//                .show(mapsFragemnt)
+//                .commit();
+    }
+
+    private void initFragment(Fragment fragment) {
+        getFragmentManager().beginTransaction().add(R.id.fragment_content, fragment)
+                .detach(fragment)
                 .commit();
     }
 
     public void onContentFragmentChange(int id) {
-        switch (id){
-            case R.id.tab_coupons:
-                currentTab = R.id.tab_coupons;
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(couponsFragment)
-                        .commit();
-                break;
-            case R.id.tab_maps:
-                currentTab = R.id.tab_maps;
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(mapsFragemnt)
-                        .commit();
-                break;
-            case R.id.tab_dining:
-                currentTab = R.id.tab_dining;
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(diningFragment)
-                        .commit();
-                break;
-            case R.id.tab_bus:
-                currentTab = R.id.tab_bus;
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(busFragment)
-                        .commit();
-                break;
-            case R.id.tab_settings:
-                currentTab = R.id.tab_settings;
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(settingsFragment)
-                        .commit();
-                break;
-            case R.id.tab_notification:
-                currentTab = R.id.tab_notification;
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(notificationFragment)
-                        .commit();
-                break;
-            case R.id.tab_feedback:
-                currentTab = R.id.tab_feedback;
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(feedbackFragment)
-                        .commit();
-                break;
-        }
+        //detachFragment(getFragment(currentTab));
+        //attachFragment(getFragment(id));
+        replaceFragment(getFragment(id));
+        currentTab = id;
         drawerLayout.closeDrawers();
     }
 
-    private void hideAllFragments() {
+    private Fragment getFragment(int id) {
+        switch (id){
+            case R.id.tab_coupons:
+                return couponsFragment;
+            case R.id.tab_maps:
+                return mapsFragemnt;
+            case R.id.tab_dining:
+                return diningFragment;
+            case R.id.tab_bus:
+                return busFragment;
+            case R.id.tab_settings:
+                return settingsFragment;
+            case R.id.tab_notification:
+                return notificationFragment;
+            case R.id.tab_feedback:
+                return feedbackFragment;
+            default:
+                return null;
+        }
+    }
+
+    private void replaceFragment(Fragment fragment) {
         getFragmentManager().beginTransaction()
-                .hide(couponsFragment)
+                .replace(R.id.fragment_content, fragment)
                 .commit();
+    }
+
+    private void attachFragment(Fragment fragment) {
         getFragmentManager().beginTransaction()
-                .hide(mapsFragemnt)
+                .attach(fragment)
                 .commit();
+    }
+
+    private void detachFragment(Fragment fragment) {
         getFragmentManager().beginTransaction()
-                .hide(diningFragment)
-                .commit();
-        getFragmentManager().beginTransaction()
-                .hide(busFragment)
-                .commit();
-        getFragmentManager().beginTransaction()
-                .hide(settingsFragment)
-                .commit();
-        getFragmentManager().beginTransaction()
-                .hide(notificationFragment)
-                .commit();
-        getFragmentManager().beginTransaction()
-                .hide(feedbackFragment)
+                .detach(fragment)
                 .commit();
     }
 

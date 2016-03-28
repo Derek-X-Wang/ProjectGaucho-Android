@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,8 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class DiningFragment extends Fragment{
 
-    MainActivity host;
+    public static final String REOPEN_DINING = "REOPENDINING";
+    private MainActivity host;
 
     private int currentCommon = 0;
     private int currentDay = 0;
@@ -104,15 +106,19 @@ public class DiningFragment extends Fragment{
 
         sharedSettings = host.getPreferences(Context.MODE_PRIVATE);
         if(sharedSettings.getBoolean(MainActivity.CLEAN_LOCAL,false)){
+            Log.e("DiningFragment", "clean local");
             databaseManager.clearAllDiningDataFromParseLocalDatastore();
             if(sharedSettings.getBoolean(MainActivity.DATA_SOURCE,false)){
+                Log.e("DiningFragment", "craw web");
                 // load from html
                 new WebRequestTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             }else{
+                Log.e("DiningFragment", "clean local");
                 // load from Parse
                 new ParseRequestTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             }
         }else{
+            Log.e("DiningFragment", "clean local");
             new LoadLocalTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
 
