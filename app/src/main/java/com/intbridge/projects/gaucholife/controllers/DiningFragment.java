@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.intbridge.projects.gaucholife.MainActivity;
 import com.intbridge.projects.gaucholife.PGDatabaseManager;
 import com.intbridge.projects.gaucholife.R;
+import com.intbridge.projects.gaucholife.utils.DateUtils;
 import com.intbridge.projects.gaucholife.views.MultiSelectionIndicator;
 import com.parse.ParseObject;
 
@@ -219,7 +220,7 @@ public class DiningFragment extends Fragment{
         Date baseDate = new Date();
         //baseDate = databaseManager.addDays(baseDate,3);
         for(int i=0;i<loadDayLimit;i++){
-            Date addDate = databaseManager.addDays(baseDate,i);
+            Date addDate = DateUtils.addDays(baseDate, i);
             String[] dateStrings = convertDateToStringArray(addDate);
             dates.add(dateStrings[2]);
         }
@@ -406,7 +407,7 @@ public class DiningFragment extends Fragment{
                     // reduce the amount needed to load from internet
                     // loadDayLimit may become negative if todayAndAfter is big. However, if loadDayLimit is constant then it should be fine
                     loadDayLimit--;
-                    currentDate = databaseManager.addDays(currentDate,1);
+                    currentDate = DateUtils.addDays(currentDate, 1);
                 }
             }
             // load from internet if needed
@@ -464,7 +465,7 @@ public class DiningFragment extends Fragment{
                     Map<String,Map> value = entry.getValue();
                     updateStickyListView(value);
                     i++;
-                    currentDate = databaseManager.addDays(currentDate,1);
+                    currentDate = DateUtils.addDays(currentDate, 1);
                     loadDayLimit--;
                 }
             //}
@@ -495,7 +496,7 @@ public class DiningFragment extends Fragment{
                 //Log.e("webtimeBG: ",""+convertDateToInteger(loopDate));
                 Map<String, Map> temp = databaseManager.getUCSBCommonsDataFromHTML(loopDate);
                 result.put(convertDateToInteger(loopDate),temp);
-                loopDate = databaseManager.addDays(loopDate,1);
+                loopDate = DateUtils.addDays(loopDate, 1);
             }
             databaseManager.cancelAllScheduledNotification(host);
             databaseManager.scheduleAllNotification(host,result);
@@ -509,7 +510,7 @@ public class DiningFragment extends Fragment{
             for(Map.Entry<Integer,Map> entry: result.entrySet()){
                 //Log.e("webtimeFG: ",""+convertDateToInteger(currentDate));
                 updateStickyListView(entry.getValue());
-                currentDate = databaseManager.addDays(currentDate,1);
+                currentDate = DateUtils.addDays(currentDate,1);
             }
         }
     }

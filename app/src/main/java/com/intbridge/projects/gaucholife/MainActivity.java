@@ -21,6 +21,7 @@ import com.intbridge.projects.gaucholife.controllers.MapsFragment;
 import com.intbridge.projects.gaucholife.controllers.NotificationFragment;
 import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
 import com.intbridge.projects.gaucholife.utils.ClientStatManager;
+import com.intbridge.projects.gaucholife.utils.DateUtils;
 import com.intbridge.projects.gaucholife.views.IconWithTextView;
 
 import java.util.Date;
@@ -67,8 +68,7 @@ public class MainActivity extends Activity{
         initView();
 
         // Uncomment the code below to run the dinning common crawlers and upload data to Parse.com
-//        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
-//        new SyncWebRequestTask().execute(pgDatabaseManager.addDays(new Date(),0));
+        new SyncWebRequestTask().execute(DateUtils.addDays(new Date(), 0));
 
         // send user stat TODO: uncomment when release
         //ClientStatManager.sendUserStatus(this);
@@ -187,7 +187,7 @@ public class MainActivity extends Activity{
     }
 
     protected Date currentDate;
-    protected int dateLoaded = 14;
+    protected int dateLoaded = 10;
     // used for update parse.com data, backup for planB
     private class SyncWebRequestTask extends AsyncTask<Date, Integer, Map<String, Map>> {
         PGDatabaseManager databaseManager;
@@ -204,7 +204,7 @@ public class MainActivity extends Activity{
             // params comes from the execute() call: use params[0] for the first.
             currentDate = params[0];
             Map<String, Map> result = databaseManager.getUCSBCommonsDataFromHTML(params[0]);
-            int dateInt = databaseManager.convertDateToInteger(params[0]);
+            int dateInt = DateUtils.convertDateToInteger(params[0]);
             databaseManager.getParseObjectFromHTML(dateInt, result);
             return result;
         }
@@ -212,10 +212,10 @@ public class MainActivity extends Activity{
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(Map<String, Map> result) {
-            Log.e("Mcurrent: ", databaseManager.convertDateToInteger(currentDate) + "");
+            Log.e("Mcurrent: ", DateUtils.convertDateToInteger(currentDate) + "");
             dateLoaded--;
             if(dateLoaded > 0){
-                currentDate = databaseManager.addDays(currentDate,1);
+                currentDate = DateUtils.addDays(currentDate,1);
                 new SyncWebRequestTask().execute(currentDate);
             }
         }

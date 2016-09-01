@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.Marker;
+import com.intbridge.projects.gaucholife.utils.DateUtils;
 import com.intbridge.projects.gaucholife.utils.Devices;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -135,12 +137,7 @@ public class PGDatabaseManager {
         return null;
     }
 
-    public Date addDays(Date date, int days) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, days); //minus number would decrement the days
-        return cal.getTime();
-    }
+
 
     public Map<String, List> filteringDictionay(int date,String common,String meal){
 
@@ -163,8 +160,8 @@ public class PGDatabaseManager {
     }
 
     public Map getUCSBDiningCommonsDictionaryFromParse(Date startDate,int range){
-        int startDateInt = convertDateToInteger(startDate);
-        int endDateInt = convertDateToInteger(addDays(startDate, range));
+        int startDateInt = DateUtils.convertDateToInteger(startDate);
+        int endDateInt = DateUtils.convertDateToInteger(DateUtils.addDays(startDate, range));
         List<ParseObject> Carrillo = getCommonDataFromParse("Carrillo", startDateInt, endDateInt);
         List<ParseObject> DeLaGuerra = getCommonDataFromParse("DeLaGuerra", startDateInt, endDateInt);
         List<ParseObject> Ortega = getCommonDataFromParse("Ortega", startDateInt, endDateInt);
@@ -178,10 +175,10 @@ public class PGDatabaseManager {
             constructDictFromParseObject("Carrillo",Carrillo, dateItr, dateDictionary);
             constructDictFromParseObject("De La Guerra",DeLaGuerra, dateItr, dateDictionary);
             constructDictFromParseObject("Ortega",Ortega, dateItr, dateDictionary);
-            constructDictFromParseObject("Portola",Portola, dateItr, dateDictionary);
+            constructDictFromParseObject("Portola", Portola, dateItr, dateDictionary);
 
-            dictionary.put(convertDateToInteger(dateItr), dateDictionary);
-            dateItr = addDays(dateItr,1);
+            dictionary.put(DateUtils.convertDateToInteger(dateItr), dateDictionary);
+            dateItr = DateUtils.addDays(dateItr, 1);
         }
 
 
@@ -192,7 +189,7 @@ public class PGDatabaseManager {
         for(ParseObject common : parseObjectList){
             Map<String, Map> commonDictionary = null;
             int date = common.getInt("date");
-            if(date == convertDateToInteger(dateItr)){
+            if(date == DateUtils.convertDateToInteger(dateItr)){
                 Set<String> keySet = common.keySet();
                 //keySet.remove("date");
                 Map<String, List> mealDict = null;
@@ -608,15 +605,6 @@ public class PGDatabaseManager {
         return  calendar;
     }
 
-
-    public int convertDateToInteger(Date date){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        // Note: zero based!
-        String dateString = String.format("%d%02d%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
-        return Integer.parseInt(dateString);
-    }
-
     private String convertCombinedStringToSeparated(String str){
         String res = ""+str.charAt(0);
         for(int i = 1; i < str.length(); i++) {
@@ -691,7 +679,7 @@ public class PGDatabaseManager {
         List<String> favoriteList = getFavoriteList();
         for(Map.Entry<Integer,Map> entry : tempDataStorage.entrySet()){
             int dateInt = entry.getKey();
-            Date date = convertIntegerToDate(dateInt);
+            Date date = DateUtils.convertIntegerToDate(dateInt);
             Map<String,Map> commonDict = entry.getValue();
             for(Map.Entry<String,Map> common : commonDict.entrySet()){
                 String commonName = common.getKey();
@@ -775,18 +763,7 @@ public class PGDatabaseManager {
         storePendingIntentArray(new ArrayList<Integer>());
     }
 
-    private Date convertIntegerToDate(int dateInt){
-        String dateString = Integer.toString(dateInt);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        Date date;
-        try {
-            date = formatter.parse(dateString);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-            date = null;
-        }
-        return date;
-    }
+
 
 
 
@@ -884,18 +861,15 @@ public class PGDatabaseManager {
             object.pinInBackground();
             return true;
         }
-        return !isSameDay(recordDate, currentDate);
+        return !DateUtils.isSameDay(recordDate, currentDate);
+    }
+
+    public static void storeLastMapSearch(String key,Double la,Double lo) {
 
     }
 
-    public static boolean isSameDay(Date date1, Date date2) {
-        Calendar cal1 = Calendar.getInstance();
-        Calendar cal2 = Calendar.getInstance();
-        cal1.setTime(date1);
-        cal2.setTime(date2);
-        boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-        return sameDay;
+    public static void storeLastCoupon() {
+
     }
 
 }

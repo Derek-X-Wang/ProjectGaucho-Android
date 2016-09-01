@@ -203,7 +203,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     }
 
     // set the marker and focus on that marker
-    public void setMarkerWithAnimation(String key,Double la,Double lo){
+    public void setMarkerWithAnimation(String key,Double la,Double lo) {
         googleMap.clear();
         LatLng lalo = new LatLng(la,lo);
         Marker marker = googleMap.addMarker(new MarkerOptions()

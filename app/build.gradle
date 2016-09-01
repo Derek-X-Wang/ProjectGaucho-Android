@@ -22,7 +22,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-
     testCompile 'org.robolectric:robolectric:3.0'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'se.emilsjolander:stickylistheaders:2.7.0'
