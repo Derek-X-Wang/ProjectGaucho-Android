@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.intbridge.projects.gaucholife.controllers.CouponsFragment;
 import com.intbridge.projects.gaucholife.controllers.DiningFragment;
 import com.intbridge.projects.gaucholife.controllers.MapsFragment;
 import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
@@ -21,13 +20,11 @@ import java.util.Map;
 
 public class MainActivity extends Activity implements View.OnClickListener{
 
-    private CouponsFragment couponsFragment;
     private MapsFragment mapsFragemnt;
     private DiningFragment diningFragment;
     private SettingsFragment settingsFragment;
 
     private int currentTab = 0;
-    IconWithTextView tabCoupons;
     IconWithTextView tabMaps;
     IconWithTextView tabDining;
     IconWithTextView tabSettings;
@@ -49,7 +46,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
             cleanLocal = savedInstanceState.getBoolean("CLEANLOCAL");
             currentTab = savedInstanceState.getInt("CURRENTTAB");
         }
-        couponsFragment = new CouponsFragment();
         mapsFragemnt = new MapsFragment();
         diningFragment = new DiningFragment();
         settingsFragment = new SettingsFragment();
@@ -106,7 +102,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //        new SyncWebRequestTask().execute(currentDate);
 
         // send user stat TODO: uncomment when release
-        ClientStatManager.sendUserStatus(this);
+        //ClientStatManager.sendUserStatus(this);
 
     }
 
@@ -141,12 +137,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private void initView(){
 
-        tabCoupons = (IconWithTextView)findViewById(R.id.tab_coupons);
         tabMaps = (IconWithTextView)findViewById(R.id.tab_maps);
         tabDining = (IconWithTextView)findViewById(R.id.tab_dining);
         tabSettings = (IconWithTextView)findViewById(R.id.tab_settings);
 
-        tabCoupons.setOnClickListener(this);
         tabMaps.setOnClickListener(this);
         tabDining.setOnClickListener(this);
         tabSettings.setOnClickListener(this);
@@ -155,24 +149,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
         initFragments();
         switch (currentTab) {
             case 0:
-                tabCoupons.setIconAlpha(1.0f);
-                getFragmentManager().beginTransaction()
-                        .show(couponsFragment)
-                        .commit();
-                break;
-            case 1:
                 tabMaps.setIconAlpha(1.0f);
                 getFragmentManager().beginTransaction()
                         .show(mapsFragemnt)
                         .commit();
                 break;
-            case 2:
+            case 1:
                 tabDining.setIconAlpha(1.0f);
                 getFragmentManager().beginTransaction()
                         .show(diningFragment)
                         .commit();
                 break;
-            case 3:
+            case 2:
                 tabSettings.setIconAlpha(1.0f);
                 getFragmentManager().beginTransaction()
                         .show(settingsFragment)
@@ -186,9 +174,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         // the one that added later will show
         getFragmentManager().beginTransaction().add(R.id.fragment_content, mapsFragemnt)
                 .hide(mapsFragemnt)
-                .commit();
-        getFragmentManager().beginTransaction().add(R.id.fragment_content, couponsFragment)
-                .hide(couponsFragment)
                 .commit();
         getFragmentManager().beginTransaction().add(R.id.fragment_content, diningFragment)
                 .hide(diningFragment)
@@ -207,14 +192,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         resetOtherTabs();
         //ActionBar actionBar = getActionBar();
         switch (v.getId()){
-            case R.id.tab_coupons:
-                currentTab = 0;
-                tabCoupons.setIconAlpha(1.0f);
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(couponsFragment)
-                        .commit();
-                break;
             case R.id.tab_maps:
                 currentTab = 1;
                 tabMaps.setIconAlpha(1.0f);
@@ -244,9 +221,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private void hideAllFragments() {
         getFragmentManager().beginTransaction()
-                .hide(couponsFragment)
-                .commit();
-        getFragmentManager().beginTransaction()
                 .hide(mapsFragemnt)
                 .commit();
         getFragmentManager().beginTransaction()
@@ -258,7 +232,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     private void resetOtherTabs(){
-        tabCoupons.setIconAlpha(0);
         tabMaps.setIconAlpha(0);
         tabDining.setIconAlpha(0);
         tabSettings.setIconAlpha(0);
