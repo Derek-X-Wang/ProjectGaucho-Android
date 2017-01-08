@@ -65,19 +65,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 false);
 
         host = (MainActivity)getActivity();
-        //ActionBar actionBar = host.getActionBar();
-        //if(actionBar != null && !actionBar.isShowing()) actionBar.show();
 
         mMapView = getMapFragment();
-//        mMapView.onCreate(savedInstanceState);
-//
-//        mMapView.onResume();// needed to get the map to display immediately
-//
-//        try {
-//            MapsInitializer.initialize(getActivity().getApplicationContext());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
         googleMap = mMapView.getMap();
 
@@ -242,29 +231,5 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     public void onInfoWindowClick(Marker marker) {
         ClientStatManager.startGoogleMapApp(getActivity(),marker);
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        mMapView.onResume();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        mMapView.onPause();
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        mMapView.onDestroy();
-//    }
-//
-//    @Override
-//    public void onLowMemory() {
-//        super.onLowMemory();
-//        mMapView.onLowMemory();
-//    }
 
 }

@@ -16,9 +16,11 @@ import android.widget.TextView;
 
 import com.intbridge.projects.gaucholife.MainActivity;
 import com.intbridge.projects.gaucholife.PGDatabaseManager;
+import com.intbridge.projects.gaucholife.PGSplashScreen;
 import com.intbridge.projects.gaucholife.R;
 import com.intbridge.projects.gaucholife.views.MultiSelectionIndicator;
 import com.parse.ParseObject;
+import com.pixplicity.easyprefs.library.Prefs;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -79,14 +81,6 @@ public class DiningFragment extends Fragment{
         // Required empty public constructor
     }
 
-    public static DiningFragment newInstance(String title)
-    {
-        Bundle bundle = new Bundle();
-        DiningFragment fragment = new DiningFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,10 +89,8 @@ public class DiningFragment extends Fragment{
         databaseManager = new PGDatabaseManager();
         tempDataStorage = new LinkedHashMap<>();
         currentDate = new Date();
-        //currentDate = databaseManager.addDays(currentDate,3);
         favoriteList = PGDatabaseManager.getFavoriteList();
         loadDayLimit = LOADDAYRANGE;
-        //Log.e("onCreate: ", "11111111");
     }
 
     @Override
@@ -112,11 +104,9 @@ public class DiningFragment extends Fragment{
 
         initStickyListView(v);
 
-        Bundle args = getArguments();
-        dataSource = args.getBoolean("DATASOURCE");
-        boolean cleanLocal = args.getBoolean("CLEANLOCAL");
+        dataSource = Prefs.getBoolean(PGSplashScreen.DATA_SOURCE, false);
         loadDayLimit = LOADDAYRANGE;
-        if(cleanLocal){
+        if(Prefs.getBoolean(PGSplashScreen.CLEAN_LOCAL, true)){
             databaseManager.clearAllDiningDataFromParseLocalDatastore();
             if(dataSource){
                 // load from html

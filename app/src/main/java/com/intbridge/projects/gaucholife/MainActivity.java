@@ -49,50 +49,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         mapsFragemnt = new MapsFragment();
         diningFragment = new DiningFragment();
         settingsFragment = new SettingsFragment();
-//        mapsFragemnt.setRetainInstance(true);
-//        diningFragment.setRetainInstance(true);
-//        settingsFragment.setRetainInstance(true);
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            dataSource = extras.getBoolean("DATASOURCE");
-            cleanLocal = extras.getBoolean("CLEANLOCAL");
-        }
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("DATASOURCE",dataSource);
-        bundle.putBoolean("CLEANLOCAL", cleanLocal);
-        diningFragment.setArguments(bundle);
-        //TODO: 我只能说无语了。。。已经试了将近12个小时，还是没解决，何弃疗了。。问题在于activity重建时会自动attach Fragments。之后我init时fragment的view又建了一次，所以call了两次
-//        if (savedInstanceState != null){
-////            getFragmentManager().beginTransaction()
-////                    .detach(mapsFragemnt)
-////                    .commit();
-////            getFragmentManager().beginTransaction()
-////                    .detach(diningFragment)
-////                    .commit();
-////            getFragmentManager().beginTransaction()
-////                    .detach(settingsFragment)
-////                    .commit();
-////
-////            mapsFragemnt = new MapsFragment();
-////            diningFragment = new DiningFragment();
-////            settingsFragment = new SettingsFragment();
-////
-////            diningFragment.setArguments(bundle);
-//
-//            Log.e("attachornotM ",mapsFragemnt.isDetached()+ "");
-//            Log.e("attachornotD ",diningFragment.isDetached()+"");
-//            Log.e("attachornotS ", settingsFragment.isDetached()+"");
-//            Log.e("addornotM ",mapsFragemnt.isAdded()+"");
-//            Log.e("addornotD ",diningFragment.isAdded()+"");
-//            Log.e("addornotS ", settingsFragment.isAdded() + "");
-//            Log.e("hideornotM ",mapsFragemnt.isHidden()+"");
-//            Log.e("hideornotD ",diningFragment.isHidden()+"");
-//            Log.e("hideornotS ",settingsFragment.isHidden()+"");
-//            //reInitView();
-//            initView();
-//        }else{
-//            initView();
-//        }
+
         initView();
 
 //        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();

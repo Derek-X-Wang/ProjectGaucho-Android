@@ -15,8 +15,16 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.pixplicity.easyprefs.library.Prefs;
+
+import java.util.List;
+import java.util.concurrent.Callable;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import rx.Observable;
+import rx.Observer;
+import rx.Scheduler;
+import rx.functions.Func1;
 
 /**
  *
@@ -24,11 +32,12 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  */
 public class PGSplashScreen extends Activity {
     // Splash screen timer
+    public static String DATA_SOURCE = "DATASOURCE";
+    public static String CLEAN_LOCAL = "CLEANLOCAL";
     private static int SPLASH_TIME_OUT = 6000;
     private SweetAlertDialog dialog;
     private boolean FORCE_ENTER = true;
-    private boolean dataSource = false;
-    private boolean cleanLocal = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,12 +48,42 @@ public class PGSplashScreen extends Activity {
         Fader.runAlphaAnimation(this, R.id.imgLogo);
         final ImageView logo = (ImageView)findViewById(R.id.imgLogo);
         if(isNetworkConnected()){
+
+//            Observable<ParseObject> request = Observable.fromCallable(new Callable<ParseObject>() {
+//                @Override
+//                public ParseObject call() throws Exception {
+//                    return ParseQuery.getQuery("ControlPanel").getFirst();
+//                }
+//            });
+//            Observer<ParseObject> observer = new Observer<ParseObject>() {
+//                @Override
+//                public void onCompleted() {
+//
+//                }
+//
+//                @Override
+//                public void onError(Throwable e) {
+//
+//                }
+//
+//                @Override
+//                public void onNext(ParseObject parseObject) {
+//                    if (parseObject == null) {
+//
+//                    } else {
+//                        logo.clearAnimation();
+//                        Prefs.putBoolean(DATA_SOURCE, parseObject.getBoolean("DataSource"));
+//                        Prefs.putBoolean(CLEAN_LOCAL, parseObject.getBoolean("CleanLocal"));
+//                    }
+//                }
+//            };
+
             ParseQuery query = ParseQuery.getQuery("ControlPanel");
             query.getFirstInBackground(new GetCallback<ParseObject>() {
                 public void done(ParseObject object, ParseException e) {
 
                     if (object == null) {
-                        Log.d("RBSE", "The getFirst request failed.");
+                        Log.d("Parse Query", "The getFirst request failed.");
                     } else {
                         FORCE_ENTER = false;
                         if(dialog.isShowing()){
@@ -53,8 +92,8 @@ public class PGSplashScreen extends Activity {
                         // get the panel
                         logo.clearAnimation();
                         Intent i = new Intent(PGSplashScreen.this, MainActivity.class);
-                        i.putExtra("DATASOURCE", object.getBoolean("DataSource"));
-                        i.putExtra("CLEANLOCAL", object.getBoolean("CleanLocal"));
+                        Prefs.putBoolean(DATA_SOURCE, object.getBoolean("DataSource"));
+                        Prefs.putBoolean(CLEAN_LOCAL, object.getBoolean("CleanLocal"));
                         startActivity(i);
                         finish();
                     }
@@ -81,8 +120,8 @@ public class PGSplashScreen extends Activity {
 
     }
 
-    public void setDialog() {
-        this.dialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Bad Internet Connection!")
+    private void setDialog() {
+        dialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText("Bad Internet Connection!")
                 .setContentText("Without internet, some of the features may not function correctly!")
                 .setConfirmText("Okay, enter anyway")
                 .setCancelText("Cancel")
@@ -93,8 +132,8 @@ public class PGSplashScreen extends Activity {
                         // reuse previous dialog instance
                         sDialog.dismiss();
                         Intent i = new Intent(PGSplashScreen.this, MainActivity.class);
-                        i.putExtra("DATASOURCE", false);
-                        i.putExtra("CLEANLOCAL", false);
+                        Prefs.putBoolean(DATA_SOURCE, false);
+                        Prefs.putBoolean(CLEAN_LOCAL, false);
                         startActivity(i);
                         finish();
                     }

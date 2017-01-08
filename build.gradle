@@ -15,5 +15,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        // For easyprefs library
+        maven { url "http://dl.bintray.com/pixplicity/maven" }
     }
 }
