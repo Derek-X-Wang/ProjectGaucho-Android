@@ -51,7 +51,7 @@ public class PGDatabaseManager {
 
     private Object getControlPanelFromParse(){
         ParseQuery query = ParseQuery.getQuery("ControlPanel");
-        query.whereEqualTo("OS",false);
+        query.whereEqualTo("OS","Android");
         try {
             return query.getFirst();
         } catch (ParseException e) {

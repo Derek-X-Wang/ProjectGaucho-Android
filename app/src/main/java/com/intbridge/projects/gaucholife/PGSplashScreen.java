@@ -79,6 +79,7 @@ public class PGSplashScreen extends Activity {
 //            };
 
             ParseQuery query = ParseQuery.getQuery("ControlPanel");
+            query.whereEqualTo("OS","Android");
             query.getFirstInBackground(new GetCallback<ParseObject>() {
                 public void done(ParseObject object, ParseException e) {
 
