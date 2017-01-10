@@ -68,8 +68,6 @@ public class DiningFragment extends Fragment{
 
     private Date currentDate;
 
-    private int loadLoopIndicator = 0;
-
     private final int LOADDAYRANGE = 9;
     private int loadDayLimit = LOADDAYRANGE;
 

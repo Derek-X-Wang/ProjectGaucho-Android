@@ -12,38 +12,35 @@ import com.intbridge.projects.gaucholife.controllers.DiningFragment;
 import com.intbridge.projects.gaucholife.controllers.MapsFragment;
 import com.intbridge.projects.gaucholife.controllers.SettingsFragment;
 import com.intbridge.projects.gaucholife.utils.ClientStatManager;
+import com.intbridge.projects.gaucholife.utils.DinningDataUpload;
 import com.intbridge.projects.gaucholife.views.IconWithTextView;
 
 import java.util.Date;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class MainActivity extends Activity implements View.OnClickListener{
+
+public class MainActivity extends Activity {
 
     private MapsFragment mapsFragemnt;
     private DiningFragment diningFragment;
     private SettingsFragment settingsFragment;
 
     private int currentTab = 0;
-    IconWithTextView tabMaps;
-    IconWithTextView tabDining;
-    IconWithTextView tabSettings;
-
-    private boolean dataSource = true;
-    private boolean cleanLocal = false;
-
-    Date currentDate;
-    int dateLoaded = 1;
+    @BindView(R.id.tab_maps) IconWithTextView tabMaps;
+    @BindView(R.id.tab_dining) IconWithTextView tabDining;
+    @BindView(R.id.tab_settings) IconWithTextView tabSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        if (savedInstanceState == null) {
-        }else{
-            dataSource = savedInstanceState.getBoolean("DATASOURCE");
-            cleanLocal = savedInstanceState.getBoolean("CLEANLOCAL");
+        if (savedInstanceState != null) {
             currentTab = savedInstanceState.getInt("CURRENTTAB");
         }
         mapsFragemnt = new MapsFragment();
@@ -52,21 +49,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         initView();
 
-//        PGDatabaseManager pgDatabaseManager = new PGDatabaseManager();
-//        currentDate = new Date();
-//        currentDate = pgDatabaseManager.addDays(currentDate,14);
-////        currentDate = null;
-//        new SyncWebRequestTask().execute(currentDate);
+//        DinningDataUpload dataUpload = new DinningDataUpload(5);
+//        dataUpload.uploadParseServer(7);
+
 
         // send user stat TODO: uncomment when release
         //ClientStatManager.sendUserStatus(this);
 
     }
-
-    public int getCurrentTab(){
-        return currentTab;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,9 +73,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("CURRENTTAB",currentTab);
-        outState.putBoolean("DATASOURCE",dataSource);
-        outState.putBoolean("CLEANLOCAL", cleanLocal);
-        outState.putBoolean("ONRESUME", true);
     }
 
     public Map<Integer, Map> getTempDataStorage() {
@@ -93,14 +80,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     private void initView(){
-
-        tabMaps = (IconWithTextView)findViewById(R.id.tab_maps);
-        tabDining = (IconWithTextView)findViewById(R.id.tab_dining);
-        tabSettings = (IconWithTextView)findViewById(R.id.tab_settings);
-
-        tabMaps.setOnClickListener(this);
-        tabDining.setOnClickListener(this);
-        tabSettings.setOnClickListener(this);
 
         resetOtherTabs();
         initFragments();
@@ -144,36 +123,37 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 .commit();
     }
 
-    @Override
-    public void onClick(View v) {
+    @OnClick(R.id.tab_maps)
+    public void onTabMapsClicked(View view) {
         resetOtherTabs();
-        //ActionBar actionBar = getActionBar();
-        switch (v.getId()){
-            case R.id.tab_maps:
-                currentTab = 1;
-                tabMaps.setIconAlpha(1.0f);
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(mapsFragemnt)
-                        .commit();
-                break;
-            case R.id.tab_dining:
-                currentTab = 2;
-                tabDining.setIconAlpha(1.0f);
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(diningFragment)
-                        .commit();
-                break;
-            case R.id.tab_settings:
-                currentTab = 3;
-                tabSettings.setIconAlpha(1.0f);
-                hideAllFragments();
-                getFragmentManager().beginTransaction()
-                        .show(settingsFragment)
-                        .commit();
-                break;
-        }
+        hideAllFragments();
+        currentTab = 0;
+        tabMaps.setIconAlpha(1.0f);
+        getFragmentManager().beginTransaction()
+                .show(mapsFragemnt)
+                .commit();
+    }
+
+    @OnClick(R.id.tab_dining)
+    public void onDiningClicked(View view) {
+        resetOtherTabs();
+        hideAllFragments();
+        currentTab = 1;
+        tabDining.setIconAlpha(1.0f);
+        getFragmentManager().beginTransaction()
+                .show(diningFragment)
+                .commit();
+    }
+
+    @OnClick(R.id.tab_settings)
+    public void onSettingsClicked(View view) {
+        resetOtherTabs();
+        hideAllFragments();
+        currentTab = 2;
+        tabSettings.setIconAlpha(1.0f);
+        getFragmentManager().beginTransaction()
+                .show(settingsFragment)
+                .commit();
     }
 
     private void hideAllFragments() {
@@ -193,40 +173,5 @@ public class MainActivity extends Activity implements View.OnClickListener{
         tabDining.setIconAlpha(0);
         tabSettings.setIconAlpha(0);
     }
-
-
-    // used for update parse.com data
-    private class SyncWebRequestTask extends AsyncTask<Date, Integer, Map<String, Map>> {
-        PGDatabaseManager databaseManager;
-
-        @Override
-        protected void onPreExecute() {
-            if(databaseManager == null){
-                databaseManager = new PGDatabaseManager();
-            }
-        }
-
-        @Override
-        protected Map<String, Map> doInBackground(Date... params) {
-            // params comes from the execute() call: use params[0] for the first.
-            currentDate = params[0];
-            Map<String, Map> result = databaseManager.getUCSBCommonsDataFromHTML(currentDate);
-            int dateInt = databaseManager.convertDateToInteger(currentDate);
-            databaseManager.getParseObjectFromHTML(dateInt, result);
-            return result;
-        }
-
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(Map<String, Map> result) {
-            Log.e("Mcurrent: ", databaseManager.convertDateToInteger(currentDate) + "");
-            dateLoaded--;
-            if(dateLoaded > 0){
-                currentDate = databaseManager.addDays(currentDate,1);
-                new SyncWebRequestTask().execute(currentDate);
-            }
-        }
-    }
-
 
 }
